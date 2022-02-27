@@ -1,4 +1,5 @@
 package SystemLayer.ProcessInterfacesses;
 
-public interface PostProcessor {
+public interface Task extends Runnable{
+    
 }
