@@ -1,7 +1,7 @@
-package SystemLayer.Factories.ComponentFactories;
+package Factories.ComponentFactories;
 
-import SystemLayer.Factories.Factory;
-import SystemLayer.Processes.ErasureProcessor;
+import Factories.Factory;
+import SystemLayer.ProcessInterfacesses.ErasureProcessor;
 
 public abstract class ErasureProcessorFactory implements Factory {
     public static ErasureProcessor getNewInstance(){

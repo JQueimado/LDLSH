@@ -1,7 +1,7 @@
-package SystemLayer.Factories.ComponentFactories;
+package Factories.ComponentFactories;
 
-import SystemLayer.Factories.Factory;
-import SystemLayer.Processes.LSHProcessor;
+import Factories.Factory;
+import SystemLayer.ProcessInterfacesses.LSHProcessor;
 
 public abstract class LSHProcessorFactory implements Factory {
     public static LSHProcessor getNewInstance(){

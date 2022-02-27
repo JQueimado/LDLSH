@@ -1,7 +1,7 @@
-package SystemLayer.Factories.ComponentFactories;
+package Factories.ComponentFactories;
 
-import SystemLayer.Factories.Factory;
-import SystemLayer.Processes.ObjectNameProcessor;
+import Factories.Factory;
+import SystemLayer.ProcessInterfacesses.ObjectNameProcessor;
 
 public abstract class ObjectNameProcessorFactory implements Factory {
     public static ObjectNameProcessor getNewInstance(){

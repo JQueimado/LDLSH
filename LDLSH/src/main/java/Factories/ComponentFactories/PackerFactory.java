@@ -1,7 +1,7 @@
-package SystemLayer.Factories.ComponentFactories;
+package Factories.ComponentFactories;
 
-import SystemLayer.Factories.Factory;
-import SystemLayer.Processes.Packer;
+import Factories.Factory;
+import SystemLayer.ProcessInterfacesses.Packer;
 
 public abstract class PackerFactory implements Factory {
     public static Packer getNewInstance(){
