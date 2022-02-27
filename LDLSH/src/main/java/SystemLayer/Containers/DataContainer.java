@@ -1,11 +1,12 @@
 package SystemLayer.Containers;
 
-import SystemLayer.Factories.*;
-import SystemLayer.Processes.*;
+import Factories.ComponentFactories.*;
+import SystemLayer.ProcessInterfacesses.*;
 
 public abstract class DataContainer {
 
     /*Objects*/
+    //SystemComponents
     private static ErasureProcessor erasureProcessor = null;
     private static ObjectNameProcessor objectNameProcessor = null;
     private static LSHProcessor lshProcessor = null;
