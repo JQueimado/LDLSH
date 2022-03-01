@@ -1,10 +1,10 @@
 package Factories.RequestFactories;
 
-import NetworkLayer.Requests.QueryRequest;
+import NetworkLayer.Requests.RequestQuery;
 import Factories.Factory;
 
-public abstract class QueryRequestFactory implements Factory {
-    public static QueryRequest newQueryRequest(){
+public abstract class RequestQueryFactory implements Factory {
+    public static RequestQuery newQueryRequest(){
         return null;
     }
 }

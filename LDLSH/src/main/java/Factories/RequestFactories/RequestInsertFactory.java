@@ -1,10 +1,10 @@
 package Factories.RequestFactories;
 
-import NetworkLayer.Requests.InsertRequest;
+import NetworkLayer.Requests.RequestInsert;
 import Factories.Factory;
 
-public abstract class InsertRequestFactory implements Factory {
-    public static InsertRequest newInsertRequest(){
+public abstract class RequestInsertFactory implements Factory {
+    public static RequestInsert newInsertRequest(){
         return null;
     }
 }
