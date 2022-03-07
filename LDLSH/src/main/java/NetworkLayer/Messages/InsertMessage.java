@@ -1,4 +1,7 @@
 package NetworkLayer.Messages;
 
-public interface InsertMessage extends Message{
-}
+import SystemLayer.Data.DataObject;
+
+public record InsertMessageImpl(
+        DataObject dataObject
+) implements InsertMessage {/**/}

@@ -1,7 +1,8 @@
 package NetworkLayer.Messages;
 
+import NetworkLayer.Message;
 import SystemLayer.Data.LocalitySensitiveHashing;
 
-public record QueryMessageBlockImpl(
+public record QueryMessageBlock(
         LocalitySensitiveHashing.LocalitySensitiveHashingBlock block
-) implements QueryMessage {/**/}
+) implements Message {/**/}
