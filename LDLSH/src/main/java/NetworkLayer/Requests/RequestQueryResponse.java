@@ -1,9 +1,8 @@
 package NetworkLayer.Requests;
 
-import NetworkLayer.Messages.Message;
+import NetworkLayer.Message;
+import NetworkLayer.Request;
 import SystemLayer.Data.DataObject;
 
-public interface RequestQueryResponse extends Message {
-    DataObject getDataObject();
-    void setDataObject(DataObject dataObject);
+public record RequestQueryResponse(DataObject dataObject) implements Request {
 }

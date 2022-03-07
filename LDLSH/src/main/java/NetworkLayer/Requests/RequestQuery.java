@@ -1,7 +1,7 @@
 package NetworkLayer.Requests;
 
-import NetworkLayer.Messages.Message;
-import SystemLayer.Data.DataObject;
+import NetworkLayer.Message;
+import NetworkLayer.Request;
 
-public interface RequestQuery extends Message {
+public record RequestQuery() implements Request {
 }

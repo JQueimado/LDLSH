@@ -1,7 +1,6 @@
 package NetworkLayer.Requests;
 
-import NetworkLayer.Messages.Message;
-import SystemLayer.Data.DataObject;
+import NetworkLayer.Request;
 
-public interface RequestInsert extends Message {
+public record RequestInsert() implements Request {
 }
