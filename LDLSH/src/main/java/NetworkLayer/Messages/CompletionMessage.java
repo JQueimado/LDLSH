@@ -1,10 +1,10 @@
 package NetworkLayer.Messages;
 
 import NetworkLayer.Message;
-import SystemLayer.Data.LocalitySensitiveHashing;
-import SystemLayer.Data.ObjectName;
+import SystemLayer.Data.LSHHash;
+import SystemLayer.Data.UniqueIdentifier;
 
 public record CompletionMessage(
-        LocalitySensitiveHashing localitySensitiveHashing,
-        ObjectName objectName
+        LSHHash localitySensitiveHashing,
+        UniqueIdentifier objectName
 ) implements Message {/**/}

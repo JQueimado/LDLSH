@@ -2,9 +2,9 @@ package NetworkLayer.Messages;
 
 import NetworkLayer.Message;
 import SystemLayer.Data.ErasureCodes;
-import SystemLayer.Data.ObjectName;
+import SystemLayer.Data.UniqueIdentifier;
 
 public record QueryResponse(
         ErasureCodes erasureCodes,
-        ObjectName objectName
+        UniqueIdentifier objectName
 ) implements Message {/**/}

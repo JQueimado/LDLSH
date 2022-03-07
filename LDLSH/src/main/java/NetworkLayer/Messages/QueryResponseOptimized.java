@@ -1,8 +1,8 @@
 package NetworkLayer.Messages;
 
 import NetworkLayer.Message;
-import SystemLayer.Data.ObjectName;
+import SystemLayer.Data.UniqueIdentifier;
 
 public record QueryResponseOptimized(
-        ObjectName objectName
+        UniqueIdentifier objectName
 ) implements Message {/**/}

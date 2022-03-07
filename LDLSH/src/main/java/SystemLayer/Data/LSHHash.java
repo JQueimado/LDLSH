@@ -1,5 +1,5 @@
 package SystemLayer.Data;
 
-public interface LocalitySensitiveHashing {
+public interface LSHHash {
     public interface LocalitySensitiveHashingBlock{}
 }

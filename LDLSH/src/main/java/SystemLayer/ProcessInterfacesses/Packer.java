@@ -1,9 +1,9 @@
 package SystemLayer.ProcessInterfacesses;
 
 import SystemLayer.Data.ErasureCodes;
-import SystemLayer.Data.LocalitySensitiveHashing;
-import SystemLayer.Data.ObjectName;
+import SystemLayer.Data.LSHHash;
+import SystemLayer.Data.UniqueIdentifier;
 
 public interface Packer {
-    public Package[] pack(ObjectName objectName, LocalitySensitiveHashing lsh, ErasureCodes codes);
+    public Package[] pack(UniqueIdentifier objectName, LSHHash lsh, ErasureCodes codes);
 }

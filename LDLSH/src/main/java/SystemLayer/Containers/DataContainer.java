@@ -8,8 +8,8 @@ public abstract class DataContainer {
     /*Objects*/
     //SystemComponents
     private static ErasureProcessor erasureProcessor = null;
-    private static ObjectNameProcessor objectNameProcessor = null;
-    private static LSHProcessor lshProcessor = null;
+    private static UniqueIdentifierProcessor objectNameProcessor = null;
+    private static LSHHashProcessor lshProcessor = null;
     private static Packer packer = null;
     private static PostProcessor postProcessor = null;
     private static DistanceMeasurer distanceMeasurer = null;
@@ -23,16 +23,16 @@ public abstract class DataContainer {
     }
 
     //Object Name Processor
-    public static ObjectNameProcessor getObjectNameProcessorInstance(){
+    public static UniqueIdentifierProcessor getObjectNameProcessorInstance(){
         if (objectNameProcessor == null)
-            objectNameProcessor = ObjectNameProcessorFactory.getNewInstance();
+            objectNameProcessor = UniqueIdentifierProcessorFactory.getNewInstance();
         return objectNameProcessor;
     }
 
     //LSH Processor
-    public static LSHProcessor getLshProcessorInstance(){
+    public static LSHHashProcessor getLshProcessorInstance(){
         if(lshProcessor == null)
-            lshProcessor = LSHProcessorFactory.getNewInstance();
+            lshProcessor = LSHHashProcessorFactory.getNewInstance();
         return lshProcessor;
     }
 

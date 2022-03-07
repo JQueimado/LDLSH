@@ -1,8 +1,8 @@
 package NetworkLayer.Messages;
 
 import NetworkLayer.Message;
-import SystemLayer.Data.LocalitySensitiveHashing;
+import SystemLayer.Data.LSHHash;
 
 public record QueryMessageMultiBlock(
-        LocalitySensitiveHashing localitySensitiveHashing
+        LSHHash localitySensitiveHashing
 ) implements Message {/**/}
