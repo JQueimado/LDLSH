@@ -1,7 +1,5 @@
 package NetworkLayer;
 
-import NetworkLayer.Messages.Message;
-
 public interface CommunicationLayer {
     public interface Transmitter {
         public void broadcast( Message message );
