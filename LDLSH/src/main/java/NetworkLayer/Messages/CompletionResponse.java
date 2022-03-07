@@ -1,7 +1,8 @@
 package NetworkLayer.Messages;
 
+import NetworkLayer.Message;
 import SystemLayer.Data.ErasureCodes;
 
-public record CompletionResponseImpl(
+public record CompletionResponse(
         ErasureCodes erasureCodes
-) implements CompletionResponse {/**/}
+) implements Message {/**/}

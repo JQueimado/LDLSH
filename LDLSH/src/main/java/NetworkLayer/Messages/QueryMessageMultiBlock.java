@@ -3,6 +3,6 @@ package NetworkLayer.Messages;
 import NetworkLayer.Message;
 import SystemLayer.Data.LocalitySensitiveHashing;
 
-public record QueryMessageComplete(
+public record QueryMessageMultiBlock(
         LocalitySensitiveHashing localitySensitiveHashing
 ) implements Message {/**/}

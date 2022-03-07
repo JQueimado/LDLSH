@@ -1,10 +1,10 @@
 package NetworkLayer.Messages;
 
+import NetworkLayer.Message;
 import SystemLayer.Data.ErasureCodes;
 import SystemLayer.Data.ObjectName;
 
-public record QueryResponseImpl(
+public record QueryResponse(
         ErasureCodes erasureCodes,
         ObjectName objectName
-) implements QueryResponse {
-}
+) implements Message {/**/}

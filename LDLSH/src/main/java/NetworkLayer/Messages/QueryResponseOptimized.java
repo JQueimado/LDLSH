@@ -1,9 +1,8 @@
 package NetworkLayer.Messages;
 
-import SystemLayer.Data.ErasureCodes;
+import NetworkLayer.Message;
 import SystemLayer.Data.ObjectName;
 
-public record QueryResponseOptimizedImpl(
+public record QueryResponseOptimized(
         ObjectName objectName
-) implements QueryResponse {
-}
+) implements Message {/**/}
