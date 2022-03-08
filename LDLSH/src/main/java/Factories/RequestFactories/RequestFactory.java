@@ -47,7 +47,7 @@ public abstract class RequestFactory {
 
     //Query Request
     public static Request newRequestQueryResponse(){
-        switch (requestQueryType){
+        switch (requestQueryResponseType){
 
             case STANDARD -> {
                 return new RequestQuery();
