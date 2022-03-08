@@ -19,7 +19,14 @@ public abstract class ErasureProcessorFactory implements Factory {
     }
 
     public static ErasureProcessor getNewInstance(){
-        /*TODO*/
-        return null;
+
+        switch (current_type){
+
+            case STANDARD ->{
+                    return null; /*TODO*/
+            }
+
+            default -> {return null;}
+        }
     }
 }
