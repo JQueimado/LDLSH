@@ -1,4 +1,4 @@
-package SystemLayer.ProcessInterfacesses;
+package SystemLayer.Processes;
 
 import SystemLayer.Data.ErasureCodes;
 import SystemLayer.Data.LSHHash;

@@ -1,4 +1,4 @@
-package SystemLayer.ProcessInterfacesses.ErasureProcessorImpl;
+package SystemLayer.Processes.ErasureProcessorImpl;
 
 import SystemLayer.Data.DataObject;
 import SystemLayer.Data.ErasureCodes;

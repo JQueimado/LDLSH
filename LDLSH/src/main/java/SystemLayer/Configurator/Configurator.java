@@ -16,7 +16,7 @@ import java.util.Properties;
 *
 * - ERASURE_PROCESSOR
 *       * Description: Configures the algorithm used to process erasure codes.
-*       * Options: NONE, STANDARD
+*       * Options: NONE, REED_SOLOMON
 *
 * - LSH_HASH
 *       * Description: Configures the LSH hash function to be used.

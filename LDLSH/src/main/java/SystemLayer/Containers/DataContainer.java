@@ -1,7 +1,8 @@
 package SystemLayer.Containers;
 
 import Factories.ComponentFactories.*;
-import SystemLayer.ProcessInterfacesses.*;
+import SystemLayer.Processes.*;
+import SystemLayer.Processes.ErasureProcessorImpl.ErasureProcessor;
 
 public abstract class DataContainer {
 
