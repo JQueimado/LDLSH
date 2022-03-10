@@ -1,7 +1,7 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.ProcessInterfacesses.LSHHashProcessor;
+import SystemLayer.Processes.LSHHashProcessor;
 
 public abstract class LSHHashProcessorFactory implements Factory {
 

@@ -1,7 +1,7 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.ProcessInterfacesses.UniqueIdentifierProcessor;
+import SystemLayer.Processes.UniqueIdentifierProcessor;
 
 public abstract class UniqueIdentifierProcessorFactory implements Factory {
 
