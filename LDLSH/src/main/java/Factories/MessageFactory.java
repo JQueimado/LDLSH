@@ -1,6 +1,5 @@
-package Factories.MessageFactories;
+package Factories;
 
-import Factories.Factory;
 import NetworkLayer.Message;
 import NetworkLayer.Messages.*;
 
@@ -24,11 +23,11 @@ public abstract class MessageFactory implements Factory {
 
 
     //Current config
-    public static completionMessageTypes completionMessageType;
-    public static completionResponseTypes completionResponseType;
-    public static insertMessageTypes insertMessageType;
-    public static queryMessageTypes queryMessageType;
-    public static queryResponseTypes queryResponseType;
+    public static completionMessageTypes completionMessageType = completionMessageTypes.NONE;
+    public static completionResponseTypes completionResponseType = completionResponseTypes.NONE;
+    public static insertMessageTypes insertMessageType = insertMessageTypes.NONE;
+    public static queryMessageTypes queryMessageType = queryMessageTypes.NONE;
+    public static queryResponseTypes queryResponseType = queryResponseTypes.NONE;
 
     //Set config
     public static void setConfig( config_settings config_name, String config_value )throws ConfigException{
