@@ -2,7 +2,7 @@ package SystemLayer.Configurator;
 
 import Factories.ComponentFactories.*;
 import Factories.Factory;
-import Factories.MessageFactories.MessageFactory;
+import Factories.MessageFactory;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -33,6 +33,23 @@ import java.util.Properties;
 * - UNIQUE_IDENTIFIER
 *       * Description:
 *       * Options:
+*
+* - Messages:
+*       * COMPLETION_MESSAGE:
+*           ** description: Sets the completion message implementation
+*           ** options: NONE, STANDARD
+*       * COMPLETION_RESPONSE:
+*           ** description: Sets the completion response message implementation
+*           ** options: NONE, STANDARD
+*       * INSERT_MESSAGE:
+*           ** description: Sets the insert message implementation
+*           ** options: NONE, STANDARD
+*       * QUERY_MESSAGE:
+*           ** description: Sets the query message implementation
+*           ** options: NONE, SINGLE_BLOCK, MULTI_BLOCK
+*       * QUERY_RESPONSE:
+*           ** description: Sets the query response message implementation
+*           ** options: NONE, STANDARD, OPTIMIZED
 * */
 
 public abstract class Configurator {
@@ -91,7 +108,7 @@ public abstract class Configurator {
         //Query response
         MessageFactory.setConfig(
                 MessageFactory.config_settings.QUERY_RESPONSE,
-                p.getProperty("QUERY_MESSAGE")
+                p.getProperty("QUERY_RESPONSE")
         );
     }
 }
