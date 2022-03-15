@@ -18,7 +18,7 @@ public abstract class LSHHashProcessorFactory implements Factory {
         }
     }
 
-    public static LSHHashProcessor getNewInstance(){
+    public static LSHHashProcessor getNewInstance( types type ){
         /*TODO*/
         return null;
     }

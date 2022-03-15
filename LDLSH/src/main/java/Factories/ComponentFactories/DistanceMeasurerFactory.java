@@ -10,6 +10,12 @@ public abstract class DistanceMeasurerFactory implements Factory {
     public static types current_type;
 
     public static void setCurrentType(String type) throws ConfigException {
+        //Blank type
+        if (type.isEmpty() || type.isBlank()){
+            current_type = types.NONE;
+            return;
+        }
+
         try{
             current_type = types.valueOf(type);
         }catch (IllegalArgumentException | NullPointerException iae){
