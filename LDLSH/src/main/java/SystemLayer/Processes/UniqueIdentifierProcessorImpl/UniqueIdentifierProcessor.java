@@ -1,6 +1,6 @@
-package SystemLayer.Processes;
+package SystemLayer.Processes.UniqueIdentifierProcessorImpl;
 
-import SystemLayer.Data.DataObject;
+import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.UniqueIdentifier;
 
 public interface UniqueIdentifierProcessor {

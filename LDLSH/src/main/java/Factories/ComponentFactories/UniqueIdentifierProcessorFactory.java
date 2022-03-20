@@ -1,25 +1,23 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Processes.UniqueIdentifierProcessor;
+import SystemLayer.Processes.UniqueIdentifierProcessorImpl.Sha256Procesor;
+import SystemLayer.Processes.UniqueIdentifierProcessorImpl.UniqueIdentifierProcessor;
 
-public abstract class UniqueIdentifierProcessorFactory implements Factory {
+public class UniqueIdentifierProcessorFactory implements Factory {
 
-    public enum types {NONE,STANDARD}
+    public enum configurations {NONE,SHA256}
 
-    public static types current_type;
+    public UniqueIdentifierProcessor getUniqueIdentifierProcessor(configurations config){
+        switch (config){
 
-    public static void setCurrentType(String type) throws ConfigException {
-        try{
-            current_type = types.valueOf(type);
-        }catch (Exception e){
-            current_type = types.NONE;
-            throw new ConfigException("Invalid config Type", "UNIQUE_IDENTIFIER", type);
+            case SHA256 -> {
+                return new Sha256Procesor();
+            }
+
+            default -> {
+                return null;
+            }
         }
-    }
-
-    public static UniqueIdentifierProcessor getNewInstance(){
-        /*TODO*/
-        return null;
     }
 }

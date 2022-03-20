@@ -1,8 +1,5 @@
 package SystemLayer.Configurator;
 
-import Factories.ComponentFactories.*;
-import Factories.Factory;
-import Factories.MessageFactory;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -52,63 +49,40 @@ import java.util.Properties;
 *           ** options: NONE, STANDARD, OPTIMIZED
 * */
 
-public abstract class Configurator {
-    public static void config(String file_name) throws IOException, Factory.ConfigException {
-        //Open file
-        FileReader properties_file = new FileReader(file_name);
+public class Configurator {
 
-        //Load properties
-        Properties p = new Properties();
-        p.load(properties_file);
+    //Configurations
+    private String f_name;
+    private Properties config;
 
-        //config Components
-        //Distance measure
-        DistanceMeasurerFactory.setCurrentType(p.getProperty("DISTANCE_MEASURE"));
+    //Create Data container
+    public Configurator(String f_name){
+        try {
+            //Open file
+            FileReader properties_file = new FileReader(f_name);
+            //Load properties
+            config = new Properties();
+            config.load(properties_file);
+            this.f_name = f_name;
 
-        //Erasure codes
-        ErasureProcessorFactory.setCurrentType(p.getProperty("ERASURE_PROCESSOR"));
+        }catch (IOException ioe){
+            //If the file can't be opened, creates an empty configurator
+            config = new Properties();
+            this.f_name = "";
+        }
+    }
 
-        //LSH hash
-        LSHHashProcessorFactory.setCurrentType(p.getProperty("LSH_HASH"));
+    //getters
+    public String getConfig( String config_name ){
+        String value = config.getProperty(config_name);
+        if( value == null || value.isEmpty() || value.isBlank())
+            return "";
+        else
+            return value;
+    }
 
-        //Packer
-        PackerFactory.setCurrentType(p.getProperty("PACKER"));
-
-        //Post processor
-        PostProcessorFactory.setCurrentType(p.getProperty("POST_PROCESSOR"));
-
-        //Unique identifier
-        UniqueIdentifierProcessorFactory.setCurrentType(p.getProperty("UNIQUE_IDENTIFIER"));
-
-        //config Messages
-        //Completion message
-        MessageFactory.setConfig(
-                MessageFactory.config_settings.COMPLETION_MESSAGE,
-                p.getProperty("COMPLETION_MESSAGE")
-        );
-
-        //Completion response
-        MessageFactory.setConfig(
-                MessageFactory.config_settings.COMPLETION_RESPONSE,
-                p.getProperty("COMPLETION_RESPONSE")
-        );
-
-        //Insert message
-        MessageFactory.setConfig(
-                MessageFactory.config_settings.INSERT_MESSAGE,
-                p.getProperty("INSERT_MESSAGE")
-        );
-
-        //Query message
-        MessageFactory.setConfig(
-                MessageFactory.config_settings.QUERY_MESSAGE,
-                p.getProperty("QUERY_MESSAGE")
-        );
-
-        //Query response
-        MessageFactory.setConfig(
-                MessageFactory.config_settings.QUERY_RESPONSE,
-                p.getProperty("QUERY_RESPONSE")
-        );
+    //setters
+    public void setConfig( String config_name, String config_value ){
+        config.setProperty(config_name, config_value);
     }
 }

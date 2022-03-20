@@ -11,24 +11,17 @@ class ErasureProcessorFactoryTest {
     @Test
     void setCurrentType_NONE() throws Exception {
         String type = "NONE";
-        ErasureProcessorFactory.setCurrentType(type);
-        assertEquals(ErasureProcessorFactory.current_type, ErasureProcessorFactory.types.NONE);
-    }
-
-    @Test
-    void getNewInstance_None() throws Exception {
-        String type = "NONE";
-        ErasureProcessorFactory.setCurrentType(type);
-        ErasureProcessor erasureCodes = ErasureProcessorFactory.getNewInstance();
-        assertNull(erasureCodes);
+        ErasureProcessorFactory erasureProcessorFactory = new ErasureProcessorFactory();
+        ErasureProcessor erasureProcessor = erasureProcessorFactory.getNewProcessor(type);
+        assertNull(erasureProcessor);
     }
 
     @Test
     void getNewInstance_ReedSolomon() throws Exception {
         String type = "REED_SOLOMON";
-        ErasureProcessorFactory.setCurrentType(type);
-        ErasureProcessor erasureCodesProcessor = ErasureProcessorFactory.getNewInstance();
-        assert erasureCodesProcessor != null;
-        assertEquals(erasureCodesProcessor.getClass(), ReedSolomonErasureCodesProcessor.class);
+        ErasureProcessorFactory erasureProcessorFactory = new ErasureProcessorFactory();
+        ErasureProcessor erasureProcessor = erasureProcessorFactory.getNewProcessor(type);
+        assertNotNull(erasureProcessor);
+        assertEquals(erasureProcessor.getClass(), ReedSolomonErasureCodesProcessor.class);
     }
 }

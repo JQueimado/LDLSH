@@ -1,31 +1,30 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Processes.DistanceMeasurer;
+import SystemLayer.Processes.DistanceMeasurerImpl.DistanceMeasurer;
+import SystemLayer.Processes.DistanceMeasurerImpl.JaccardDistance;
 
-public abstract class DistanceMeasurerFactory implements Factory {
+public class DistanceMeasurerFactory implements Factory {
 
-    public enum types {NONE,STANDARD}
+    private enum configurations {NONE,JACCARD}
 
-    public static types current_type;
-
-    public static void setCurrentType(String type) throws ConfigException {
-        //Blank type
-        if (type.isEmpty() || type.isBlank()){
-            current_type = types.NONE;
-            return;
-        }
-
-        try{
-            current_type = types.valueOf(type);
-        }catch (IllegalArgumentException | NullPointerException iae){
-            current_type = types.NONE;
-            throw new ConfigException("Invalid config Type", "DISTANCE_MEASURER", type);
-        }
+    public DistanceMeasurerFactory(){
+        //
     }
 
-    public static DistanceMeasurer getNewDistanceMeasurer(){
-        //TODO
-        return null;
+    public DistanceMeasurer getNewDistanceMeasurer( String config_name ){
+
+        configurations config = configurations.valueOf(config_name);
+
+        switch (config){
+
+            case JACCARD -> {
+                return new JaccardDistance();
+            }
+
+            default ->{
+                return null;
+            }
+        }
     }
 }

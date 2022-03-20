@@ -9,30 +9,38 @@ class NodeFactoryTest {
 
     @Test
     void getNewInstance_Inserter() {
-        NodeFactory.types type = NodeFactory.types.INSERTER;
-        Node node = NodeFactory.getNewInstance(type);
-        assertEquals( Objects.requireNonNull(node).getClass(), Inserter.class);
+        String type = "INSERTER";
+        NodeFactory nodeFactory = new NodeFactory();
+        Node node = nodeFactory.getNode(type);
+        assertNotNull( node );
+        assertEquals( node.getClass(), Inserter.class);
     }
 
     @Test
     void getNewInstance_MultimapServer() {
-        NodeFactory.types type = NodeFactory.types.MULTIMAP_SERVER;
-        Node node = NodeFactory.getNewInstance(type);
-        assertEquals( Objects.requireNonNull(node).getClass(), MultimapServer.class);
+        String type = "MULTIMAP_SERVER";
+        NodeFactory nodeFactory = new NodeFactory();
+        Node node = nodeFactory.getNode(type);
+        assertNotNull( node );
+        assertEquals( node.getClass(), MultimapServer.class);
     }
 
     @Test
     void getNewInstance_Querier() {
-        NodeFactory.types type = NodeFactory.types.QUERIER;
-        Node node = NodeFactory.getNewInstance(type);
-        assertEquals( Objects.requireNonNull(node).getClass(), Querier.class);
+        String type = "QUERIER";
+        NodeFactory nodeFactory = new NodeFactory();
+        Node node = nodeFactory.getNode(type);
+        assertNotNull( node );
+        assertEquals( node.getClass(), Querier.class);
     }
 
     @Test
     void getNewInstance_SystemClient() {
-        NodeFactory.types type = NodeFactory.types.SYSTEM_CLIENT;
-        Node node = NodeFactory.getNewInstance(type);
-        assertEquals( Objects.requireNonNull(node).getClass(), SystemClient.class);
+        String type = "SYSTEM_CLIENT";
+        NodeFactory nodeFactory = new NodeFactory();
+        Node node = nodeFactory.getNode(type);
+        assertNotNull( node );
+        assertEquals( node.getClass(), SystemClient.class);
     }
 
 }

@@ -1,25 +1,24 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Processes.LSHHashProcessor;
+import SystemLayer.Containers.DataContainer;
+import SystemLayer.Processes.LSHHashFactory.LSHHashProcessor;
+import SystemLayer.Processes.LSHHashFactory.JavaMinHash;
 
-public abstract class LSHHashProcessorFactory implements Factory {
+public class LSHHashProcessorFactory implements Factory {
 
-    public enum types {NONE,STANDARD}
+    public enum configurations {NONE,MINHASH}
 
-    public static types current_type;
+    public LSHHashProcessor getNewInstance( configurations config, DataContainer dataContainer ) throws Exception {
+        switch (config){
 
-    public static void setCurrentType(String type) throws ConfigException{
-        try{
-            current_type = types.valueOf(type);
-        }catch (Exception e){
-            current_type = types.NONE;
-            throw new ConfigException("Invalid config Type", "LSH_HASH", type);
+            case MINHASH -> {
+                return new JavaMinHash( dataContainer );
+            }
+
+            default -> {
+                return null;
+            }
         }
-    }
-
-    public static LSHHashProcessor getNewInstance( types type ){
-        /*TODO*/
-        return null;
     }
 }

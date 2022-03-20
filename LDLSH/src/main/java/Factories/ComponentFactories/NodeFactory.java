@@ -3,14 +3,15 @@ package Factories.ComponentFactories;
 import Factories.Factory;
 import SystemLayer.Processes.Nodes.*;
 
-import java.security.PublicKey;
+public class NodeFactory implements Factory {
 
-public abstract class NodeFactory implements Factory {
+    public enum configurations {INSERTER, MULTIMAP_SERVER, QUERIER, SYSTEM_CLIENT}
 
-    public enum types {INSERTER, MULTIMAP_SERVER, QUERIER, SYSTEM_CLIENT}
+    public NodeFactory(){/**/}
 
-    public static Node getNewInstance(types nodeType){
-        switch (nodeType){
+    public Node getNode(String config_name){
+        configurations config = configurations.valueOf(config_name);
+        switch (config){
             case INSERTER -> {
                 return new Inserter();
             }

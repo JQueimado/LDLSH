@@ -1,25 +1,27 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Processes.Packer;
+import SystemLayer.Processes.PackerImpl.Packer;
+import SystemLayer.Processes.PackerImpl.StandardPacker;
 
-public abstract class PackerFactory implements Factory {
+public class PackerFactory implements Factory {
 
-    public enum types {NONE,STANDARD}
+    public enum configurations {NONE,STANDARD}
 
-    public static types current_type;
-
-    public static void setCurrentType(String type) throws ConfigException{
-        try{
-            current_type = types.valueOf(type);
-        }catch (Exception e){
-            current_type = types.NONE;
-            throw new ConfigException("Invalid config Type", "PACKER_FACTORY", type);
-        }
+    public PackerFactory(){
+        /**/
     }
 
-    public static Packer getNewInstance(){
-        //TODO
-        return null;
+    public Packer getPackerFactory(configurations config){
+        switch ( config ){
+
+            case STANDARD -> {
+                return new StandardPacker();
+            }
+
+            default ->{
+                return null;
+            }
+        }
     }
 }

@@ -1,35 +1,26 @@
 package Factories.ComponentFactories;
 
-import SystemLayer.Processes.DistanceMeasurer;
+import SystemLayer.Processes.DistanceMeasurerImpl.DistanceMeasurer;
+import SystemLayer.Processes.DistanceMeasurerImpl.JaccardDistance;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DistanceMeasurerFactoryTest {
 
     @Test
-    void setCurrentType() throws Exception {
-        String type;
-
-        //NONE
-        type = "NONE";
-        DistanceMeasurerFactory.setCurrentType(type);
-        assertEquals(DistanceMeasurerFactory.current_type, DistanceMeasurerFactory.types.NONE);
-
-        //STANDARD
-        type = "STANDARD";
-        DistanceMeasurerFactory.setCurrentType(type);
-        assertEquals(DistanceMeasurerFactory.current_type, DistanceMeasurerFactory.types.STANDARD);
+    void getNewDistanceMeasurer_NONE() throws Exception {
+        String type = "NONE";
+        DistanceMeasurerFactory distanceMeasurerFactory = new DistanceMeasurerFactory();
+        DistanceMeasurer distanceMeasurer = distanceMeasurerFactory.getNewDistanceMeasurer( type );
+        assertNull( distanceMeasurer );
     }
 
     @Test
-    void getNewDistanceMeasurer() throws Exception {
-        String type;
-
-        //NONE
-        type = "NONE";
-        DistanceMeasurerFactory.setCurrentType(type);
-
-        DistanceMeasurer distanceMeasurer = DistanceMeasurerFactory.getNewDistanceMeasurer();
-        assertNull( distanceMeasurer );
+    void getNewDistanceMeasurer_JACCARD() throws Exception {
+        String type = "JACCARD";
+        DistanceMeasurerFactory distanceMeasurerFactory = new DistanceMeasurerFactory();
+        DistanceMeasurer distanceMeasurer = distanceMeasurerFactory.getNewDistanceMeasurer( type );
+        assertNotNull(distanceMeasurer);
+        assertEquals( distanceMeasurer.getClass(), JaccardDistance.class);
     }
 }

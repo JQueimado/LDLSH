@@ -1,6 +1,6 @@
 package SystemLayer.Processes.ErasureProcessorImpl;
 
-import SystemLayer.Data.DataObject;
+import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodes;
 
 public class ReedSolomonErasureCodesProcessor implements ErasureProcessor{

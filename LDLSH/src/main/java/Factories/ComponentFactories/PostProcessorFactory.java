@@ -1,25 +1,22 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Processes.PostProcessor;
+import SystemLayer.Processes.PostProcessorImpl.PostProcessor;
+import SystemLayer.Processes.PostProcessorImpl.StandardPostProcessor;
 
-public abstract class PostProcessorFactory implements Factory {
+public class PostProcessorFactory implements Factory {
 
-    public enum types {NONE,STANDARD}
+    public enum configurations {NONE,STANDARD}
 
-    public static types current_type;
+    public PostProcessor getPostProcessor( configurations config ){
+        switch ( config ){
+            case STANDARD -> {
+                return new StandardPostProcessor();
+            }
 
-    public static void setCurrentType(String type) throws ConfigException {
-        try{
-            current_type = types.valueOf(type);
-        }catch (Exception e){
-            current_type = types.NONE;
-            throw new ConfigException("Invalid config Type", "POST_PROCESSOR", type);
+            default -> {
+                return null;
+            }
         }
-    }
-
-    public static PostProcessor getNewInstance(){
-        //TODO
-        return null;
     }
 }
