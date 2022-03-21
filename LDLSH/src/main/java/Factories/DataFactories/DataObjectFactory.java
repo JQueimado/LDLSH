@@ -3,8 +3,6 @@ package Factories.DataFactories;
 import Factories.Factory;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
-import SystemLayer.Data.LSHHashImpl.ArrayLSHHash;
-import SystemLayer.Data.LSHHashImpl.LSHHash;
 
 public class DataObjectFactory implements Factory {
     private enum configurations {NONE,STRING}

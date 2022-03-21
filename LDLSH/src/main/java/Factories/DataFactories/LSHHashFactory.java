@@ -1,40 +1,30 @@
 package Factories.DataFactories;
 
-import SystemLayer.Data.LSHHashImpl.ArrayLSHHash;
+
+import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 
 public class LSHHashFactory {
-    private enum configurations {NONE,INT_ARRAY_HASH}
+    private enum configurations {NONE,JAVA_MINHASH}
 
     public LSHHashFactory(){
         //
     }
 
-    public LSHHash getNewLSHHash( String config_name){
+    public LSHHash getNewLSHHash(String config_name, DataContainer dataContainer){
 
         configurations config = configurations.valueOf(config_name);
 
         switch (config){
 
-            case INT_ARRAY_HASH -> {
-                return new ArrayLSHHash<Integer>();
+            case JAVA_MINHASH -> {
+                return new JavaMinHash(dataContainer);
             }
 
             default ->{
                 return null;
             }
-        }
-    }
-
-    //Hash
-    public interface LSHHash<T> {
-        void setValues( T[] values );
-        T[] getValues();
-        SystemLayer.Data.LSHHashImpl.LSHHash.LSHBlock<T>[] getBlocks(int n_blocks);
-
-        interface LSHBlock<T>{
-            void setValues( T[] values );
-            T[] getValues();
         }
     }
 }

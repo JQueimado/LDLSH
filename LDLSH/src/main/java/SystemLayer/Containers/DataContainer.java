@@ -5,16 +5,9 @@ import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.MessageFactory;
 import SystemLayer.Configurator.Configurator;
-import SystemLayer.Processes.*;
-import SystemLayer.Processes.ErasureProcessorImpl.ErasureProcessor;
-import SystemLayer.Processes.LSHHashFactory.LSHHashProcessor;
-import SystemLayer.Processes.Nodes.Node;
-import SystemLayer.Processes.PostProcessorImpl.PostProcessor;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.PrimitiveIterator;
-import java.util.Properties;
+
 
 public class DataContainer {
 
@@ -23,7 +16,6 @@ public class DataContainer {
     //ComponentFactories
     private DistanceMeasurerFactory distanceMeasurerFactory = null;
     private ErasureProcessorFactory erasureProcessorFactory = null;
-    private LSHHashProcessorFactory lshHashProcessorFactory = null;
     private NodeFactory nodeFactory = null;
     private PackerFactory packerFactory = null;
     private PostProcessorFactory postProcessorFactory = null;
@@ -56,12 +48,6 @@ public class DataContainer {
         if (erasureProcessorFactory == null)
             erasureProcessorFactory = new ErasureProcessorFactory();
         return erasureProcessorFactory;
-    }
-
-    public LSHHashProcessorFactory getLshHashProcessor(){
-        if(lshHashProcessorFactory == null)
-            lshHashProcessorFactory = new LSHHashProcessorFactory();
-        return lshHashProcessorFactory;
     }
 
     public NodeFactory getNodeFactory(){
