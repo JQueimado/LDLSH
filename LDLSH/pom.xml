@@ -18,7 +18,7 @@
         <dependency>
             <groupId>info.debatty</groupId>
             <artifactId>java-lsh</artifactId>
-            <version>0.12</version>
+            <version>LATEST</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
