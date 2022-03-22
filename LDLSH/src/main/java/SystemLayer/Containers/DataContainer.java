@@ -2,6 +2,7 @@ package SystemLayer.Containers;
 
 import Factories.ComponentFactories.*;
 import Factories.DataFactories.DataObjectFactory;
+import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.MessageFactory;
 import SystemLayer.Configurator.Configurator;
@@ -15,7 +16,6 @@ public class DataContainer {
 
     //ComponentFactories
     private DistanceMeasurerFactory distanceMeasurerFactory = null;
-    private ErasureProcessorFactory erasureProcessorFactory = null;
     private NodeFactory nodeFactory = null;
     private PackerFactory packerFactory = null;
     private PostProcessorFactory postProcessorFactory = null;
@@ -24,6 +24,7 @@ public class DataContainer {
     //Data Factories
     private DataObjectFactory dataObjectFactory = null;
     private LSHHashFactory lshHashFactory = null;
+    private ErasureCodesFactory erasureCodesFactory = null;
 
     //Message
     private MessageFactory messageFactory = null;
@@ -42,12 +43,6 @@ public class DataContainer {
         if (distanceMeasurerFactory == null)
             distanceMeasurerFactory = new DistanceMeasurerFactory();
         return distanceMeasurerFactory;
-    }
-
-    public ErasureProcessorFactory getErasureProcessorFactory(){
-        if (erasureProcessorFactory == null)
-            erasureProcessorFactory = new ErasureProcessorFactory();
-        return erasureProcessorFactory;
     }
 
     public NodeFactory getNodeFactory(){
@@ -86,6 +81,12 @@ public class DataContainer {
         if(lshHashFactory == null)
             lshHashFactory = new LSHHashFactory();
         return lshHashFactory;
+    }
+
+    public ErasureCodesFactory getErasureCodesFactory(){
+        if (erasureCodesFactory == null)
+            erasureCodesFactory = new ErasureCodesFactory();
+        return erasureCodesFactory;
     }
 
     public MessageFactory getMessageFactory(){
