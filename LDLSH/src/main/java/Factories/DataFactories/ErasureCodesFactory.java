@@ -1,9 +1,10 @@
 package Factories.DataFactories;
 
+import Factories.Factory;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ReedSolomonErasureCodes;
 
-public class ErasureCodesFactory {
+public class ErasureCodesFactory implements Factory {
 
     public enum configurations {NONE,REED_SOLOMON}
 
