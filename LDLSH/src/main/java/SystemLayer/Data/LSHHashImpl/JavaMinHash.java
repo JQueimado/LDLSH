@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.MissingFormatArgumentException;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -74,15 +75,14 @@ public class JavaMinHash implements LSHHash{
 
     //Auxiliary methods
     private Set<Integer> toIntSet( byte[] bytes ){
-        IntBuffer intBuffer = ByteBuffer.wrap( bytes )
-                .order(ByteOrder.BIG_ENDIAN)
-                .asIntBuffer();
-
-        int[] intArray = new int[intBuffer.remaining()];
-        intBuffer.get(intArray);
-        return Arrays.stream(intArray)
-                .boxed()
-                .collect( Collectors.toSet() );
+        Set<Integer> values = new HashSet<>();
+        int i;
+        int j = bytes.length;
+        for (i = 0; i<j; i++ ){
+            int value = bytes[i];
+            values.add( value );
+        }
+        return values;
     }
 
     private byte[] toByteArray(int[] ints ){
