@@ -7,8 +7,9 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 public class UniqueIdentifierFactory implements Factory {
     public enum configurations {NONE,SHA256}
 
-    public UniqueIdentifier getNewUniqueIdentifier(configurations config){
-        switch (config){
+    public UniqueIdentifier getNewUniqueIdentifier(String config){
+        configurations type = configurations.valueOf(config);
+        switch (type){
 
             case SHA256 -> {
                 return new Sha256UniqueIdentifier();
