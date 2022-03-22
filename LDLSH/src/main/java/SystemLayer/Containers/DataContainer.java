@@ -4,8 +4,10 @@ import Factories.ComponentFactories.*;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
+import Factories.DataFactories.UniqueIdentifierFactory;
 import Factories.MessageFactory;
 import SystemLayer.Configurator.Configurator;
+import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 import java.io.IOException;
 
@@ -19,12 +21,12 @@ public class DataContainer {
     private NodeFactory nodeFactory = null;
     private PackerFactory packerFactory = null;
     private PostProcessorFactory postProcessorFactory = null;
-    private UniqueIdentifierProcessorFactory uniqueIdentifierProcessorFactory = null;
 
     //Data Factories
     private DataObjectFactory dataObjectFactory = null;
     private LSHHashFactory lshHashFactory = null;
     private ErasureCodesFactory erasureCodesFactory = null;
+    private UniqueIdentifierFactory uniqueIdentifierFactory = null;
 
     //Message
     private MessageFactory messageFactory = null;
@@ -63,12 +65,6 @@ public class DataContainer {
         return postProcessorFactory;
     }
 
-    public UniqueIdentifierProcessorFactory getUniqueIdentifierProcessorFactory(){
-        if(uniqueIdentifierProcessorFactory == null)
-            uniqueIdentifierProcessorFactory = new UniqueIdentifierProcessorFactory();
-        return uniqueIdentifierProcessorFactory;
-    }
-
     //Creates Data Objects
     public DataObjectFactory getDataObjectFactory(){
         if(dataObjectFactory == null)
@@ -87,6 +83,12 @@ public class DataContainer {
         if (erasureCodesFactory == null)
             erasureCodesFactory = new ErasureCodesFactory();
         return erasureCodesFactory;
+    }
+
+    public UniqueIdentifierFactory getUniqueIdentifierFactory(){
+        if(uniqueIdentifierFactory == null)
+            uniqueIdentifierFactory = new UniqueIdentifierFactory();
+        return uniqueIdentifierFactory;
     }
 
     public MessageFactory getMessageFactory(){
