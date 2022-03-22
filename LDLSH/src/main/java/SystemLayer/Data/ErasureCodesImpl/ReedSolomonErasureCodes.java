@@ -1,9 +1,16 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
+import SystemLayer.Data.DataObjectsImpl.DataObject;
+
 public class ReedSolomonErasureCodes implements ErasureCodes {
     @Override
-    public void createErasureCodes() {
+    public void encodeDataObject(DataObject dataObject) {
 
+    }
+
+    @Override
+    public DataObject decodeDataObject() {
+        return null;
     }
 
     @Override
