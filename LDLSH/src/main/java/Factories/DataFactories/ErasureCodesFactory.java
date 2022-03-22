@@ -13,7 +13,7 @@ public class ErasureCodesFactory {
     }
 
     //getters
-    public ErasureCodes getNewProcessor( String config_name ){
+    public ErasureCodes getNewErasureCodes( String config_name ){
         configurations config = configurations.valueOf(config_name);
         switch (config){
 
