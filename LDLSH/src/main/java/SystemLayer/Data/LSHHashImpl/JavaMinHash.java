@@ -22,6 +22,7 @@ public class JavaMinHash implements LSHHash{
     //constants
     private static final String ERROR = "ERROR";
     private static final String VECTOR_DIMENSIONS = "VECTOR_DIMENSIONS";
+    private static final String LSH_SEED = "LSH_SEED";
 
     //Static Methods
     private static MinHash minHash = null;
@@ -51,8 +52,16 @@ public class JavaMinHash implements LSHHash{
             else
                 vector_dimensions = Integer.parseInt(vector_dimensions_string);
 
+            //Get Seed
+            String seed_string = configurator.getConfig(LSH_SEED);
+            long seed;
+            if (seed_string.isBlank())
+                throw new Exception("JavaMinHash requires LSH_SEED configuration");
+            else
+                seed = Long.parseLong(vector_dimensions_string);
+
             //Build MinHash module
-            minHash = new MinHash(accuracy_error, vector_dimensions);
+            minHash = new MinHash(accuracy_error, vector_dimensions, seed);
         }
         return minHash;
     }

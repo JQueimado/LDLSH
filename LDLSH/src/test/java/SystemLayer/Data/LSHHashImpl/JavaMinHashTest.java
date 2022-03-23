@@ -4,12 +4,15 @@ import Factories.DataFactories.DataObjectFactory;
 import SystemLayer.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import info.debatty.java.lsh.MinHash;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
@@ -25,6 +28,7 @@ class JavaMinHashTest {
         Configurator configurator = simulatedState.getConfigurator();
         configurator.setConfig("ERROR", "0.1");
         configurator.setConfig("VECTOR_DIMENSIONS", "5");
+        configurator.setConfig("LSH_SEED", "11111");
 
         //Vectors
         String data_object_type = "STRING";
@@ -71,17 +75,23 @@ class JavaMinHashTest {
         int[] ints2 = toIntArray(signature2);
 
         double similarity = JavaMinHash.getMinHash().similarity(ints, ints2);
+        double jaccard_similarity = MinHash.jaccardIndex(
+                toIntSet( dataObject1.toByteArray() ),
+                toIntSet( dataObject2.toByteArray() )
+        );
         System.out.printf(
                 """
-                Similarity test between "%s" and "%s:"
+                Similarity test between "%s" and "%s":
                 \t-Expected Similarity: %f
                 \t-Actual Similarity: %f
+                \t-Jaccard Similarity: %f
                 """,
                 dataObject1.getValues(),
                 dataObject2.getValues(),
                 expected_similarity,
-                similarity
-                );
+                similarity,
+                jaccard_similarity
+            );
     }
 
     @Test
@@ -104,6 +114,8 @@ class JavaMinHashTest {
     }
 
     //Auxiliary methods
+
+    /*
     private void printArray(int[] array ){
         System.out.print("[");
         for (int i : array){
@@ -112,6 +124,7 @@ class JavaMinHashTest {
         }
         System.out.println("]");
     }
+    */
 
     private int[] toIntArray( byte[] array ){
         int[] values = new int[array.length];
@@ -122,5 +135,16 @@ class JavaMinHashTest {
             values[i] = value;
         }
         return values;
+    }
+
+    private Set<Integer> toIntSet(byte[] array ){
+        Set<Integer> set = new HashSet<>();
+        int i;
+        int j = array.length;
+        for (i = 0; i<j; i++ ){
+            int value = array[i];
+            set.add( value );
+        }
+        return set;
     }
 }
