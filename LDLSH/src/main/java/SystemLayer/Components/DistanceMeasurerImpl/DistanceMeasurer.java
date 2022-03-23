@@ -1,4 +1,4 @@
-package SystemLayer.Processes.DistanceMeasurerImpl;
+package SystemLayer.Components.DistanceMeasurerImpl;
 
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 

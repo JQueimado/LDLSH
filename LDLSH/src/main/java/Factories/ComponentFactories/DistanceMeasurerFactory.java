@@ -1,8 +1,8 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Processes.DistanceMeasurerImpl.DistanceMeasurer;
-import SystemLayer.Processes.DistanceMeasurerImpl.JaccardDistance;
+import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
+import SystemLayer.Components.DistanceMeasurerImpl.JaccardDistance;
 
 public class DistanceMeasurerFactory implements Factory {
 

@@ -1,8 +1,8 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Processes.PostProcessorImpl.PostProcessor;
-import SystemLayer.Processes.PostProcessorImpl.StandardPostProcessor;
+import SystemLayer.Components.PostProcessorImpl.PostProcessor;
+import SystemLayer.Components.PostProcessorImpl.StandardPostProcessor;
 
 public class PostProcessorFactory implements Factory {
 

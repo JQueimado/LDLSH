@@ -1,4 +1,4 @@
-package SystemLayer.Processes.Nodes;
+package SystemLayer.Components.Nodes;
 
 public class Inserter implements Node{
     @Override

@@ -1,7 +1,7 @@
 package Factories.ComponentFactories;
 
-import SystemLayer.Processes.DistanceMeasurerImpl.DistanceMeasurer;
-import SystemLayer.Processes.DistanceMeasurerImpl.JaccardDistance;
+import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
+import SystemLayer.Components.DistanceMeasurerImpl.JaccardDistance;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

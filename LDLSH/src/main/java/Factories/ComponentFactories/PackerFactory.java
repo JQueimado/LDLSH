@@ -1,8 +1,8 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Processes.PackerImpl.Packer;
-import SystemLayer.Processes.PackerImpl.StandardPacker;
+import SystemLayer.Components.PackerImpl.Packer;
+import SystemLayer.Components.PackerImpl.StandardPacker;
 
 public class PackerFactory implements Factory {
 

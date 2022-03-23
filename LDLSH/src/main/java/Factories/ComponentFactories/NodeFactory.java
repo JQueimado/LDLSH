@@ -1,7 +1,7 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Processes.Nodes.*;
+import SystemLayer.Components.Nodes.*;
 
 public class NodeFactory implements Factory {
 
