@@ -4,10 +4,14 @@ import Factories.DataFactories.DataObjectFactory;
 import SystemLayer.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNot;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class JavaMinHashTest {
 
@@ -44,88 +48,55 @@ class JavaMinHashTest {
     }
 
     @Test
-    void setObject() {
+    void setGetObject() throws Exception {
+        JavaMinHash hash1 = new JavaMinHash(dataObjects[0], simulatedState);
+        JavaMinHash hash2 = new JavaMinHash(dataObjects[2], simulatedState);
+        assertArrayEquals(hash1.getValues(), hash2.getValues());
+        hash1.setObject(dataObjects[1]);
+        Assert.assertThat(
+                hash1.getValues(),
+                IsNot.not(
+                        IsEqual.equalTo( hash2.getValues()
+                        )
+                ));
     }
 
-    @Test
-    void getValues() throws Exception {
-        for (DataObject dataObject : dataObjects) {
-            JavaMinHash hash = new JavaMinHash(dataObject, simulatedState);
-            byte[] signature = hash.getValues();
-            printArray( toIntArray( signature ) );
-        }
+    void similarityTest( DataObject dataObject1, DataObject dataObject2, double expected_similarity ) throws Exception {
+        JavaMinHash hash = new JavaMinHash(dataObject1, simulatedState);
+        byte[] signature = hash.getValues();
+        int[] ints = toIntArray(signature);
+
+        JavaMinHash hash2 = new JavaMinHash(dataObject2, simulatedState);
+        byte[] signature2 = hash2.getValues();
+        int[] ints2 = toIntArray(signature2);
+
+        double similarity = JavaMinHash.getMinHash().similarity(ints, ints2);
+        System.out.printf(
+                """
+                Similarity test between "%s" and "%s:"
+                \t-Expected Similarity: %f
+                \t-Actual Similarity: %f
+                """,
+                dataObject1.getValues(),
+                dataObject2.getValues(),
+                expected_similarity,
+                similarity
+                );
     }
 
     @Test
     void getValuesSimilarity_01() throws Exception {
-        JavaMinHash hash = new JavaMinHash(dataObjects[0], simulatedState);
-        byte[] signature = hash.getValues();
-        int[] ints = toIntArray(signature);
-
-        //Additional Data 1
-        System.out.println("Data0 int:");
-        printArray( toIntArray( dataObjects[0].toByteArray() ) );
-        printArray(ints);
-
-        JavaMinHash hash2 = new JavaMinHash(dataObjects[1], simulatedState);
-        byte[] signature2 = hash2.getValues();
-        int[] ints2 = toIntArray(signature2);
-
-        //Additional Data 2
-        System.out.println("Data1 int:");
-        printArray( toIntArray( dataObjects[1].toByteArray() ) );
-        printArray(ints2);
-
-        double similarity = JavaMinHash.getMinHash().similarity(ints, ints2);
-        System.out.printf( "Similarity: %f ", similarity );
+        similarityTest(dataObjects[0], dataObjects[1], 0.8 );
     }
 
     @Test
     void getValuesSimilarity_02() throws Exception {
-        JavaMinHash hash = new JavaMinHash(dataObjects[0], simulatedState);
-        byte[] signature = hash.getValues();
-        int[] ints = toIntArray(signature);
-
-        //Additional Data 1
-        System.out.println("Data0 int:");
-        printArray( toIntArray( dataObjects[0].toByteArray() ) );
-        printArray(ints);
-
-        JavaMinHash hash2 = new JavaMinHash(dataObjects[2], simulatedState);
-        byte[] signature2 = hash2.getValues();
-        int[] ints2 = toIntArray(signature2);
-
-        //Additional Data 2
-        System.out.println("Data1 int:");
-        printArray( toIntArray( dataObjects[2].toByteArray() ) );
-        printArray(ints2);
-
-        double similarity = JavaMinHash.getMinHash().similarity(ints, ints2);
-        System.out.printf( "Similarity: %f ", similarity );
+        similarityTest(dataObjects[0], dataObjects[2], 1);
     }
 
     @Test
     void getValuesSimilarity_03() throws Exception {
-        JavaMinHash hash = new JavaMinHash(dataObjects[0], simulatedState);
-        byte[] signature = hash.getValues();
-        int[] ints = toIntArray(signature);
-
-        //Additional Data 1
-        System.out.println("Data0 int:");
-        printArray( toIntArray( dataObjects[0].toByteArray() ) );
-        printArray(ints);
-
-        JavaMinHash hash2 = new JavaMinHash(dataObjects[3], simulatedState);
-        byte[] signature2 = hash2.getValues();
-        int[] ints2 = toIntArray(signature2);
-
-        //Additional Data 2
-        System.out.println("Data1 int:");
-        printArray( toIntArray( dataObjects[3].toByteArray() ) );
-        printArray(ints2);
-
-        double similarity = JavaMinHash.getMinHash().similarity(ints, ints2);
-        System.out.printf( "Similarity: %f ", similarity );
+        similarityTest(dataObjects[0], dataObjects[3], 0.2);
     }
 
     @Test
