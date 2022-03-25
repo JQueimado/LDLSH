@@ -28,6 +28,11 @@ public class JavaMinHash implements LSHHash{
     private static MinHash minHash = null;
     private static DataContainer dataContainer = null;
 
+    public static MinHash getMinHash( DataContainer dataContainer ) throws Exception {
+        JavaMinHash.dataContainer = dataContainer;
+        return getMinHash();
+    }
+
     public static MinHash getMinHash() throws Exception {
         if( minHash == null ) {
             if (dataContainer == null){
@@ -70,11 +75,12 @@ public class JavaMinHash implements LSHHash{
 
     //Values
     private byte[] data;
+    private LSHHashBlock[] blocks;
 
     //Constructors
-    public JavaMinHash(DataObject dataObject, DataContainer dataContainer ) throws Exception{
+    public JavaMinHash(DataObject dataObject, int n_blocks, DataContainer dataContainer ){
         JavaMinHash.dataContainer = dataContainer;
-        this.setObject(dataObject);
+        setObject(dataObject, n_blocks);
     }
 
     public JavaMinHash(DataContainer dataContainer){
@@ -102,7 +108,7 @@ public class JavaMinHash implements LSHHash{
     }
 
     @Override
-    public void setObject( DataObject object ){
+    public void setObject( DataObject object, int n_blocks ){
         try {
 
             //GetSignature
@@ -111,19 +117,59 @@ public class JavaMinHash implements LSHHash{
             int[] signature = JavaMinHash.getMinHash().signature(intData);
             this.data = toByteArray(signature);
 
+            blocks = createBlocks(data, n_blocks);
+
         }catch (Exception e){
             System.out.println("ERROR: "+ e.getMessage());
+            e.printStackTrace();
             this.data = null;
+            this.blocks = null;
         }
     }
 
     @Override
-    public byte[] getValues() {
+    public byte[] getSignature() {
         return data;
     }
 
     @Override
-    public byte[][] getBlocks(int n_blocks) {
-        return null;
+    public LSHHashBlock[] getBlocks() {
+        return blocks;
+    }
+
+    @Override
+    public LSHHashBlock getBlockAt(int position) {
+        return blocks[position];
+    }
+
+    //Auxiliary
+    private LSHHashBlock[] createBlocks( byte[] signature, int n_blocks ){
+
+        LSHHashBlock[] blockArray = new LSHHashBlock[n_blocks];
+        LSHHashBlock blockDump;
+        int block_count = 0;
+
+        int signature_length = signature.length;
+
+        int block_size = signature_length / n_blocks;
+        int block_size_count = 0;
+
+        byte[] current_block = new byte[block_size];
+
+        for (byte b : signature) {
+            current_block[block_size_count] = b;
+            block_size_count++;
+
+            if (block_size_count >= block_size) {
+                blockDump = new LSHHashBlock(current_block);
+                current_block = new byte[block_size];
+                block_size_count = 0;
+
+                blockArray[block_count] = blockDump;
+                block_count++;
+            }
+        }
+
+        return blockArray;
     }
 }
