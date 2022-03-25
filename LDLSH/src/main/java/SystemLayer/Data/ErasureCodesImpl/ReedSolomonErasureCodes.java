@@ -3,8 +3,9 @@ package SystemLayer.Data.ErasureCodesImpl;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 
 public class ReedSolomonErasureCodes implements ErasureCodes {
+
     @Override
-    public void encodeDataObject(DataObject dataObject) {
+    public void encodeDataObject(DataObject dataObject, int n_blocks) {
 
     }
 
@@ -14,12 +15,17 @@ public class ReedSolomonErasureCodes implements ErasureCodes {
     }
 
     @Override
-    public byte[] getErasureCodes() {
-        return new byte[0];
+    public void addBlockAt(ErasureBlock erasureBlock) {
+
     }
 
     @Override
-    public byte[][] getErasureBlocks() {
-        return new byte[0][];
+    public ErasureBlock[] getErasureBlocks() {
+        return new ErasureBlock[0];
+    }
+
+    @Override
+    public ErasureBlock getBlockAt(int blocks) {
+        return null;
     }
 }
