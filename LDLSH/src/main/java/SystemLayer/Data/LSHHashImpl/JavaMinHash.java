@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.MissingFormatArgumentException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JavaMinHash implements LSHHash{
@@ -61,12 +58,12 @@ public class JavaMinHash implements LSHHash{
             String seed_string = configurator.getConfig(LSH_SEED);
             long seed;
             if (seed_string.isBlank())
-                throw new Exception("JavaMinHash requires LSH_SEED configuration");
-            else
+                minHash = new MinHash(accuracy_error, vector_dimensions);
+            else {
                 seed = Long.parseLong(vector_dimensions_string);
+                minHash = new MinHash(accuracy_error, vector_dimensions, seed);
+            }
 
-            //Build MinHash module
-            minHash = new MinHash(accuracy_error, vector_dimensions, seed);
         }
         return minHash;
     }
@@ -117,7 +114,7 @@ public class JavaMinHash implements LSHHash{
             int[] signature = JavaMinHash.getMinHash().signature(intData);
             this.data = toByteArray(signature);
 
-            blocks = createBlocks(data, n_blocks);
+            blocks = createBlocks(this.data, n_blocks);
 
         }catch (Exception e){
             System.out.println("ERROR: "+ e.getMessage());
@@ -144,30 +141,39 @@ public class JavaMinHash implements LSHHash{
 
     //Auxiliary
     private LSHHashBlock[] createBlocks( byte[] signature, int n_blocks ){
+        final LSHHashBlock[] blockArray = new LSHHashBlock[n_blocks]; //Array of blocks to be returned
+        LSHHashBlock blockDump; //temporary LSHHashBlock pointer
+        int block_count = 0; //block counter
 
-        LSHHashBlock[] blockArray = new LSHHashBlock[n_blocks];
-        LSHHashBlock blockDump;
-        int block_count = 0;
+        final int signature_length = signature.length; //Signature size
+        int signature_counter; //Signature position counter
 
-        int signature_length = signature.length;
+        final int block_size = Math.floorDiv(signature_length, n_blocks) + 1; //block size topped
+        byte[] current_block = new byte[block_size]; //temporary block
+        int block_size_counter=0; //Block position counter
 
-        int block_size = signature_length / n_blocks;
-        int block_size_count = 0;
+        for (signature_counter = 0; signature_counter<signature_length; signature_counter++) {
+            current_block[block_size_counter]= signature[signature_counter]; //Assign value
+            block_size_counter++;
 
-        byte[] current_block = new byte[block_size];
+            if (block_size_counter >= block_size) {
+                blockDump = new LSHHashBlock(current_block); //Create block
 
-        for (byte b : signature) {
-            current_block[block_size_count] = b;
-            block_size_count++;
+                if (block_size > signature_length - signature_counter)
+                    current_block = new byte[signature_length - signature_counter - 1]; //creates smaller array
+                else
+                    current_block = new byte[block_size_counter]; //creates block sized array
 
-            if (block_size_count >= block_size) {
-                blockDump = new LSHHashBlock(current_block);
-                current_block = new byte[block_size];
-                block_size_count = 0;
+                block_size_counter = 0;
 
-                blockArray[block_count] = blockDump;
+                blockArray[block_count] = blockDump; //Assigns new Block
                 block_count++;
             }
+        }
+
+        if ( block_count < n_blocks ){ //Dump remaining values into the last block
+            blockDump = new LSHHashBlock(current_block);
+            blockArray[block_count] = blockDump;
         }
 
         return blockArray;
