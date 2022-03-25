@@ -4,22 +4,24 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
+import static SystemLayer.Data.ErasureCodesImpl.ErasureCodes.*;
+
 public interface MultiMap {
     //Inserts data into the MultiMap
     void insert(
-            byte[] lshHash,
-            byte[] uniqueIdentifier,
-            byte[] erasureCodes
+            LSHHash lshHash,
+            UniqueIdentifier uniqueIdentifier,
+            ErasureCodes erasureCodes
     );
 
     //Searches and Returns an ErasureBlock
     byte[] complete(
-            byte[] lshHash,
-            byte[] uniqueIdentifier
+            LSHHash lshHash,
+            UniqueIdentifier uniqueIdentifier
     );
 
     //All results for a given lshHash
-    MultiMapValue[] query( byte[] lshHash );
+    MultiMapValue[] query( LSHHash lshHash );
 
     //Extras
     void setHashBlockPosition(int position);
@@ -29,8 +31,8 @@ public interface MultiMap {
     int getTotalBlocks();
 
     public record MultiMapValue(
-            byte[] lshHash,
-            byte[] uniqueIdentifier,
-            byte[] ErasureCode
+            LSHHash lshHash,
+            UniqueIdentifier uniqueIdentifier,
+            ErasureBlock ErasureCode
     ){/**/}
 }
