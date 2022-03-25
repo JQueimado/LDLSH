@@ -82,8 +82,6 @@ class JavaMinHashTest {
 
     @Test
     void getMinHash() throws Exception {
-        assertThrows(Exception.class, JavaMinHash::getMinHash);
-        //Initiates the Minhash
         MinHash minHash = JavaMinHash.getMinHash(simulatedState);
         assertNotNull(minHash);
     }
