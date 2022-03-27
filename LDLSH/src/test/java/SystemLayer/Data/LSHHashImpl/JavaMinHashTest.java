@@ -87,6 +87,23 @@ class JavaMinHashTest {
     }
 
     @Test
-    void getBlockAt() {
+    void getBlockAt_SingleBlock() {
+        int n_blocks = 1;
+        int position = 0;
+        LSHHash hash = new JavaMinHash( dataObjects[0], n_blocks, simulatedState );
+        LSHHashBlock[] blocks = hash.getBlocks();
+        LSHHashBlock block = hash.getBlockAt(position);
+        assertArrayEquals(blocks[position].lshBlock(), block.lshBlock());
+    }
+
+    @Test
+    void getBlockAt_AllBlocks(){
+        int n_blocks = 6;
+        JavaMinHash hash = new JavaMinHash( dataObjects[0], n_blocks, simulatedState );
+        LSHHashBlock[] blocks = hash.getBlocks();
+        for (int i = 0; i<n_blocks; i++) {
+            LSHHashBlock block = hash.getBlockAt(i);
+            assertArrayEquals(blocks[i].lshBlock(), block.lshBlock());
+        }
     }
 }
