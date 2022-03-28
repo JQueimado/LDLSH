@@ -2,11 +2,16 @@ package SystemLayer.Components.MultiMapImpl;
 
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
+import SystemLayer.Data.LSHHashImpl.LSHHash.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 import static SystemLayer.Data.ErasureCodesImpl.ErasureCodes.*;
 
 public interface MultiMap {
+
+    //Locks a LSH hash block and returns it
+    LSHHashBlock lock( LSHHash hash );
+
     //Inserts data into the MultiMap
     void insert(
             LSHHash lshHash,

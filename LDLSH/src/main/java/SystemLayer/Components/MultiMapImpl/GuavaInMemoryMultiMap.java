@@ -6,6 +6,7 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import static SystemLayer.Data.LSHHashImpl.LSHHash.*;
@@ -21,6 +22,20 @@ public class GuavaInMemoryMultiMap implements MultiMap{
         this.multiMap = ArrayListMultimap.create();
         setHashBlockPosition(hash_position);
         setTotalBlocks(total_hash_blocks);
+    }
+
+    @Override
+    public LSHHashBlock lock(LSHHash hash) {
+        LSHHashBlock rcv_block = hash.getBlockAt(hash_position);
+        LSHHashBlock fetched_block = null;
+
+        for ( LSHHashBlock current : multiMap.keys() ){
+            if(Arrays.hashCode(current.lshBlock()) == Arrays.hashCode(rcv_block.lshBlock())){
+                fetched_block = current;
+            }
+        }
+
+        return fetched_block;
     }
 
     @Override

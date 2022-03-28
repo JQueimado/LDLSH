@@ -9,6 +9,7 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ReedSolomonErasureCodes;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
+import SystemLayer.Data.LSHHashImpl.LSHHash.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.Sha256UniqueIdentifier;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import org.junit.Before;
@@ -59,6 +60,22 @@ class GuavaInMemoryMultiMapTest {
         erasureCodes.add(erasureCode);
         uniqueIdentifiers.add(uniqueIdentifier);
 
+    }
+
+    @Test
+    void testLock(){
+        MultiMap multiMap = new GuavaInMemoryMultiMap(0, 1);
+        int position = 0;
+        multiMap.insert(
+                hashes.get(position),
+                uniqueIdentifiers.get(position),
+                erasureCodes.get(position)
+        );
+
+        LSHHash new_hash = new JavaMinHash(objects.get(position), 1, simulatedState);
+        LSHHashBlock block = multiMap.lock( new_hash );
+        assertNotNull(block);
+        assertArrayEquals( hashes.get(position).getBlockAt(0).lshBlock(), block.lshBlock() );
     }
 
     @Test
