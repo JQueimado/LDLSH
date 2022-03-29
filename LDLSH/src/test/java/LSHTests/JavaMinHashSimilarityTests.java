@@ -30,7 +30,7 @@ public class JavaMinHashSimilarityTests {
         //Vectors
         String data_object_type = "STRING";
         DataObjectFactory dataObjectFactory = simulatedState.getDataObjectFactory();
-        dataObjects = new DataObject[4];
+        dataObjects = new DataObject[5];
 
         dataObjects[0] = dataObjectFactory.getNewDataObject( data_object_type );
         dataObjects[0].setValues("12345");
@@ -46,6 +46,9 @@ public class JavaMinHashSimilarityTests {
         //Jaccard Distance to 0: 0.8
         dataObjects[3] = dataObjectFactory.getNewDataObject( data_object_type );
         dataObjects[3].setValues("55555");
+
+        dataObjects[4] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[4].setValues("54321");
     }
 
     void similarityTest(DataObject dataObject1, DataObject dataObject2, double expected_similarity ) throws Exception {
@@ -90,6 +93,11 @@ public class JavaMinHashSimilarityTests {
     @Test
     void getValuesSimilarity_03() throws Exception {
         similarityTest(dataObjects[0], dataObjects[3], 0.2);
+    }
+
+    @Test
+    void getValuesSimilarity_04() throws Exception {
+        similarityTest(dataObjects[0], dataObjects[4], 0.2);
     }
 
     //Auxiliary methods
