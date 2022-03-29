@@ -25,17 +25,16 @@ public class GuavaInMemoryMultiMap implements MultiMap{
     }
 
     @Override
-    public LSHHashBlock lock(LSHHash hash) {
+    public LSHHashBlock getBlock(LSHHash hash) {
         LSHHashBlock rcv_block = hash.getBlockAt(hash_position);
-        LSHHashBlock fetched_block = null;
 
         for ( LSHHashBlock current : multiMap.keys() ){
             if(Arrays.hashCode(current.lshBlock()) == Arrays.hashCode(rcv_block.lshBlock())){
-                fetched_block = current;
+                return current;
             }
         }
 
-        return fetched_block;
+        return null;
     }
 
     @Override
@@ -53,6 +52,7 @@ public class GuavaInMemoryMultiMap implements MultiMap{
 
     @Override
     public byte[] complete(LSHHash lshHash, UniqueIdentifier uniqueIdentifier) {
+        //TODO
         return new byte[0];
     }
 

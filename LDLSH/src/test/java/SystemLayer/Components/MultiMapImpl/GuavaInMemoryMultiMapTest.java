@@ -12,11 +12,9 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.Sha256UniqueIdentifier;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.chrono.Era;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +61,7 @@ class GuavaInMemoryMultiMapTest {
     }
 
     @Test
-    void testLock(){
+    void testGetBlock(){
         MultiMap multiMap = new GuavaInMemoryMultiMap(0, 1);
         int position = 0;
         multiMap.insert(
@@ -73,7 +71,7 @@ class GuavaInMemoryMultiMapTest {
         );
 
         LSHHash new_hash = new JavaMinHash(objects.get(position), 1, simulatedState);
-        LSHHashBlock block = multiMap.lock( new_hash );
+        LSHHashBlock block = multiMap.getBlock( new_hash );
         assertNotNull(block);
         assertArrayEquals( hashes.get(position).getBlockAt(0).lshBlock(), block.lshBlock() );
     }

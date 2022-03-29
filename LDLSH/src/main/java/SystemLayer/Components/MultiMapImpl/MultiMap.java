@@ -9,8 +9,8 @@ import static SystemLayer.Data.ErasureCodesImpl.ErasureCodes.*;
 
 public interface MultiMap {
 
-    //Locks a LSH hash block and returns it
-    LSHHashBlock lock( LSHHash hash );
+    //Finds and returns a reference to the LSHHashBlock stored in the multimap that corresponds to the given LSHHash
+    LSHHashBlock getBlock(LSHHash hash );
 
     //Inserts data into the MultiMap
     void insert(
