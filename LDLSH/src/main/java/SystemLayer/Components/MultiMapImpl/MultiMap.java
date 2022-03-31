@@ -20,7 +20,7 @@ public interface MultiMap {
     );
 
     //Searches and Returns an ErasureBlock
-    byte[] complete(
+    ErasureBlock complete(
             LSHHash lshHash,
             UniqueIdentifier uniqueIdentifier
     );
