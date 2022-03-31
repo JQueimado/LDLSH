@@ -2,7 +2,7 @@ package SystemLayer.Data.DataObjectsImpl;
 
 import java.nio.charset.StandardCharsets;
 
-public class StringDataObject implements DataObject{
+public class StringDataObject implements DataObject<String>{
 
     private String data;
 
@@ -14,17 +14,22 @@ public class StringDataObject implements DataObject{
     }
 
     @Override
-    public Object getValues() {
+    public String getValues() {
         return data;
     }
 
     @Override
-    public void setValues(Object values){
+    public void setValues(String values){
         data = (String) values;
     }
 
     @Override
     public byte[] toByteArray() {
         return data.getBytes(StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public int compareTo( DataObject<String> o) {
+        return this.getValues().compareTo(o.getValues());
     }
 }

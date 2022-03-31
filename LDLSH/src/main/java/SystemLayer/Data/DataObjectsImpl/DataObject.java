@@ -2,8 +2,8 @@ package SystemLayer.Data.DataObjectsImpl;
 
 import java.io.Serializable;
 
-public interface DataObject extends Serializable {
-    Object getValues();
-    void setValues( Object values );
+public interface DataObject<T> extends Serializable, Comparable<DataObject<T>> {
+    T getValues();
+    void setValues( T values );
     byte[] toByteArray();
 }
