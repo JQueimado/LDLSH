@@ -4,6 +4,7 @@ import Factories.DataFactories.DataObjectFactory;
 import SystemLayer.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import info.debatty.java.lsh.MinHash;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class JavaMinHashTest {
 
     DataContainer simulatedState;
-    DataObject[] dataObjects;
+    StringDataObject[] dataObjects;
 
     @BeforeEach
     void simulateStateAndVectors() throws IOException {
@@ -32,23 +33,21 @@ class JavaMinHashTest {
         configurator.setConfig("LSH_SEED", "12345");
 
         //Vectors
-        String data_object_type = "STRING";
-        DataObjectFactory dataObjectFactory = simulatedState.getDataObjectFactory();
-        dataObjects = new DataObject[4];
+        dataObjects = new StringDataObject[4];
 
-        dataObjects[0] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[0] = new StringDataObject();
         dataObjects[0].setValues("12345");
 
         //Jaccard Distance to 0: 0.2
-        dataObjects[1] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[1] = new StringDataObject();
         dataObjects[1].setValues("12355");
 
         //Jaccard Distance to 0: 0.0
-        dataObjects[2] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[2] = new StringDataObject();
         dataObjects[2].setValues("12345");
 
         //Jaccard Distance to 0: 0.8
-        dataObjects[3] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[3] = new StringDataObject();
         dataObjects[3].setValues("55555");
     }
 
