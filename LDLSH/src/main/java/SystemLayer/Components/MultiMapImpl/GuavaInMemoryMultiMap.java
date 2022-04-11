@@ -6,7 +6,6 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,7 +52,7 @@ public class GuavaInMemoryMultiMap implements MultiMap{
     }
 
     @Override
-    public ErasureBlock complete(@NotNull LSHHash lshHash , @NotNull UniqueIdentifier uniqueIdentifier) {
+    public ErasureBlock complete( LSHHash lshHash , UniqueIdentifier uniqueIdentifier) {
         Collection<MultiMapValue> multiMapValues = multiMap.get(lshHash.getBlockAt(hash_position));
 
         for( MultiMapValue multiMapValue: multiMapValues ){

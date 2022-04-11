@@ -2,7 +2,6 @@ package SystemLayer.Data.UniqueIndentifierImpl;
 
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import com.google.common.hash.Hashing;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -29,7 +28,7 @@ public class Sha256UniqueIdentifier implements UniqueIdentifier{
     }
 
     @Override
-    public int compareTo(@NotNull UniqueIdentifier o) {
+    public int compareTo( UniqueIdentifier o) {
         return Arrays.compare(this.getUID(), o.getUID());
     }
 }

@@ -4,14 +4,12 @@ import SystemLayer.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import info.debatty.java.lsh.MinHash;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.IntBuffer;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class JavaMinHash implements LSHHash{
 
@@ -181,7 +179,7 @@ public class JavaMinHash implements LSHHash{
     }
 
     @Override
-    public int compareTo(@NotNull LSHHash o) {
+    public int compareTo( LSHHash o ) {
         return Arrays.compare(this.getSignature(), o.getSignature());
     }
 }

@@ -1,7 +1,6 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Data.DataObjectsImpl.DataObject;
-import org.jetbrains.annotations.NotNull;
 
 public class ReedSolomonErasureCodes implements ErasureCodes {
 
@@ -31,7 +30,7 @@ public class ReedSolomonErasureCodes implements ErasureCodes {
     }
 
     @Override
-    public int compareTo(@NotNull ErasureCodes o) {
+    public int compareTo(ErasureCodes o) {
         return 0;
     }
 }
