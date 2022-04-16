@@ -1,5 +1,6 @@
 package LSHTests;
 
+import Factories.ComponentFactories.MultimapFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.LSHHashFactory;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
@@ -10,6 +11,7 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.plaf.multi.MultiLabelUI;
 import java.io.IOException;
 
 public class LocalLSHTests {
@@ -31,7 +33,9 @@ public class LocalLSHTests {
         configurator.setConfig("LSH_SEED", "11111");
         configurator.setConfig("LSH_HASH", "JAVA_MINHASH");
         configurator.setConfig("N_MULTIMAPS", "2");
+        configurator.setConfig("MULTIMAPS", "GUAVA_MEMORY_MULTIMAP");
 
+        //Data objects
         dataObjects = new DataObject[5];
         DataObjectFactory dataObjectFactory = appContext.getDataObjectFactory();
         String data_object_type = "STRING";
@@ -54,17 +58,22 @@ public class LocalLSHTests {
         dataObjects[4] = dataObjectFactory.getNewDataObject( data_object_type );
         dataObjects[4].setValues("54321");
 
-
-        multiMaps = new MultiMap[2];
-
-        //multiMaps[0] =
+        //Multimaps
+        int N = Integer.parseInt( configurator.getConfig("N_MULTIMAPS") );
+        multiMaps = new MultiMap[N];
+        MultimapFactory multimapFactory = appContext.getMultimapFactory();
+        try {
+            for ( int i = 0; i<N; i++)
+                multiMaps[i] = multimapFactory.getNewMultiMap(configurator.getConfig("MULTIMAP"), appContext);
+        }catch (Exception e ){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void InsertMapTest(){
-        Integer n_multimaps = Integer.parseInt(configurator.getConfig("N_MULTIMAPS"));
-
-        LSHHash hash = lshHashFactory.getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
-        hash.setObject(dataObjects[0], n_multimaps );
+        //LSHHash hash = lshHashFactory.getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
+        //hash.setObject(dataObjects[0], n_multimaps );
     }
 }

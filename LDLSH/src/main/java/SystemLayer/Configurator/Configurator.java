@@ -52,7 +52,6 @@ import java.util.Properties;
 public class Configurator {
 
     //Configurations
-    private String f_name;
     private Properties config;
 
     //Create Data container
@@ -63,12 +62,10 @@ public class Configurator {
             //Load properties
             config = new Properties();
             config.load(properties_file);
-            this.f_name = f_name;
 
         }catch (IOException ioe){
             //If the file can't be opened, creates an empty configurator
             config = new Properties();
-            this.f_name = "";
         }
     }
 

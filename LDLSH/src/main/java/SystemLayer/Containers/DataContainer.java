@@ -21,6 +21,7 @@ public class DataContainer {
     private NodeFactory nodeFactory = null;
     private PackerFactory packerFactory = null;
     private PostProcessorFactory postProcessorFactory = null;
+    private MultimapFactory multimapFactory = null;
 
     //Data Factories
     private DataObjectFactory dataObjectFactory = null;
@@ -63,6 +64,12 @@ public class DataContainer {
         if (postProcessorFactory == null)
             postProcessorFactory = new PostProcessorFactory();
         return postProcessorFactory;
+    }
+
+    public MultimapFactory getMultimapFactory(){
+        if (multimapFactory == null)
+            multimapFactory = new MultimapFactory();
+        return multimapFactory;
     }
 
     //Creates Data Objects

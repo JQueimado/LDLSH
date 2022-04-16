@@ -1,5 +1,8 @@
 package SystemLayer.Components.MultiMapImpl;
 
+import Factories.Factory;
+import SystemLayer.Configurator.Configurator;
+import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
@@ -14,6 +17,8 @@ import static SystemLayer.Data.LSHHashImpl.LSHHash.*;
 
 public class GuavaInMemoryMultiMap implements MultiMap{
 
+    private final String hash_position_config = "HASH_POSITION";
+    private final String number_hashes_config = "TOTAL_HASH";
     private final Multimap<LSHHashBlock, MultiMapValue> multiMap;
     private int hash_position;
     private int total_hash_blocks;
@@ -23,6 +28,26 @@ public class GuavaInMemoryMultiMap implements MultiMap{
         this.multiMap = ArrayListMultimap.create();
         setHashBlockPosition(hash_position);
         setTotalBlocks(total_hash_blocks);
+    }
+
+    public GuavaInMemoryMultiMap(DataContainer dataContainer) throws Exception{
+        Configurator configurator = dataContainer.getConfigurator();
+
+        String hash_position_string = configurator.getConfig(hash_position_config);
+        if ( hash_position_string.isEmpty() ) {
+            throw new Exception("GuavaInMemoryMultiMap requires "+hash_position_config+" configuration");
+        }
+        int n = Integer.parseInt(hash_position_string);
+
+        String total_hash_string = configurator.getConfig(hash_position_config);
+        if ( total_hash_string.isEmpty() ) {
+            throw new Exception( "GuavaInMemoryMultiMap requires "+number_hashes_config+" configuration");
+        }
+        int N = Integer.parseInt(total_hash_string);
+
+        this.multiMap = ArrayListMultimap.create();
+        setHashBlockPosition(n);
+        setTotalBlocks(N);
     }
 
     @Override
