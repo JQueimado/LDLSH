@@ -5,5 +5,6 @@ import java.io.Serializable;
 public interface DataObject<T> extends Serializable, Comparable<DataObject<T>> {
     T getValues();
     void setValues( T values );
+    void setByteArray( byte[] array );
     byte[] toByteArray();
 }

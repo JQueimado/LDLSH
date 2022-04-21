@@ -24,6 +24,11 @@ public class StringDataObject implements DataObject<String>{
     }
 
     @Override
+    public void setByteArray(byte[] array) {
+        data = new String(array, StandardCharsets.UTF_8);
+    }
+
+    @Override
     public byte[] toByteArray() {
         return data.getBytes(StandardCharsets.UTF_8);
     }
