@@ -3,10 +3,11 @@ package Factories.DataFactories;
 import Factories.Factory;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ReedSolomonErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.SimplePartitionErasureCodes;
 
 public class ErasureCodesFactory implements Factory {
 
-    public enum configurations {NONE,REED_SOLOMON}
+    public enum configurations {NONE,REED_SOLOMON, SIMPLE_PARTITION}
 
     //Constructors
     public ErasureCodesFactory(){
@@ -20,6 +21,10 @@ public class ErasureCodesFactory implements Factory {
 
             case REED_SOLOMON ->{
                 return new ReedSolomonErasureCodes();
+            }
+
+            case SIMPLE_PARTITION ->{
+                return new SimplePartitionErasureCodes();
             }
 
             default -> {return null;}
