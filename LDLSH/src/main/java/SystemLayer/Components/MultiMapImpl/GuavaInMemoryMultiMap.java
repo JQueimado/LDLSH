@@ -31,6 +31,7 @@ public class GuavaInMemoryMultiMap implements MultiMap{
     }
 
     public GuavaInMemoryMultiMap(DataContainer dataContainer) throws Exception{
+        /*
         Configurator configurator = dataContainer.getConfigurator();
 
         String hash_position_string = configurator.getConfig(hash_position_config);
@@ -44,10 +45,9 @@ public class GuavaInMemoryMultiMap implements MultiMap{
             throw new Exception( "GuavaInMemoryMultiMap requires "+number_hashes_config+" configuration");
         }
         int N = Integer.parseInt(total_hash_string);
+         */
 
         this.multiMap = ArrayListMultimap.create();
-        setHashBlockPosition(n);
-        setTotalBlocks(N);
     }
 
     @Override

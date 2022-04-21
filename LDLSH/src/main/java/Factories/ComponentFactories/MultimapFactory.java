@@ -7,7 +7,7 @@ import SystemLayer.Containers.DataContainer;
 
 
 public class MultimapFactory implements Factory {
-    public enum configurations {NONE,GUAVA_MEMORY_MULTIMAP}
+    private enum configurations {NONE,GUAVA_MEMORY_MULTIMAP}
 
     public MultimapFactory(){
         /**/
