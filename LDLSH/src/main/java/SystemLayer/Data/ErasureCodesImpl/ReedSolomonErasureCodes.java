@@ -10,7 +10,7 @@ public class ReedSolomonErasureCodes implements ErasureCodes {
     }
 
     @Override
-    public DataObject decodeDataObject() {
+    public DataObject decodeDataObject(DataObject object) {
         return null;
     }
 
