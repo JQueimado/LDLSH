@@ -10,17 +10,16 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.plaf.multi.MultiLabelUI;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class LocalLSHTests {
 
@@ -73,8 +72,7 @@ public class LocalLSHTests {
         try {
             for ( int i = 0; i<b; i++) {
                 multiMaps[i] = multimapFactory.getNewMultiMap(
-                        configurator.getConfig("MULTIMAP"),
-                        appContext
+                        configurator.getConfig("MULTIMAP")
                 );
                 multiMaps[i].setTotalBlocks(b);
                 multiMaps[i].setHashBlockPosition(i);
@@ -87,26 +85,71 @@ public class LocalLSHTests {
 
     @Test
     public void InsertMapTest(){
-        DataObject dataObject = dataObjects[0];
+        // Insert object 0
+        DataObject object = dataObjects[0];
+        insert( object, multiMaps );
 
+        //Run Query
+        List<MultiMap.MultiMapValue> results = query( object, multiMaps );
+
+        //Preprocess assertion
+        UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
+                .getNewUniqueIdentifier("SHA256");
+        uid.setObject(object);
+
+        //Assertions (All multi-maps should return the same object)
+        Assertions.assertEquals(multiMaps.length, results.size());
+        for(MultiMap.MultiMapValue value : results){
+            Assertions.assertEquals( 0,uid.compareTo( value.uniqueIdentifier()));
+        }
+    }
+
+    @Test
+    public void SimilarityTest(){
+        //Insert object 0
+        insert(dataObjects[0], multiMaps);
+        //Insert object 1
+        insert(dataObjects[1], multiMaps );
+    }
+
+    private void insert(DataObject object, MultiMap[] multiMaps ){
         LSHHash hash = appContext.getLshHashFactory()
                 .getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
-        hash.setObject(dataObject, multiMaps.length);
+        hash.setObject(object, multiMaps.length);
 
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
                 .getNewUniqueIdentifier("SHA256");
-        uid.setObject(dataObject);
+        uid.setObject(object);
 
         ErasureCodes erasureCodes = appContext.getErasureCodesFactory()
                 .getNewErasureCodes("SIMPLE_PARTITION");
-        erasureCodes.encodeDataObject(dataObject, multiMaps.length);
+        erasureCodes.encodeDataObject(object, multiMaps.length);
 
         //Insert
         for (MultiMap map : multiMaps) {
             map.insert(hash, uid, erasureCodes);
         }
+    }
+
+    private List<MultiMap.MultiMapValue> query(DataObject queryObject, MultiMap[] multiMaps ){
+        LSHHash hash = appContext.getLshHashFactory()
+                .getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
+        hash.setObject(queryObject, multiMaps.length);
+
+        UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
+                .getNewUniqueIdentifier("SHA256");
+        uid.setObject(queryObject);
 
         List<MultiMap.MultiMapValue> results = new ArrayList<>();
+
+        //DEBUG
+        ErasureCodes erasureCodes = appContext.getErasureCodesFactory()
+                .getNewErasureCodes("SIMPLE_PARTITION");
+        erasureCodes.encodeDataObject(queryObject, multiMaps.length);
+
+        for (MultiMap map : multiMaps) {
+            map.insert(hash, uid, erasureCodes);
+        }
 
         //Query
         for (MultiMap multiMap : multiMaps) {
@@ -114,10 +157,6 @@ public class LocalLSHTests {
             Collections.addAll(results, query_results);
         }
 
-        //Assertions
-        assertEquals( multiMaps.length, results.size() );
-        for(MultiMap.MultiMapValue value : results){
-            assertEquals( uid, value.uniqueIdentifier());
-        }
+        return results;
     }
 }

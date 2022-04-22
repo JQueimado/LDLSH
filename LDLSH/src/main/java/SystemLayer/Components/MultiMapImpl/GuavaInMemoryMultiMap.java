@@ -7,11 +7,11 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 
 import static SystemLayer.Data.LSHHashImpl.LSHHash.*;
 
@@ -19,44 +19,28 @@ public class GuavaInMemoryMultiMap implements MultiMap{
 
     private final String hash_position_config = "HASH_POSITION";
     private final String number_hashes_config = "TOTAL_HASH";
-    private final Multimap<LSHHashBlock, MultiMapValue> multiMap;
+    private final Multimap<byte[], MultiMapValue> multiMap;
     private int hash_position;
     private int total_hash_blocks;
 
     //Constructors
     public GuavaInMemoryMultiMap(int hash_position, int total_hash_blocks){
-        this.multiMap = ArrayListMultimap.create();
+        this();
         setHashBlockPosition(hash_position);
         setTotalBlocks(total_hash_blocks);
     }
 
-    public GuavaInMemoryMultiMap(DataContainer dataContainer) throws Exception{
-        /*
-        Configurator configurator = dataContainer.getConfigurator();
-
-        String hash_position_string = configurator.getConfig(hash_position_config);
-        if ( hash_position_string.isEmpty() ) {
-            throw new Exception("GuavaInMemoryMultiMap requires "+hash_position_config+" configuration");
-        }
-        int n = Integer.parseInt(hash_position_string);
-
-        String total_hash_string = configurator.getConfig(hash_position_config);
-        if ( total_hash_string.isEmpty() ) {
-            throw new Exception( "GuavaInMemoryMultiMap requires "+number_hashes_config+" configuration");
-        }
-        int N = Integer.parseInt(total_hash_string);
-         */
-
-        this.multiMap = ArrayListMultimap.create();
+    public GuavaInMemoryMultiMap(){
+        this.multiMap = HashMultimap.create();
     }
 
     @Override
     public LSHHashBlock getBlock(LSHHash hash) {
         LSHHashBlock rcv_block = hash.getBlockAt(hash_position);
 
-        for ( LSHHashBlock current : multiMap.keys() ){
-            if(Arrays.hashCode(current.lshBlock()) == Arrays.hashCode(rcv_block.lshBlock())){
-                return current;
+        for ( byte[] current : multiMap.keys() ){
+            if(Arrays.hashCode(current) == Arrays.hashCode(rcv_block.lshBlock())){
+                return new LSHHashBlock( current );
             }
         }
 
@@ -73,12 +57,12 @@ public class GuavaInMemoryMultiMap implements MultiMap{
         );
 
         //Insert Values
-        multiMap.put( lshHash.getBlockAt(hash_position), mapValue );
+        multiMap.put( lshHash.getBlockAt(hash_position).lshBlock(), mapValue );
     }
 
     @Override
     public ErasureBlock complete( LSHHash lshHash , UniqueIdentifier uniqueIdentifier) {
-        Collection<MultiMapValue> multiMapValues = multiMap.get(lshHash.getBlockAt(hash_position));
+        Collection<MultiMapValue> multiMapValues = multiMap.get(lshHash.getBlockAt(hash_position).lshBlock());
 
         for( MultiMapValue multiMapValue: multiMapValues ){
             if( uniqueIdentifier.compareTo( multiMapValue.uniqueIdentifier() ) == 0 ){
@@ -91,7 +75,7 @@ public class GuavaInMemoryMultiMap implements MultiMap{
 
     @Override
     public MultiMapValue[] query(LSHHash lshHash) {
-        Collection<MultiMapValue> collection = multiMap.get( lshHash.getBlockAt(hash_position) );
+        Collection<MultiMapValue> collection = multiMap.get( lshHash.getBlockAt(hash_position).lshBlock() );
         MultiMapValue[] result = new MultiMapValue[collection.size()];
         collection.toArray(result);
         return result;

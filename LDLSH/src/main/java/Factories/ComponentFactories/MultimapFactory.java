@@ -13,12 +13,12 @@ public class MultimapFactory implements Factory {
         /**/
     }
 
-    public MultiMap getNewMultiMap(String config, DataContainer dataContainer) throws Exception {
+    public MultiMap getNewMultiMap(String config) throws Exception {
         configurations configuration = configurations.valueOf(config);
         switch ( configuration ){
 
             case GUAVA_MEMORY_MULTIMAP -> {
-                return new GuavaInMemoryMultiMap(dataContainer);
+                return new GuavaInMemoryMultiMap();
             }
 
             default ->{
