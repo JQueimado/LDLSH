@@ -142,15 +142,6 @@ public class LocalLSHTests {
 
         List<MultiMap.MultiMapValue> results = new ArrayList<>();
 
-        //DEBUG
-        ErasureCodes erasureCodes = appContext.getErasureCodesFactory()
-                .getNewErasureCodes("SIMPLE_PARTITION");
-        erasureCodes.encodeDataObject(queryObject, multiMaps.length);
-
-        for (MultiMap map : multiMaps) {
-            map.insert(hash, uid, erasureCodes);
-        }
-
         //Query
         for (MultiMap multiMap : multiMaps) {
             MultiMap.MultiMapValue[] query_results = multiMap.query(hash);
