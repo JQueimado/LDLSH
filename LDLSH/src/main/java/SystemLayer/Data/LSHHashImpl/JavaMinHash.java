@@ -1,6 +1,6 @@
 package SystemLayer.Data.LSHHashImpl;
 
-import SystemLayer.Configurator.Configurator;
+import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import info.debatty.java.lsh.MinHash;

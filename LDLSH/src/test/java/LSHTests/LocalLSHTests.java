@@ -4,7 +4,7 @@ import Factories.ComponentFactories.MultimapFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.LSHHashFactory;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Configurator.Configurator;
+import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
