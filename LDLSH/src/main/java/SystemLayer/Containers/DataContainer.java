@@ -6,8 +6,9 @@ import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
 import Factories.MessageFactory;
-import SystemLayer.Configurator.Configurator;
-import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.Components.MultiMapImpl.MultiMap;
+import SystemLayer.Components.TaskImpl.TaskManager;
+import SystemLayer.Containers.Configurator.Configurator;
 
 import java.io.IOException;
 
@@ -16,21 +17,21 @@ public class DataContainer {
 
     private Configurator configurator = null;
 
-    //ComponentFactories
+    //Factories
     private DistanceMeasurerFactory distanceMeasurerFactory = null;
     private NodeFactory nodeFactory = null;
     private PackerFactory packerFactory = null;
     private PostProcessorFactory postProcessorFactory = null;
     private MultimapFactory multimapFactory = null;
-
-    //Data Factories
     private DataObjectFactory dataObjectFactory = null;
     private LSHHashFactory lshHashFactory = null;
     private ErasureCodesFactory erasureCodesFactory = null;
     private UniqueIdentifierFactory uniqueIdentifierFactory = null;
-
-    //Message
     private MessageFactory messageFactory = null;
+
+    //Components
+    private MultiMap[] multiMaps;
+    private TaskManager taskManager;
 
     //Constructor
     public DataContainer( String f_name ){
@@ -102,5 +103,23 @@ public class DataContainer {
         if(messageFactory == null)
             messageFactory = new MessageFactory();
         return messageFactory;
+    }
+
+    //Components
+    // -MultiMaps
+    public void setMultiMaps( MultiMap[] multiMaps ){
+        this.multiMaps = multiMaps;
+    }
+
+    public MultiMap[] getMultiMaps() throws Exception {
+        return multiMaps;
+    }
+    //-TaskManager
+    public void setTaskManager( TaskManager taskManager ){
+        this.taskManager = taskManager;
+    }
+
+    public TaskManager getTaskManager(){
+        return this.taskManager;
     }
 }
