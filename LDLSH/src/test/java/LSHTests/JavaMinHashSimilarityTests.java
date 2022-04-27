@@ -1,7 +1,7 @@
 package LSHTests;
 
 import Factories.DataFactories.DataObjectFactory;
-import SystemLayer.Configurator.Configurator;
+import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;

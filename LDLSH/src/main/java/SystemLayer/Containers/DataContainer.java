@@ -1,36 +1,31 @@
 package SystemLayer.Containers;
 
-import Factories.ComponentFactories.*;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
 import Factories.MessageFactory;
-import SystemLayer.Configurator.Configurator;
-import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.Components.MultiMapImpl.MultiMap;
+import SystemLayer.Containers.Configurator.Configurator;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 
 public class DataContainer {
 
     private Configurator configurator = null;
 
-    //ComponentFactories
-    private DistanceMeasurerFactory distanceMeasurerFactory = null;
-    private NodeFactory nodeFactory = null;
-    private PackerFactory packerFactory = null;
-    private PostProcessorFactory postProcessorFactory = null;
-    private MultimapFactory multimapFactory = null;
-
-    //Data Factories
+    //Factories
     private DataObjectFactory dataObjectFactory = null;
     private LSHHashFactory lshHashFactory = null;
     private ErasureCodesFactory erasureCodesFactory = null;
     private UniqueIdentifierFactory uniqueIdentifierFactory = null;
-
-    //Message
     private MessageFactory messageFactory = null;
+
+    //Components
+    private MultiMap[] multiMaps;
+    private ExecutorService executorService;
 
     //Constructor
     public DataContainer( String f_name ){
@@ -40,36 +35,6 @@ public class DataContainer {
     //getters
     public Configurator getConfigurator() throws IOException {
         return configurator;
-    }
-
-    public DistanceMeasurerFactory getDistanceMeasurerFactory() {
-        if (distanceMeasurerFactory == null)
-            distanceMeasurerFactory = new DistanceMeasurerFactory();
-        return distanceMeasurerFactory;
-    }
-
-    public NodeFactory getNodeFactory(){
-        if(nodeFactory == null)
-            nodeFactory = new NodeFactory();
-        return nodeFactory;
-    }
-
-    public PackerFactory getPackerFactory(){
-        if(packerFactory == null)
-            packerFactory = new PackerFactory();
-        return packerFactory;
-    }
-
-    public PostProcessorFactory getPostProcessorFactory(){
-        if (postProcessorFactory == null)
-            postProcessorFactory = new PostProcessorFactory();
-        return postProcessorFactory;
-    }
-
-    public MultimapFactory getMultimapFactory(){
-        if (multimapFactory == null)
-            multimapFactory = new MultimapFactory();
-        return multimapFactory;
     }
 
     //Creates Data Objects
@@ -103,4 +68,23 @@ public class DataContainer {
             messageFactory = new MessageFactory();
         return messageFactory;
     }
+
+    //Components
+    // -MultiMaps
+    public void setMultiMaps( MultiMap[] multiMaps ){
+        this.multiMaps = multiMaps;
+    }
+
+    public MultiMap[] getMultiMaps() throws Exception {
+        return multiMaps;
+    }
+
+    //-Executor Service
+    public void setExecutorService( ExecutorService executorService ){
+        this.executorService = executorService;
+    }
+    public ExecutorService getExecutorService( ){
+        return this.executorService;
+    }
+
 }

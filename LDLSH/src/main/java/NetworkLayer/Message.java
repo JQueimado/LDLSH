@@ -17,4 +17,9 @@ public interface Message extends Serializable {
         QUERY_REQUEST,
         QUERY_REQUEST_RESPONSE
     }
+
+    public Object getBody();
+    public void setBody(Object body);
+    public types getType();
+    public void setType(types type);
 }

@@ -1,4 +1,4 @@
-package SystemLayer.Configurator;
+package SystemLayer.Containers.Configurator;
 
 import java.io.FileReader;
 import java.io.IOException;

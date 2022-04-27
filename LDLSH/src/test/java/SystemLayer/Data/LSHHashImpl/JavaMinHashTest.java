@@ -1,9 +1,7 @@
 package SystemLayer.Data.LSHHashImpl;
 
-import Factories.DataFactories.DataObjectFactory;
-import SystemLayer.Configurator.Configurator;
+import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import info.debatty.java.lsh.MinHash;
 import org.hamcrest.MatcherAssert;

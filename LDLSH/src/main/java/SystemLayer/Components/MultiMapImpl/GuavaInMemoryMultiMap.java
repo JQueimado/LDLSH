@@ -1,15 +1,12 @@
 package SystemLayer.Components.MultiMapImpl;
 
-import Factories.Factory;
-import SystemLayer.Configurator.Configurator;
-import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -25,29 +22,13 @@ public class GuavaInMemoryMultiMap implements MultiMap{
 
     //Constructors
     public GuavaInMemoryMultiMap(int hash_position, int total_hash_blocks){
-        this.multiMap = ArrayListMultimap.create();
+        this();
         setHashBlockPosition(hash_position);
         setTotalBlocks(total_hash_blocks);
     }
 
-    public GuavaInMemoryMultiMap(DataContainer dataContainer) throws Exception{
-        Configurator configurator = dataContainer.getConfigurator();
-
-        String hash_position_string = configurator.getConfig(hash_position_config);
-        if ( hash_position_string.isEmpty() ) {
-            throw new Exception("GuavaInMemoryMultiMap requires "+hash_position_config+" configuration");
-        }
-        int n = Integer.parseInt(hash_position_string);
-
-        String total_hash_string = configurator.getConfig(hash_position_config);
-        if ( total_hash_string.isEmpty() ) {
-            throw new Exception( "GuavaInMemoryMultiMap requires "+number_hashes_config+" configuration");
-        }
-        int N = Integer.parseInt(total_hash_string);
-
-        this.multiMap = ArrayListMultimap.create();
-        setHashBlockPosition(n);
-        setTotalBlocks(N);
+    public GuavaInMemoryMultiMap(){
+        this.multiMap = HashMultimap.create();
     }
 
     @Override
@@ -78,7 +59,7 @@ public class GuavaInMemoryMultiMap implements MultiMap{
 
     @Override
     public ErasureBlock complete( LSHHash lshHash , UniqueIdentifier uniqueIdentifier) {
-        Collection<MultiMapValue> multiMapValues = multiMap.get(lshHash.getBlockAt(hash_position));
+        Collection<MultiMapValue> multiMapValues = multiMap.get( lshHash.getBlockAt(hash_position) );
 
         for( MultiMapValue multiMapValue: multiMapValues ){
             if( uniqueIdentifier.compareTo( multiMapValue.uniqueIdentifier() ) == 0 ){
