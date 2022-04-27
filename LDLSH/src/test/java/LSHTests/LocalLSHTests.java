@@ -68,7 +68,7 @@ public class LocalLSHTests {
         int b = Integer.parseInt( configurator.getConfig("N_BANDS") );
 
         multiMaps = new MultiMap[b];
-        MultimapFactory multimapFactory = appContext.getMultimapFactory();
+        MultimapFactory multimapFactory = new MultimapFactory();
         try {
             for ( int i = 0; i<b; i++) {
                 multiMaps[i] = multimapFactory.getNewMultiMap(
