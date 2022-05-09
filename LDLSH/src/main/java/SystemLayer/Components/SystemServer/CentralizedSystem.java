@@ -30,7 +30,10 @@ public class CentralizedSystem implements SystemServer {
         String multimapConfig = configurator.getConfig("MULTIMAP");
         MultiMap[] multiMaps = new MultiMap[bands];
         for ( int i = 0; i<bands; i++ ){
-            multiMaps[i] = multimapFactory.getNewMultiMap(multimapConfig);
+            MultiMap current = multimapFactory.getNewMultiMap(multimapConfig);
+            current.setHashBlockPosition(i);
+            current.setTotalBlocks(bands);
+            multiMaps[i] = current;
         }
         context.setMultiMaps(multiMaps);
 
@@ -42,11 +45,11 @@ public class CentralizedSystem implements SystemServer {
     }
 
     @Override
-    public void insert(DataObject object) throws Exception {
+    public Future insert(DataObject object) throws Exception {
         Message insertMessage = context.getMessageFactory().getMessage( Message.types.INSERT_REQUEST );
         insertMessage.setBody( object );
         Task insertTask = new InsertTask(insertMessage, context );
-        context.getExecutorService().submit( insertTask );
+        return context.getExecutorService().submit( insertTask );
     }
 
     @Override
