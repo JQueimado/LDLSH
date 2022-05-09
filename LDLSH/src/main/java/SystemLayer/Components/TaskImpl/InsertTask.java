@@ -35,14 +35,15 @@ public class InsertTask implements Task{
     }
 
     @Override
-    public DataObject call() {
+    public DataObject call() throws Exception {
         DataObject object = (DataObject) insertRequest.getBody();
 
         //PREPROCESS
         LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(hash_config, appContext);
         object_hash.setObject(object, bands);
 
-        ErasureCodes object_erasure_codes = appContext.getErasureCodesFactory().getNewErasureCodes(erasure_config);
+        ErasureCodes object_erasure_codes = appContext.getErasureCodesFactory()
+                .getNewErasureCodes( erasure_config, appContext );
         object_erasure_codes.encodeDataObject(object,bands);
 
         UniqueIdentifier object_unique_identifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier(uid_config);

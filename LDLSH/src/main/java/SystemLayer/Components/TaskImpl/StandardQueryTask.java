@@ -27,7 +27,7 @@ public class StandardQueryTask implements Task {
 
         this.queryRequest = queryRequest;
         this.appContext = appContext;
-        this.dataObject_config = appContext.getConfigurator().getConfig("OBJECT_TYPE");
+        this.dataObject_config = appContext.getConfigurator().getConfig("DATA_OBJECT");
         this.hash_config = appContext.getConfigurator().getConfig("LSH_HASH");
         this.erasure_config = appContext.getConfigurator().getConfig("ERASURE_CODES");
         this.bands = Integer.parseInt( appContext.getConfigurator().getConfig("N_BANDS") );
@@ -50,6 +50,9 @@ public class StandardQueryTask implements Task {
             Collections.addAll(results, multimap_results);
         }
 
+        if( results.size() == 0 )
+            return null;
+
         //Completion
         Map<UniqueIdentifier, ErasureCodes> objectMapping = new HashMap<>();
         Map<UniqueIdentifier, LSHHash> hashMapping = new HashMap<>();
@@ -57,7 +60,8 @@ public class StandardQueryTask implements Task {
         for(MultiMap.MultiMapValue multiMapValue: results){
             ErasureCodes erasureCodes = objectMapping.get( multiMapValue.uniqueIdentifier() );
             if( erasureCodes == null ){
-                ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory().getNewErasureCodes(erasure_config);
+                ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory()
+                        .getNewErasureCodes(erasure_config, appContext);
                 temp_erasure_codes.addBlockAt( multiMapValue.ErasureCode() );
                 objectMapping.put( multiMapValue.uniqueIdentifier(), temp_erasure_codes );
                 hashMapping.put( multiMapValue.uniqueIdentifier(), multiMapValue.lshHash() );
@@ -68,7 +72,7 @@ public class StandardQueryTask implements Task {
         List<DataObject> potentialCandidates = new ArrayList<>();
         for( UniqueIdentifier uid : objectMapping.keySet() ){
             ErasureCodes codes = objectMapping.get(uid);
-            DataObject temporaryObject = appContext.getDataObjectFactory().getNewDataObject(dataObject_config);;
+            DataObject temporaryObject = appContext.getDataObjectFactory().getNewDataObject(dataObject_config);
 
             //Attempt ar decoding
             try{
@@ -93,7 +97,18 @@ public class StandardQueryTask implements Task {
         }
 
         //-Post Process
+        DataObject nearestNeighbour = potentialCandidates.get(0);
+        double distance = appContext.getDistanceMeasurer().getDistance( nearestNeighbour, queryObject );
 
-        return null;
+        for ( int i = 1; i<potentialCandidates.size(); i++ ){
+            double c_distance = appContext.getDistanceMeasurer().getDistance( potentialCandidates.get(i), queryObject );
+
+            if( c_distance < distance ){
+                nearestNeighbour = potentialCandidates.get(i);
+                distance = c_distance;
+            }
+        }
+
+        return nearestNeighbour;
     }
 }
