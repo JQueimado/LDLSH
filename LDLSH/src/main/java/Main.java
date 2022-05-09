@@ -1,11 +1,10 @@
 import Factories.ComponentFactories.SystemServerFactory;
-import Factories.DataFactories.DataObjectFactory;
-import SystemLayer.Components.SystemServer.CentralizedSystem;
 import SystemLayer.Components.SystemServer.SystemServer;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 
 import java.util.Scanner;
+import java.util.concurrent.Future;
 
 public class Main {
 
@@ -20,11 +19,13 @@ public class Main {
         //UI configurations
         Scanner scanner = new Scanner(System.in);
 
-        while (true){
-            System.out.print("" +
-                    "InsertInstruction:\n" +
-                    "I <string> -> Inserts the <string> object into the database\n" +
-                    "Q <string> -> Queries the <string> and returns its Nearest Neighbor\n");
+        System.out.print("" +
+                "InsertInstruction:\n" +
+                "I <string> -> Inserts the <string> object into the database\n" +
+                "Q <string> -> Queries the <string> and returns its Nearest Neighbor\n" +
+                "E -> exit\n");
+        boolean exit = false;
+        while (!exit){
 
             String op = scanner.nextLine();
 
@@ -42,10 +43,14 @@ public class Main {
             dataObject.setValues(ops[1]);
 
             switch (ops[0]){
+                //Insert
                 case "I" -> {
-                    system.insert(dataObject);
+                    Future future = system.insert(dataObject);
+                    future.get();
+                    System.out.println("done");
                 }
 
+                //Query
                 case "Q" -> {
                     DataObject result = system.query(dataObject);
 
@@ -59,6 +64,12 @@ public class Main {
                     System.out.printf("Result:%s\n", string.getValues() );
                 }
 
+                //Exit
+                case "E" -> {
+                    exit = true;
+                }
+
+                //Unknown Op
                 default -> {
                     System.out.println("Invalid OP");
                 }

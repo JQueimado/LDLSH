@@ -84,7 +84,7 @@ public class LocalLSHTests {
     }
 
     @Test
-    public void InsertMapTest(){
+    public void InsertMapTest() throws Exception {
         // Insert object 0
         DataObject object = dataObjects[0];
         insert( object, multiMaps );
@@ -105,14 +105,14 @@ public class LocalLSHTests {
     }
 
     @Test
-    public void SimilarityTest(){
+    public void SimilarityTest() throws Exception {
         //Insert object 0
         insert(dataObjects[0], multiMaps);
         //Insert object 1
         insert(dataObjects[1], multiMaps );
     }
 
-    private void insert(DataObject object, MultiMap[] multiMaps ){
+    private void insert(DataObject object, MultiMap[] multiMaps ) throws Exception {
         LSHHash hash = appContext.getLshHashFactory()
                 .getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
         hash.setObject(object, multiMaps.length);
@@ -122,7 +122,7 @@ public class LocalLSHTests {
         uid.setObject(object);
 
         ErasureCodes erasureCodes = appContext.getErasureCodesFactory()
-                .getNewErasureCodes("SIMPLE_PARTITION");
+                .getNewErasureCodes("SIMPLE_PARTITION", appContext);
         erasureCodes.encodeDataObject(object, multiMaps.length);
 
         //Insert
