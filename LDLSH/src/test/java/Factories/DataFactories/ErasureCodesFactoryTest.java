@@ -9,15 +9,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class ErasureCodesFactoryTest {
 
     @Test
-    void getNewProcessor_None() {
+    void getNewProcessor_None() throws Exception {
         ErasureCodesFactory erasureCodesFactory = new ErasureCodesFactory();
-        ErasureCodes erasureCodes = erasureCodesFactory.getNewErasureCodes("NONE");
+        ErasureCodes erasureCodes = erasureCodesFactory.getNewErasureCodes("NONE", null);
         assertNull( erasureCodes );
     }
 
-    void getNewProcessor_REED_SOLOMON() {
+    void getNewProcessor_REED_SOLOMON() throws Exception {
         ErasureCodesFactory erasureCodesFactory = new ErasureCodesFactory();
-        ErasureCodes erasureCodes = erasureCodesFactory.getNewErasureCodes("REED_SOLOMON");
+        ErasureCodes erasureCodes = erasureCodesFactory.getNewErasureCodes("REED_SOLOMON", null);
         assertNotNull(erasureCodes);
         assertEquals( erasureCodes.getClass(), ReedSolomonErasureCodes.class);
     }
