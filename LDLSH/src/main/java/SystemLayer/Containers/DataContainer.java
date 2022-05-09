@@ -1,10 +1,12 @@
 package SystemLayer.Containers;
 
+import Factories.ComponentFactories.DistanceMeasurerFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
 import Factories.MessageFactory;
+import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.Configurator.Configurator;
 
@@ -26,6 +28,7 @@ public class DataContainer {
     //Components
     private MultiMap[] multiMaps;
     private ExecutorService executorService;
+    private DistanceMeasurer distanceMeasurer = null;
 
     //Constructor
     public DataContainer( String f_name ){
@@ -85,6 +88,17 @@ public class DataContainer {
     }
     public ExecutorService getExecutorService( ){
         return this.executorService;
+    }
+
+    //Distance Measurer
+    public DistanceMeasurer getDistanceMeasurer(  ){
+        if(distanceMeasurer == null){
+            DistanceMeasurerFactory distanceMeasurerFactory = new DistanceMeasurerFactory();
+            distanceMeasurer = distanceMeasurerFactory.getNewDistanceMeasurer(
+                    configurator.getConfig("DISTANCE_METRIC")
+            );
+        }
+        return distanceMeasurer;
     }
 
 }
