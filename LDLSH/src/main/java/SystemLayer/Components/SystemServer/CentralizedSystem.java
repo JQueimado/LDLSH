@@ -1,4 +1,4 @@
-package SystemLayer.Components.System;
+package SystemLayer.Components.SystemServer;
 
 import Factories.ComponentFactories.MultimapFactory;
 import NetworkLayer.Message;
@@ -10,18 +10,16 @@ import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 
-import java.io.IOException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class CentralizedSystem implements System {
+public class CentralizedSystem implements SystemServer {
 
     private DataContainer context;
 
-    public CentralizedSystem( String configFile ) throws Exception {
-        context = new DataContainer(configFile);
+    public CentralizedSystem( DataContainer context ) throws Exception {
+        this.context = context;
 
         //Setup
         Configurator configurator = context.getConfigurator();

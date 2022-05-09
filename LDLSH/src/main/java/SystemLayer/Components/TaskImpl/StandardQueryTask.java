@@ -52,6 +52,7 @@ public class StandardQueryTask implements Task {
 
         //Completion
         Map<UniqueIdentifier, ErasureCodes> objectMapping = new HashMap<>();
+        Map<UniqueIdentifier, LSHHash> hashMapping = new HashMap<>();
         //-group erasure codes
         for(MultiMap.MultiMapValue multiMapValue: results){
             ErasureCodes erasureCodes = objectMapping.get( multiMapValue.uniqueIdentifier() );
@@ -59,6 +60,7 @@ public class StandardQueryTask implements Task {
                 ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory().getNewErasureCodes(erasure_config);
                 temp_erasure_codes.addBlockAt( multiMapValue.ErasureCode() );
                 objectMapping.put( multiMapValue.uniqueIdentifier(), temp_erasure_codes );
+                hashMapping.put( multiMapValue.uniqueIdentifier(), multiMapValue.lshHash() );
             }
         }
 
@@ -66,18 +68,31 @@ public class StandardQueryTask implements Task {
         List<DataObject> potentialCandidates = new ArrayList<>();
         for( UniqueIdentifier uid : objectMapping.keySet() ){
             ErasureCodes codes = objectMapping.get(uid);
-            DataObject temporaryObject;
+            DataObject temporaryObject = appContext.getDataObjectFactory().getNewDataObject(dataObject_config);;
 
+            //Attempt ar decoding
             try{
-                temporaryObject = appContext.getDataObjectFactory().getNewDataObject(dataObject_config);
                 temporaryObject = codes.decodeDataObject(temporaryObject);
                 potentialCandidates.add( temporaryObject );
 
             } catch (ErasureCodes.IncompleteBlockException ibe){
+                //If decode fails by an incomplete block error, runs completion TODO: OPTIMIZE COMPLETION
+                LSHHash objectHash = hashMapping.get( uid );
+
                 //Complete
+                for( MultiMap multiMap: multiMaps ){ //Go to all multiMaps and retrieve the intended erasure block
+                    ErasureCodes.ErasureBlock block = multiMap.complete(objectHash, uid);
+                    codes.addBlockAt(block);
+                }
+
+                temporaryObject = codes.decodeDataObject(temporaryObject);
+                potentialCandidates.add( temporaryObject );
+
             }
 
         }
+
+        //-Post Process
 
         return null;
     }
