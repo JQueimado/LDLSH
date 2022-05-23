@@ -1,34 +1,24 @@
 package SystemLayer.Data.UniqueIndentifierImpl;
 
+import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import com.google.common.hash.Hashing;
 
 import java.util.Arrays;
 
-public class Sha256UniqueIdentifier implements UniqueIdentifier{
+public class Sha256UniqueIdentifier extends UniqueIdentifierImpl{
 
-    private byte[] ui;
-
-    public Sha256UniqueIdentifier( DataObject object ){
+    public Sha256UniqueIdentifier(DataContainer appContext, DataObject object ){
+        super(appContext);
         setObject(object);
     }
 
-    public Sha256UniqueIdentifier(){
-        ui = null;
+    public Sha256UniqueIdentifier(DataContainer appContext){
+        super(appContext);
     }
 
     @Override
     public void setObject(DataObject dataObject) {
-        this.ui = Hashing.sha256().hashBytes(dataObject.toByteArray()).asBytes();
-    }
-
-    @Override
-    public byte[] getUID() {
-        return ui;
-    }
-
-    @Override
-    public int compareTo( UniqueIdentifier o) {
-        return Arrays.compare(this.getUID(), o.getUID());
+        this.data = Hashing.sha256().hashBytes(dataObject.toByteArray()).asBytes();
     }
 }
