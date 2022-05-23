@@ -29,7 +29,7 @@ public class JavaMinHash implements LSHHash{
         return getMinHash();
     }
 
-    public static MinHash getMinHash() throws Exception {
+    public static MinHash getMinHash() throws Exception { //l-n+1
         if( minHash == null ) {
             if (dataContainer == null){
                 throw new Exception("No DataContainer was provided");

@@ -3,9 +3,9 @@ package SystemLayer.Components.SystemServer;
 import Factories.ComponentFactories.MultimapFactory;
 import NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.TaskImpl.InsertTask;
-import SystemLayer.Components.TaskImpl.StandardQueryTask;
-import SystemLayer.Components.TaskImpl.Task;
+import SystemLayer.Components.TaskImpl.Worker.InsertWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.StandardQueryWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
@@ -48,16 +48,16 @@ public class CentralizedSystem implements SystemServer {
     public Future insert(DataObject object) throws Exception {
         Message insertMessage = context.getMessageFactory().getMessage( Message.types.INSERT_REQUEST );
         insertMessage.setBody( object );
-        Task insertTask = new InsertTask(insertMessage, context );
-        return context.getExecutorService().submit( insertTask );
+        WorkerTask insertWorkerTask = new InsertWorkerTask(insertMessage, context );
+        return context.getExecutorService().submit(insertWorkerTask);
     }
 
     @Override
     public DataObject query(DataObject queryObject) throws Exception {
         Message queryMessage = context.getMessageFactory().getMessage( Message.types.QUERY_REQUEST );
         queryMessage.setBody( queryObject );
-        Task queryTask = new StandardQueryTask(queryMessage, context );
-        Future<DataObject> response = context.getExecutorService().submit( queryTask );
+        WorkerTask queryWorkerTask = new StandardQueryWorkerTask(queryMessage, context );
+        Future<DataObject> response = context.getExecutorService().submit(queryWorkerTask);
         return response.get();
     }
 }
