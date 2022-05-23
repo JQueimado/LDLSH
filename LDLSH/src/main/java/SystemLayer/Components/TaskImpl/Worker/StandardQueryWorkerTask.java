@@ -1,4 +1,4 @@
-package SystemLayer.Components.TaskImpl;
+package SystemLayer.Components.TaskImpl.Worker;
 
 import NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
@@ -10,7 +10,7 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 import java.util.*;
 
-public class StandardQueryTask implements Task {
+public class StandardQueryWorkerTask implements WorkerTask {
 
     private final Message queryRequest;
 
@@ -21,7 +21,7 @@ public class StandardQueryTask implements Task {
     private final String erasure_config;
     private final int bands;
 
-    public StandardQueryTask(Message queryRequest, DataContainer appContext ) throws Exception {
+    public StandardQueryWorkerTask(Message queryRequest, DataContainer appContext ) throws Exception {
         if( queryRequest.getType() != Message.types.QUERY_REQUEST )
             throw new Exception("Invalid Message type for QueryTask");
 

@@ -1,4 +1,4 @@
-package SystemLayer.Components.TaskImpl;
+package SystemLayer.Components.TaskImpl.Worker;
 
 import NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
@@ -8,9 +8,7 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
-import java.io.IOException;
-
-public class InsertTask implements Task{
+public class InsertWorkerTask implements WorkerTask {
 
     private final Message insertRequest;
 
@@ -21,7 +19,7 @@ public class InsertTask implements Task{
     private final String uid_config;
     private final int bands;
 
-    public InsertTask( Message insertRequest, DataContainer appContext ) throws Exception {
+    public InsertWorkerTask(Message insertRequest, DataContainer appContext ) throws Exception {
 
         if( insertRequest.getType() != Message.types.INSERT_REQUEST )
             throw new Exception("Invalid Message type for InsertTask");
