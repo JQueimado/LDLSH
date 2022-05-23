@@ -62,7 +62,7 @@ public class DataContainer {
 
     public UniqueIdentifierFactory getUniqueIdentifierFactory(){
         if(uniqueIdentifierFactory == null)
-            uniqueIdentifierFactory = new UniqueIdentifierFactory();
+            uniqueIdentifierFactory = new UniqueIdentifierFactory(this);
         return uniqueIdentifierFactory;
     }
 
