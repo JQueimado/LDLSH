@@ -46,6 +46,7 @@ public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
 
     //Codes
     ErasureBlock[] erasureBlocks;
+    boolean[] isPresent;
     int n_blocks;
     int block_size;
 
@@ -53,6 +54,11 @@ public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
         erasureBlocks = new ErasureBlock[n];
         n_blocks = 0;
         block_size = -1;
+
+        isPresent = new boolean[n];
+        for (int c = 0; c<n; c++){
+            isPresent[c] = false;
+        }
     }
 
     @Override
@@ -67,6 +73,7 @@ public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
         //Copy data
         for( byte[] block : shards ){
             erasureBlocks[c] = new ErasureBlock(block, c);
+            isPresent[c] = true;
             c++;
         }
     }
@@ -81,19 +88,16 @@ public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
         //Calculate missing and
         //Assemble shards
         byte[][] matrix = new byte[n][];
-        boolean[] missing = new boolean[n];
         for( int c = 0; c<n; c++ ){
             ErasureBlock current = erasureBlocks[c];
             if( current == null ){
-                missing[c] = false;
                 matrix[c] = new byte[block_size];
             }else {
-                missing[c] = true;
                 matrix[c] = current.block_data();
             }
         }
 
-        encoder.decodeMissing(matrix,missing,0,block_size);
+        encoder.decodeMissing(matrix,isPresent,0,block_size);
 
         int data_size = k*block_size;
         byte[] data = shardsToByteArray(matrix, data_size);
@@ -103,11 +107,13 @@ public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
 
     @Override
     public void addBlockAt(ErasureBlock erasureBlock) {
-        if( erasureBlocks[erasureBlock.position()] == null )
+        int pos = erasureBlock.position();
+        if( !isPresent[pos] )
             n_blocks++;
         if( block_size ==-1 )
             block_size = erasureBlock.block_data().length;
-        erasureBlocks[erasureBlock.position()] = erasureBlock;
+        erasureBlocks[pos] = erasureBlock;
+        isPresent[pos] = true;
     }
 
     @Override

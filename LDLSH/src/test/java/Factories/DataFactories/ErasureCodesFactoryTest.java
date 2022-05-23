@@ -1,7 +1,7 @@
 package Factories.DataFactories;
 
+import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.ReedSolomonErasureCodes;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,6 +19,6 @@ class ErasureCodesFactoryTest {
         ErasureCodesFactory erasureCodesFactory = new ErasureCodesFactory();
         ErasureCodes erasureCodes = erasureCodesFactory.getNewErasureCodes("REED_SOLOMON", null);
         assertNotNull(erasureCodes);
-        assertEquals( erasureCodes.getClass(), ReedSolomonErasureCodes.class);
+        assertEquals( erasureCodes.getClass(), BlackblazeReedSolomonErasureCodes.class);
     }
 }

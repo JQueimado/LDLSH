@@ -6,7 +6,7 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.ReedSolomonErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.SimplePartitionErasureCodes;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash.LSHHashBlock;
@@ -51,7 +51,7 @@ class GuavaInMemoryMultiMapTest {
         //Object 0
         object = new StringDataObject("12345");
         hash = new JavaMinHash(object, 1, simulatedState);
-        erasureCode = new ReedSolomonErasureCodes();
+        erasureCode = new SimplePartitionErasureCodes(simulatedState);
         uniqueIdentifier = new Sha256UniqueIdentifier();
         objects.add(object);
         hashes.add(hash);
