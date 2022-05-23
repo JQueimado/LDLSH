@@ -5,6 +5,7 @@ import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
@@ -79,13 +80,13 @@ public class StandardQueryWorkerTask implements WorkerTask {
                 temporaryObject = codes.decodeDataObject(temporaryObject);
                 potentialCandidates.add( temporaryObject );
 
-            } catch (ErasureCodes.IncompleteBlockException ibe){
+            } catch (ErasureCodesImpl.IncompleteBlockException ibe){
                 //If decode fails by an incomplete block error, runs completion TODO: OPTIMIZE COMPLETION
                 LSHHash objectHash = hashMapping.get( uid );
 
                 //Complete
                 for( MultiMap multiMap: multiMaps ){ //Go to all multiMaps and retrieve the intended erasure block
-                    ErasureCodes.ErasureBlock block = multiMap.complete(objectHash, uid);
+                    ErasureCodesImpl.ErasureBlock block = multiMap.complete(objectHash, uid);
                     codes.addBlockAt(block);
                 }
 

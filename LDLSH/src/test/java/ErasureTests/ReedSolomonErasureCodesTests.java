@@ -1,15 +1,15 @@
 package ErasureTests;
 
+import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static java.lang.System.in;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ReedSolomonErasureCodesTests {
@@ -17,9 +17,10 @@ public class ReedSolomonErasureCodesTests {
     private int n, k, t;
     private DataObject<String> string_data;
     private byte[][] sharding;
+    private DataContainer appContext;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() throws Exception{
         //Encoder config
         n = 6;
         k = 4;
@@ -28,6 +29,10 @@ public class ReedSolomonErasureCodesTests {
         //Data config
         string_data = new StringDataObject("This is a string to be processed"); //size must be dividable by k
         sharding = BlackblazeReedSolomonErasureCodes.byteArrayToShards( string_data.toByteArray() );
+
+        //Context
+        appContext = new DataContainer("");
+        appContext.getConfigurator().setConfig("UNIQUE_IDENTIFIER", "SHA256");
     }
 
     /**
@@ -82,14 +87,14 @@ public class ReedSolomonErasureCodesTests {
     @Test
     public void encodeDecodeCompleteTest() throws Exception {
         //Encode
-        BlackblazeReedSolomonErasureCodes codes = new BlackblazeReedSolomonErasureCodes();
+        BlackblazeReedSolomonErasureCodes codes = new BlackblazeReedSolomonErasureCodes(appContext);
         codes.encodeDataObject( string_data, n);
         printBlocks(codes.getErasureBlocks());
 
         //Decode
         DataObject<String> result_object = new StringDataObject();
-        BlackblazeReedSolomonErasureCodes codes2 = new BlackblazeReedSolomonErasureCodes();
-        for(ErasureCodes.ErasureBlock block: codes.getErasureBlocks()){
+        BlackblazeReedSolomonErasureCodes codes2 = new BlackblazeReedSolomonErasureCodes(appContext);
+        for(ErasureCodesImpl.ErasureBlock block: codes.getErasureBlocks()){
             codes2.addBlockAt(block);
         }
         codes2.decodeDataObject( result_object );
@@ -104,7 +109,7 @@ public class ReedSolomonErasureCodesTests {
     @Test
     public void decodeFailTest(){
         //Encode
-        BlackblazeReedSolomonErasureCodes codes = new BlackblazeReedSolomonErasureCodes();
+        BlackblazeReedSolomonErasureCodes codes = new BlackblazeReedSolomonErasureCodes(appContext);
         codes.encodeDataObject( string_data, n);
         printBlocks(codes.getErasureBlocks());
 
@@ -113,12 +118,12 @@ public class ReedSolomonErasureCodesTests {
             removed.add(c);
         }
 
-        BlackblazeReedSolomonErasureCodes codes2 = new BlackblazeReedSolomonErasureCodes();
+        BlackblazeReedSolomonErasureCodes codes2 = new BlackblazeReedSolomonErasureCodes(appContext);
         copyAllButSome(codes2, codes.getErasureBlocks(), removed);
 
         //Assertions
         assertThrows(
-                ErasureCodes.IncompleteBlockException.class,
+                ErasureCodesImpl.IncompleteBlockException.class,
                 ()->{ codes2.decodeDataObject(new StringDataObject()); }
         );
     }
@@ -131,15 +136,15 @@ public class ReedSolomonErasureCodesTests {
     @Test
     public void randomPopMaxTest() throws Exception{
         //Encode
-        BlackblazeReedSolomonErasureCodes codes1 = new BlackblazeReedSolomonErasureCodes();
+        BlackblazeReedSolomonErasureCodes codes1 = new BlackblazeReedSolomonErasureCodes(appContext);
         codes1.encodeDataObject( string_data, n);
 
-        ErasureCodes.ErasureBlock[] blocks = codes1.getErasureBlocks();
+        ErasureCodesImpl.ErasureBlock[] blocks = codes1.getErasureBlocks();
         //Display resulting Blocks
         System.out.println("Encoded blocks");
         printBlocks(blocks);
 
-        BlackblazeReedSolomonErasureCodes codes2 = new BlackblazeReedSolomonErasureCodes();
+        BlackblazeReedSolomonErasureCodes codes2 = new BlackblazeReedSolomonErasureCodes(appContext);
         //Randomly selects t rows to be removed
         Random random = new Random();
         List<Integer> missing_rows = new ArrayList<>();
@@ -154,7 +159,7 @@ public class ReedSolomonErasureCodesTests {
 
         //Display codes2 status
         System.out.println("blocks for decoding");
-        ErasureCodes.ErasureBlock[] blocks2 = codes2.getErasureBlocks();
+        ErasureCodesImpl.ErasureBlock[] blocks2 = codes2.getErasureBlocks();
         printBlocks(blocks2);
 
         //Decodes
@@ -173,10 +178,10 @@ public class ReedSolomonErasureCodesTests {
     @Test
     public void PopAllEach() throws Exception{
         //Encode
-        BlackblazeReedSolomonErasureCodes codes1 = new BlackblazeReedSolomonErasureCodes();
+        BlackblazeReedSolomonErasureCodes codes1 = new BlackblazeReedSolomonErasureCodes(appContext);
         codes1.encodeDataObject( string_data, n);
 
-        ErasureCodes.ErasureBlock[] blocks = codes1.getErasureBlocks();
+        ErasureCodesImpl.ErasureBlock[] blocks = codes1.getErasureBlocks();
         //Display resulting Blocks
         System.out.println("Encoded blocks");
         printBlocks(blocks);
@@ -190,7 +195,7 @@ public class ReedSolomonErasureCodesTests {
             toRemove.add(c); //Picks c
             System.out.printf("Remove code at: %d\n", c);
             //Remove and Decode
-            codes2 = new BlackblazeReedSolomonErasureCodes();
+            codes2 = new BlackblazeReedSolomonErasureCodes(appContext);
             copyAllButSome(codes2, blocks, toRemove); //Copies all but c
             printBlocks(codes2.getErasureBlocks()); //Shows resulting codes
             result_object = new StringDataObject();
@@ -202,15 +207,15 @@ public class ReedSolomonErasureCodesTests {
     }
 
     //Auxiliary methods
-    private void printBlocks(ErasureCodes.ErasureBlock[] blocks){
-        for( ErasureCodes.ErasureBlock row: blocks )
+    private void printBlocks(ErasureCodesImpl.ErasureBlock[] blocks){
+        for( ErasureCodesImpl.ErasureBlock row: blocks )
             if (row != null)
                 System.out.println( row.position() + ":" + Arrays.toString(row.block_data()) );
     }
 
     private void copyAllButSome(
             BlackblazeReedSolomonErasureCodes dest,
-            ErasureCodes.ErasureBlock[] src,
+            ErasureCodesImpl.ErasureBlock[] src,
             List<Integer> some
     ) {
         for( int c = 0; c<n; c++ ){

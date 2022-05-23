@@ -1,14 +1,10 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
+import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodesLib.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
+public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
     //Encoders
     private static int n; //Total blocks
@@ -45,14 +41,11 @@ public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
     }
 
     //Codes
-    ErasureBlock[] erasureBlocks;
     boolean[] isPresent;
-    int n_blocks;
     int block_size;
 
-    public BlackblazeReedSolomonErasureCodes(){
-        erasureBlocks = new ErasureBlock[n];
-        n_blocks = 0;
+    public BlackblazeReedSolomonErasureCodes(DataContainer appContext){
+        super(appContext, n);
         block_size = -1;
 
         isPresent = new boolean[n];
@@ -81,7 +74,7 @@ public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
     @Override
     public DataObject decodeDataObject(DataObject object) throws IncompleteBlockException {
 
-        if( n_blocks < n-t ){
+        if( number_of_blocks < n-t ){
             throw new IncompleteBlockException();
         }
 
@@ -109,26 +102,10 @@ public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
     public void addBlockAt(ErasureBlock erasureBlock) {
         int pos = erasureBlock.position();
         if( !isPresent[pos] )
-            n_blocks++;
+            number_of_blocks++;
         if( block_size ==-1 )
             block_size = erasureBlock.block_data().length;
         erasureBlocks[pos] = erasureBlock;
         isPresent[pos] = true;
     }
-
-    @Override
-    public ErasureBlock[] getErasureBlocks() {
-        return erasureBlocks;
-    }
-
-    @Override
-    public ErasureBlock getBlockAt(int blocks) {
-        return erasureBlocks[blocks];
-    }
-
-    @Override
-    public int compareTo(ErasureCodes o) {
-        return Arrays.compare( getErasureBlocks(), o.getErasureBlocks() ) ;
-    }
-
 }

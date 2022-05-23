@@ -36,6 +36,7 @@ class GuavaInMemoryMultiMapTest {
         configurator.setConfig("ERROR", "0.1");
         configurator.setConfig("VECTOR_DIMENSIONS", "5");
         configurator.setConfig("LSH_SEED", "11111");
+        configurator.setConfig("N_BANDS", "1");
 
         //Objects
         objects = new ArrayList<>();
