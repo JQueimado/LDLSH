@@ -81,7 +81,7 @@ public class BlackblazeReedSolomonErasureCodes implements ErasureCodes{
     @Override
     public DataObject decodeDataObject(DataObject object) throws IncompleteBlockException {
 
-        if( erasureBlocks.length < t ){
+        if( n_blocks < n-t ){
             throw new IncompleteBlockException();
         }
 
