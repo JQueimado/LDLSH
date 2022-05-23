@@ -36,7 +36,7 @@ public class DataContainer {
     }
 
     //getters
-    public Configurator getConfigurator() throws IOException {
+    public Configurator getConfigurator(){
         return configurator;
     }
 

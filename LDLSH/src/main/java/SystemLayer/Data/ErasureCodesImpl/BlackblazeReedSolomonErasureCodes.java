@@ -3,6 +3,7 @@ package SystemLayer.Data.ErasureCodesImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodesLib.*;
+import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
@@ -72,7 +73,8 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
     }
 
     @Override
-    public DataObject decodeDataObject(DataObject object) throws IncompleteBlockException {
+    public DataObject decodeDataObject(DataObject object, UniqueIdentifier validation_identifier)
+            throws IncompleteBlockException, CorruptBlockException {
 
         if( number_of_blocks < n-t ){
             throw new IncompleteBlockException();
@@ -95,7 +97,7 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
         int data_size = k*block_size;
         byte[] data = shardsToByteArray(matrix, data_size);
         object.setByteArray(data);
-        return object;
+        return super.decodeDataObject(object, validation_identifier);
     }
 
     @Override

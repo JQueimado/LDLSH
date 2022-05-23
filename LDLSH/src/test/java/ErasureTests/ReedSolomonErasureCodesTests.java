@@ -5,6 +5,7 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.*;
+import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +19,7 @@ public class ReedSolomonErasureCodesTests {
     private DataObject<String> string_data;
     private byte[][] sharding;
     private DataContainer appContext;
+    private UniqueIdentifier uniqueIdentifier;
 
     @BeforeEach
     public void beforeEach() throws Exception{
@@ -33,6 +35,9 @@ public class ReedSolomonErasureCodesTests {
         //Context
         appContext = new DataContainer("");
         appContext.getConfigurator().setConfig("UNIQUE_IDENTIFIER", "SHA256");
+
+        uniqueIdentifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier(appContext);
+        uniqueIdentifier.setObject(string_data);
     }
 
     /**
@@ -97,7 +102,7 @@ public class ReedSolomonErasureCodesTests {
         for(ErasureCodesImpl.ErasureBlock block: codes.getErasureBlocks()){
             codes2.addBlockAt(block);
         }
-        codes2.decodeDataObject( result_object );
+        codes2.decodeDataObject( result_object, uniqueIdentifier );
 
         //Assertions
         assertEquals(string_data.getValues(), result_object.getValues() );
@@ -124,7 +129,7 @@ public class ReedSolomonErasureCodesTests {
         //Assertions
         assertThrows(
                 ErasureCodesImpl.IncompleteBlockException.class,
-                ()->{ codes2.decodeDataObject(new StringDataObject()); }
+                ()->{ codes2.decodeDataObject(new StringDataObject(), uniqueIdentifier); }
         );
     }
 
@@ -164,7 +169,7 @@ public class ReedSolomonErasureCodesTests {
 
         //Decodes
         DataObject<String> result_object = new StringDataObject();
-        codes2.decodeDataObject(result_object);
+        codes2.decodeDataObject(result_object, uniqueIdentifier);
 
         //Assertions
         assertEquals( result_object.getValues(), result_object.getValues() );
@@ -199,7 +204,7 @@ public class ReedSolomonErasureCodesTests {
             copyAllButSome(codes2, blocks, toRemove); //Copies all but c
             printBlocks(codes2.getErasureBlocks()); //Shows resulting codes
             result_object = new StringDataObject();
-            codes2.decodeDataObject( result_object ); //Decode
+            codes2.decodeDataObject( result_object, uniqueIdentifier ); //Decode
 
             //Assertions
             assertEquals( string_data.getValues(), result_object.getValues() );

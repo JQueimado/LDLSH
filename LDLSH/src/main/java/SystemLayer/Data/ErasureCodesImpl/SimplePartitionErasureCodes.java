@@ -2,6 +2,7 @@ package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,8 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
     }
 
     @Override
-    public DataObject decodeDataObject(DataObject object) throws IncompleteBlockException {
+    public DataObject decodeDataObject(DataObject object, UniqueIdentifier validation_identifier)
+            throws IncompleteBlockException, CorruptBlockException {
 
         if(number_of_blocks < super.total_blocks)
             throw new IncompleteBlockException();
@@ -92,7 +94,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         }
 
         object.setByteArray(data);
-        return object;
+        return super.decodeDataObject(object, validation_identifier);
     }
 
 }

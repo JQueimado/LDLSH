@@ -2,6 +2,7 @@ package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 import java.util.Arrays;
 
@@ -12,6 +13,11 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     public int number_of_blocks;
     public int total_blocks;
 
+    /**
+     * Erasure codes super constructor
+     * @param appContext application context
+     * @param total_blocks total number of erasure codes that can be stored
+     */
     public ErasureCodesImpl( DataContainer appContext, int total_blocks ){
         this.appContext = appContext;
         this.total_blocks = total_blocks;
@@ -25,8 +31,13 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     }
 
     @Override
-    public DataObject decodeDataObject(DataObject object) throws IncompleteBlockException {
-        return null;
+    public DataObject decodeDataObject(DataObject object, UniqueIdentifier validation_identifier)
+            throws IncompleteBlockException, CorruptBlockException
+    {
+        if( validate(object, validation_identifier)  )
+            throw new CorruptBlockException();
+
+        return object;
     }
 
     @Override
@@ -65,8 +76,26 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
         return 0;
     }
 
+    /**
+     * Validates a data object face a given UID
+     * @param object object subject to validation
+     * @param validator uid of the original object (preferably cryptographic a uid)
+     * @return true if object is valid, false if object is not valid
+     */
+    private boolean validate( DataObject object, UniqueIdentifier validator ){
+        UniqueIdentifier temp = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier( appContext );
+        temp.setObject(object);
+        return temp.compareTo( validator ) == 0;
+    }
+
     //Subclasses
-    public static final record ErasureBlock( byte[] block_data, int position ) implements Comparable<ErasureBlock> {
+
+    /**
+     * Object representing a single Erasure code
+     * @param block_data erasure code's data
+     * @param position erasure code's position
+     */
+    public record ErasureBlock( byte[] block_data, int position ) implements Comparable<ErasureBlock> {
         @Override
         public int compareTo(ErasureBlock o) {
             if ( position != o.position )
@@ -87,6 +116,15 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
             super(message);
         }
         public IncompleteBlockException(){
+            super();
+        }
+    }
+
+    public static class CorruptBlockException extends Exception{
+        public CorruptBlockException( String message ){
+            super(message);
+        }
+        public CorruptBlockException(){
             super();
         }
     }

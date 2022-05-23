@@ -77,7 +77,7 @@ public class StandardQueryWorkerTask implements WorkerTask {
 
             //Attempt ar decoding
             try{
-                temporaryObject = codes.decodeDataObject(temporaryObject);
+                temporaryObject = codes.decodeDataObject( temporaryObject, uid );
                 potentialCandidates.add( temporaryObject );
 
             } catch (ErasureCodesImpl.IncompleteBlockException ibe){
@@ -90,7 +90,7 @@ public class StandardQueryWorkerTask implements WorkerTask {
                     codes.addBlockAt(block);
                 }
 
-                temporaryObject = codes.decodeDataObject(temporaryObject);
+                temporaryObject = codes.decodeDataObject(temporaryObject, uid);
                 potentialCandidates.add( temporaryObject );
 
             }
