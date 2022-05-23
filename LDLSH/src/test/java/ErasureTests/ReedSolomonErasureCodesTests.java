@@ -36,7 +36,7 @@ public class ReedSolomonErasureCodesTests {
         appContext = new DataContainer("");
         appContext.getConfigurator().setConfig("UNIQUE_IDENTIFIER", "SHA256");
 
-        uniqueIdentifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier(appContext);
+        uniqueIdentifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier();
         uniqueIdentifier.setObject(string_data);
     }
 

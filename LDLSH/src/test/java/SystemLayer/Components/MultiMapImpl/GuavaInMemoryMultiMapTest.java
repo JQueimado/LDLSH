@@ -53,7 +53,7 @@ class GuavaInMemoryMultiMapTest {
         object = new StringDataObject("12345");
         hash = new JavaMinHash(object, 1, simulatedState);
         erasureCode = new SimplePartitionErasureCodes(simulatedState);
-        uniqueIdentifier = new Sha256UniqueIdentifier();
+        uniqueIdentifier = new Sha256UniqueIdentifier(simulatedState);
         objects.add(object);
         hashes.add(hash);
         erasureCodes.add(erasureCode);

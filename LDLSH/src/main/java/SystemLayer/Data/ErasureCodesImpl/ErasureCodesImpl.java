@@ -34,7 +34,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     public DataObject decodeDataObject(DataObject object, UniqueIdentifier validation_identifier)
             throws IncompleteBlockException, CorruptBlockException
     {
-        if( validate(object, validation_identifier)  )
+        if( !validate(object, validation_identifier)  )
             throw new CorruptBlockException();
 
         return object;
@@ -83,9 +83,9 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
      * @return true if object is valid, false if object is not valid
      */
     private boolean validate( DataObject object, UniqueIdentifier validator ){
-        UniqueIdentifier temp = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier( appContext );
+        UniqueIdentifier temp = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier();
         temp.setObject(object);
-        return temp.compareTo( validator ) == 0;
+        return temp.equals( validator );
     }
 
     //Subclasses
@@ -111,6 +111,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
         }
     }
 
+    /**IncompleteBlockException**/
     public static class IncompleteBlockException extends Exception{
         public IncompleteBlockException( String message ){
             super(message);
@@ -120,6 +121,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
         }
     }
 
+    /**CorruptBlockException**/
     public static class CorruptBlockException extends Exception{
         public CorruptBlockException( String message ){
             super(message);
