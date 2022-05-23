@@ -70,6 +70,7 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
             isPresent[c] = true;
             c++;
         }
+        number_of_blocks = n_blocks;
     }
 
     @Override

@@ -211,6 +211,31 @@ public class ReedSolomonErasureCodesTests {
         }
     }
 
+    /**
+     * Tests the decoder function behavior facing a corrupt erasure code
+     */
+    @Test
+    public void randomValidationTest(){
+        //Encode
+        BlackblazeReedSolomonErasureCodes codes1 = new BlackblazeReedSolomonErasureCodes(appContext);
+        codes1.encodeDataObject( string_data, n );
+        ErasureCodesImpl.ErasureBlock[] blocks = codes1.getErasureBlocks();
+
+        //Random block
+        byte[] data = new byte[blocks[0].block_data().length];
+        Random random = new Random();
+        random.nextBytes(data);
+        int pos = random.nextInt(blocks.length);
+        ErasureCodesImpl.ErasureBlock random_block = new ErasureCodesImpl.ErasureBlock(data, pos);
+
+        codes1.addBlockAt(random_block); //Inject corrupt code
+
+        DataObject<String> object2 = new StringDataObject();
+        assertThrows(ErasureCodesImpl.CorruptBlockException.class, () ->{
+            codes1.decodeDataObject(object2, uniqueIdentifier);
+        });
+    }
+
     //Auxiliary methods
     private void printBlocks(ErasureCodesImpl.ErasureBlock[] blocks){
         for( ErasureCodesImpl.ErasureBlock row: blocks )
