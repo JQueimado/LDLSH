@@ -3,19 +3,18 @@ package SystemLayer.Components.MultiMapImpl;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
+import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import com.google.common.collect.*;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-import static SystemLayer.Data.LSHHashImpl.LSHHash.*;
-
 public class GuavaInMemoryMultiMap implements MultiMap{
 
     private final String hash_position_config = "HASH_POSITION";
     private final String number_hashes_config = "TOTAL_HASH";
-    private final Multimap<LSHHashBlock, MultiMapValue> multiMap;
+    private final Multimap<LSHHashImpl.LSHHashBlock, MultiMapValue> multiMap;
     private int hash_position;
     private int total_hash_blocks;
 
@@ -31,10 +30,10 @@ public class GuavaInMemoryMultiMap implements MultiMap{
     }
 
     @Override
-    public LSHHashBlock getBlock(LSHHash hash) {
-        LSHHashBlock rcv_block = hash.getBlockAt(hash_position);
+    public LSHHashImpl.LSHHashBlock getBlock(LSHHash hash) {
+        LSHHashImpl.LSHHashBlock rcv_block = hash.getBlockAt(hash_position);
 
-        for ( LSHHashBlock current : multiMap.keys() ){
+        for ( LSHHashImpl.LSHHashBlock current : multiMap.keys() ){
             if(Arrays.hashCode(current.lshBlock()) == Arrays.hashCode(rcv_block.lshBlock())){
                 return current;
             }

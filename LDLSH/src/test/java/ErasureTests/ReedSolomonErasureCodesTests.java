@@ -225,7 +225,7 @@ public class ReedSolomonErasureCodesTests {
         byte[] data = new byte[blocks[0].block_data().length];
         Random random = new Random();
         random.nextBytes(data);
-        int pos = random.nextInt(blocks.length);
+        int pos = random.nextInt(k); //Only data blocks throw corrupt exception
         ErasureCodesImpl.ErasureBlock random_block = new ErasureCodesImpl.ErasureBlock(data, pos);
 
         codes1.addBlockAt(random_block); //Inject corrupt code

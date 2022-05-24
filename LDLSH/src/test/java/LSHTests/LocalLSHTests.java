@@ -131,7 +131,7 @@ public class LocalLSHTests {
         }
     }
 
-    private List<MultiMap.MultiMapValue> query(DataObject queryObject, MultiMap[] multiMaps ){
+    private List<MultiMap.MultiMapValue> query(DataObject queryObject, MultiMap[] multiMaps )throws Exception{
         LSHHash hash = appContext.getLshHashFactory()
                 .getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
         hash.setObject(queryObject, multiMaps.length);
