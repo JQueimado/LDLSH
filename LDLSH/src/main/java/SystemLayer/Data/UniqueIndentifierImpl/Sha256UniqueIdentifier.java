@@ -8,11 +8,6 @@ import java.util.Arrays;
 
 public class Sha256UniqueIdentifier extends UniqueIdentifierImpl{
 
-    public Sha256UniqueIdentifier(DataContainer appContext, DataObject object ){
-        super(appContext);
-        setObject(object.toByteArray());
-    }
-
     public Sha256UniqueIdentifier(DataContainer appContext){
         super(appContext);
     }

@@ -6,7 +6,7 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 public interface DataProcessor {
-    ProcessedData preProcessData(DataObject object);
+    ProcessedData preProcessData(DataObject object) throws Exception;
     DataObject postProcess();
 
     record ProcessedData(

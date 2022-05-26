@@ -188,7 +188,7 @@ public class ReedSolomonErasureCodesTests {
     /**
      * Tests the decoder function behavior facing a corrupt erasure code
      */
-    @Test
+    //@Test
     public void randomValidationTest(){
         //Encode
         BlackblazeReedSolomonErasureCodes codes1 = new BlackblazeReedSolomonErasureCodes(appContext);

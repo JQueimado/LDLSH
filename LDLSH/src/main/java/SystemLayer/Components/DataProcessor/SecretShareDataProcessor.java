@@ -2,6 +2,7 @@ package SystemLayer.Components.DataProcessor;
 
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.LSHHashImpl.LSHHash;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -15,19 +16,31 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
 
     //Adicionar chave aos codigos
 
-    private static String ALGORITHM = "AES";
-    private static String CIPHER_ALGORITHM = "AES/CBC/PKCS5PADDING";
+    //Static
+    public static final String config_seed = "IV_SEED";
+
+    //Objects
+    private static final String ALGORITHM = "AES";
+    private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5PADDING";
 
     private SecretKey key;
-    private byte[] init_vector;
+    private String iv_seed;
+    private byte[] iv;
 
 
+    /**
+     * Standard Constructor
+     * @param appContext application state
+     */
     public SecretShareDataProcessor(DataContainer appContext){
         super(appContext);
+        this.iv_seed = appContext.getConfigurator().getConfig(config_seed);
     }
 
     @Override
-    public ProcessedData preProcessData(DataObject object){
+    public ProcessedData preProcessData(DataObject object) throws Exception {
+        LSHHash lshHash = appContext.getLshHashFactory().getNewLSHHash();
+
         return null;
     }
 
@@ -69,14 +82,14 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
      * @param secureRandom random number generator.
      */
     private void setInitializationVector( SecureRandom secureRandom ){
-        init_vector = new byte[16];
-        secureRandom.nextBytes(init_vector);
+        iv = new byte[16];
+        secureRandom.nextBytes(iv);
     }
 
     private byte[] cipher( byte[] data ){
         try {
             Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-            IvParameterSpec ivParameterSpec = new IvParameterSpec(init_vector);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
             cipher.init(Cipher.ENCRYPT_MODE, key, ivParameterSpec);
             return cipher.doFinal(data);
         }catch (Exception e) {
@@ -88,7 +101,7 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
     private byte[] decipher( byte[] data ){
         try {
             Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-            IvParameterSpec ivParameterSpec = new IvParameterSpec(init_vector);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
             cipher.init(Cipher.DECRYPT_MODE, key, ivParameterSpec);
             return cipher.doFinal(data);
         }catch (Exception e){
