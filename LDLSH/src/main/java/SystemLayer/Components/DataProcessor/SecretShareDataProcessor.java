@@ -1,4 +1,7 @@
-package SystemLayer.Data.ErasureCodesImpl.ErasurePreProcessor;
+package SystemLayer.Components.DataProcessor;
+
+import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataObjectsImpl.DataObject;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -8,7 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-public class SecretShareDataProcessor extends ErasureDataProcessor {
+public class SecretShareDataProcessor extends DataProcessorImpl{
+
+    //Adicionar chave aos codigos
 
     private static String ALGORITHM = "AES";
     private static String CIPHER_ALGORITHM = "AES/CBC/PKCS5PADDING";
@@ -16,17 +21,23 @@ public class SecretShareDataProcessor extends ErasureDataProcessor {
     private SecretKey key;
     private byte[] init_vector;
 
-    private void createAESKey( SecureRandom secureRandom ) throws NoSuchAlgorithmException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
-        keyGenerator.init(256, secureRandom);
-        key = keyGenerator.generateKey();
+
+    public SecretShareDataProcessor(DataContainer appContext){
+        super(appContext);
     }
 
-    private void setInitializationVector( SecureRandom secureRandom ){
-        init_vector = new byte[16];
-        secureRandom.nextBytes(init_vector);
+    @Override
+    public ProcessedData preProcessData(DataObject object){
+        return null;
     }
 
+    @Override
+    public DataObject postProcess(){ return null; }
+
+    /**
+     * Configures the Cipher with the predetermined algorithm and key;
+     * @param seed seed used to generate IV and cypher key
+     */
     private void setup( String seed ){
         SecureRandom secureRandom = new SecureRandom(seed.getBytes(StandardCharsets.UTF_8)); //Create pseudo random
 
@@ -41,12 +52,28 @@ public class SecretShareDataProcessor extends ErasureDataProcessor {
         setInitializationVector(secureRandom);
     }
 
-    public SecretShareDataProcessor( String seed ) {
-        setup(seed);
+    /**
+     * Creates a AES cipher key using a predetermined random number generator
+     * @param secureRandom random number generator
+     * @throws NoSuchAlgorithmException Thrown if the set encryption algorithm does not exist or is not supported by the
+     * JAVA KeyGenerator.
+     */
+    private void createAESKey( SecureRandom secureRandom ) throws NoSuchAlgorithmException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
+        keyGenerator.init(256, secureRandom);
+        key = keyGenerator.generateKey();
     }
 
-    @Override
-    public byte[] preProcess(byte[] data) {
+    /**
+     * Returns a pseudo random number array, generated using a given random number generator
+     * @param secureRandom random number generator.
+     */
+    private void setInitializationVector( SecureRandom secureRandom ){
+        init_vector = new byte[16];
+        secureRandom.nextBytes(init_vector);
+    }
+
+    private byte[] cipher( byte[] data ){
         try {
             Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
             IvParameterSpec ivParameterSpec = new IvParameterSpec(init_vector);
@@ -58,8 +85,7 @@ public class SecretShareDataProcessor extends ErasureDataProcessor {
         }
     }
 
-    @Override
-    public byte[] postProcess(byte[] data) {
+    private byte[] decipher( byte[] data ){
         try {
             Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
             IvParameterSpec ivParameterSpec = new IvParameterSpec(init_vector);
