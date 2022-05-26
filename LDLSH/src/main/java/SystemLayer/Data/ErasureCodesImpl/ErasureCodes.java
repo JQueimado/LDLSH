@@ -15,8 +15,6 @@ public interface ErasureCodes extends Serializable, Comparable<ErasureCodes> {
 
     /**
      * Decodes the stored erasure codes into a given data object.
-     * @param object object destination of the decoding process.
-     * @param validation_identifier uid of the original object, used for validation.
      * @return object destination populated with the decoded data.
      * @throws ErasureCodesImpl.IncompleteBlockException thrown when the number of store erasure codes is not
      * sufficient to generate the data object.

@@ -1,6 +1,5 @@
 package SystemLayer.Data.LSHHashImpl;
 
-import SystemLayer.Data.DataObjectsImpl.DataObject;
 import java.io.Serializable;
 
 public interface LSHHash extends Serializable, Comparable<LSHHash> {
@@ -10,7 +9,7 @@ public interface LSHHash extends Serializable, Comparable<LSHHash> {
      * @param object object to be associated
      * @param n_blocks number of divisions on the signature
      */
-    void setObject( DataObject object, int n_blocks );
+    void setObject( byte[] object, int n_blocks );
 
     /**
      * Returns the generated complete signature

@@ -53,22 +53,22 @@ class JavaMinHashTest {
 
     @Test
     void setObjectGetSignature() throws Exception {
-        LSHHash hash1 = lshHashFactory.getNewLSHHash( "JAVA_MINHASH", simulatedState );
-        hash1.setObject(dataObjects[0], 2);
+        LSHHash hash1 = lshHashFactory.getNewLSHHash( "JAVA_MINHASH");
+        hash1.setObject(dataObjects[0].toByteArray(), 2);
 
-        LSHHash hash2 = lshHashFactory.getNewLSHHash( "JAVA_MINHASH", simulatedState );
-        hash2.setObject(dataObjects[2], 2);
+        LSHHash hash2 = lshHashFactory.getNewLSHHash( "JAVA_MINHASH" );
+        hash2.setObject(dataObjects[2].toByteArray(), 2);
 
         assertArrayEquals(hash1.getSignature(), hash2.getSignature());
-        hash1.setObject(dataObjects[1], 2);
+        hash1.setObject(dataObjects[1].toByteArray(), 2);
         MatcherAssert.assertThat(hash1.getSignature(), IsNot.not( IsEqual.equalTo( hash2.getSignature() ) ) );
     }
 
     @Test
     void getBlocks() throws Exception {
         int n_blocks = 6;
-        LSHHash hash = lshHashFactory.getNewLSHHash( "JAVA_MINHASH", simulatedState );
-        hash.setObject(dataObjects[0], n_blocks);
+        LSHHash hash = lshHashFactory.getNewLSHHash( "JAVA_MINHASH" );
+        hash.setObject(dataObjects[0].toByteArray(), n_blocks);
         LSHHashImpl.LSHHashBlock[] blocks = hash.getBlocks();
         assertNotNull(blocks);
         assertEquals(blocks.length, n_blocks);
@@ -94,8 +94,8 @@ class JavaMinHashTest {
     void getBlockAt_SingleBlock() throws Exception {
         int n_blocks = 1;
         int position = 0;
-        LSHHash hash = lshHashFactory.getNewLSHHash( "JAVA_MINHASH", simulatedState );
-        hash.setObject(dataObjects[0], n_blocks);
+        LSHHash hash = lshHashFactory.getNewLSHHash( "JAVA_MINHASH" );
+        hash.setObject(dataObjects[0].toByteArray(), n_blocks);
         LSHHashImpl.LSHHashBlock[] blocks = hash.getBlocks();
         LSHHashImpl.LSHHashBlock block = hash.getBlockAt(position);
         assertArrayEquals(blocks[position].lshBlock(), block.lshBlock());
@@ -104,8 +104,8 @@ class JavaMinHashTest {
     @Test
     void getBlockAt_AllBlocks() throws Exception{
         int n_blocks = 6;
-        LSHHash hash = lshHashFactory.getNewLSHHash( "JAVA_MINHASH", simulatedState );
-        hash.setObject(dataObjects[0], n_blocks);
+        LSHHash hash = lshHashFactory.getNewLSHHash( "JAVA_MINHASH" );
+        hash.setObject(dataObjects[0].toByteArray(), n_blocks);
         LSHHashImpl.LSHHashBlock[] blocks = hash.getBlocks();
         for (int i = 0; i<n_blocks; i++) {
             LSHHashImpl.LSHHashBlock block = hash.getBlockAt(i);

@@ -113,9 +113,8 @@ public class LocalLSHTests {
     }
 
     private void insert(DataObject object, MultiMap[] multiMaps ) throws Exception {
-        LSHHash hash = appContext.getLshHashFactory()
-                .getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
-        hash.setObject(object, multiMaps.length);
+        LSHHash hash = appContext.getLshHashFactory().getNewLSHHash();
+        hash.setObject(object.toByteArray(), multiMaps.length);
 
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
                 .getNewUniqueIdentifier("SHA256");
@@ -132,9 +131,8 @@ public class LocalLSHTests {
     }
 
     private List<MultiMap.MultiMapValue> query(DataObject queryObject, MultiMap[] multiMaps )throws Exception{
-        LSHHash hash = appContext.getLshHashFactory()
-                .getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
-        hash.setObject(queryObject, multiMaps.length);
+        LSHHash hash = appContext.getLshHashFactory().getNewLSHHash();
+        hash.setObject(queryObject.toByteArray(), multiMaps.length);
 
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
                 .getNewUniqueIdentifier("SHA256");

@@ -37,8 +37,8 @@ public class InsertWorkerTask implements WorkerTask {
         DataObject object = (DataObject) insertRequest.getBody();
 
         //PREPROCESS
-        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(hash_config, appContext);
-        object_hash.setObject(object, bands);
+        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash();
+        object_hash.setObject(object.toByteArray(), bands);
 
         ErasureCodes object_erasure_codes = appContext.getErasureCodesFactory()
                 .getNewErasureCodes( erasure_config, appContext );

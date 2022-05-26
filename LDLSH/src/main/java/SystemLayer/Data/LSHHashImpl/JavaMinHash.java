@@ -17,30 +17,11 @@ public class JavaMinHash extends LSHHashImpl{
 
     //constants
     public static final String ERROR = "ERROR";
-    public static final String VECTOR_DIMENSIONS = "VECTOR_DIMENSIONS";
     public static final String LSH_SEED = "LSH_SEED";
 
     private static MinHash minHash = null;
 
-    /**
-     * Prepares the MinHash encoder
-     * @param error minhash required error
-     * @param vector_dimensions expected vector dimensions
-     * @param seed RNG seed
-     */
-    public static void setupMinHash(
-            double error,
-            int vector_dimensions,
-            long seed
-    ) { //l-n+1
-        minHash = new MinHash(error, vector_dimensions, seed);
-    }
-
-    /**
-     * Checks if the MinHash encode has been set
-     * @return true if its already set or false if not
-     */
-    public static boolean isSet(){
+    protected static boolean isSetup(){
         return minHash != null;
     }
 
@@ -52,24 +33,27 @@ public class JavaMinHash extends LSHHashImpl{
         return minHash;
     }
 
-    /** Objects **/
-    //Constructors
+    // Objects context
+    // Object Constructor
     public JavaMinHash(DataContainer dataContainer){
         super(dataContainer);
     }
 
     public JavaMinHash(DataObject object, int n_blocks, DataContainer dataContainer){
         super(dataContainer);
-        setObject(object, n_blocks);
+        setObject(object.toByteArray(), n_blocks);
     }
 
     @Override
-    public void setObject( DataObject object, int n_blocks ){
-       this.data = getSignature( object.toByteArray() );
+    public void setObject( byte[] object, int n_blocks ){
+        if ( !isSetup() )
+            setupMinHash(object.length, appContext);
+
+       this.data = getSignature( object );
        this.blocks = createBlocks(this.data, n_blocks);
     }
 
-    /** Auxiliary **/
+    // Auxiliary methods
     /**
      * Transforms a byte array into a set of integers (required to calculate signatures)
      * @param bytes Array required
@@ -113,6 +97,43 @@ public class JavaMinHash extends LSHHashImpl{
             System.out.println("ERROR: "+ e.getMessage());
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * Prepares the MinHash encoder
+     * @param appContext context containing the configurations
+     */
+    protected void setupMinHash( int vector_dimensions, DataContainer appContext ){ //l-n+1
+        try {
+
+            if (appContext == null) {
+                throw new Exception("No DataContainer was provided");
+            }
+
+            Configurator configurator = appContext.getConfigurator();
+
+            //Get Accuracy
+            String accuracy_string = configurator.getConfig(JavaMinHash.ERROR);
+            double accuracy_error;
+            if (accuracy_string.isBlank())
+                throw new Exception("JavaMinHash requires ERROR configuration");
+            else
+                accuracy_error = Double.parseDouble(accuracy_string);
+
+            //Get Seed
+            String seed_string = configurator.getConfig(LSH_SEED);
+            long seed;
+            if (seed_string.isBlank())
+                throw new Exception("JavaMinHash requires " + LSH_SEED + " configuration");
+            seed = Long.parseLong(seed_string);
+
+            //Setup
+            minHash = new MinHash(accuracy_error, vector_dimensions, seed);
+        } catch (Exception e){
+            System.out.println( e.getMessage() );
+            e.printStackTrace();
+            minHash = null;
         }
     }
 }

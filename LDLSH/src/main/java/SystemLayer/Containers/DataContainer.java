@@ -50,7 +50,7 @@ public class DataContainer {
     //Creates LSHHash objects
     public LSHHashFactory getLshHashFactory(){
         if(lshHashFactory == null)
-            lshHashFactory = new LSHHashFactory();
+            lshHashFactory = new LSHHashFactory(this);
         return lshHashFactory;
     }
 

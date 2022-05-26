@@ -19,11 +19,6 @@ public abstract class UniqueIdentifierImpl implements UniqueIdentifier {
     }
 
     @Override
-    public void setObject( DataObject object ){
-        setObject(object.toByteArray());
-    }
-
-    @Override
     public byte[] getUID() {
         return data;
     }

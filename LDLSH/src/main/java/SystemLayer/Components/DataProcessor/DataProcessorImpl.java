@@ -12,7 +12,7 @@ public abstract class DataProcessorImpl implements DataProcessor {
     }
 
     @Override
-    public ProcessedData preProcessData(DataObject object){ return null; }
+    public ProcessedData preProcessData(DataObject object) throws Exception { return null; }
 
     @Override
     public DataObject postProcess(){ return null; }

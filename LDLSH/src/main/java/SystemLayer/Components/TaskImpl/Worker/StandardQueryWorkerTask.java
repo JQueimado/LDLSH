@@ -40,8 +40,8 @@ public class StandardQueryWorkerTask implements WorkerTask {
         //Preprocess
         DataObject queryObject = (DataObject) queryRequest.getBody();
 
-        LSHHash query_hash = appContext.getLshHashFactory().getNewLSHHash(hash_config, appContext);
-        query_hash.setObject(queryObject, bands);
+        LSHHash query_hash = appContext.getLshHashFactory().getNewLSHHash();
+        query_hash.setObject(queryObject.toByteArray(), bands);
 
         MultiMap[] multiMaps = appContext.getMultiMaps();
         List<MultiMap.MultiMapValue> results = new ArrayList<>();

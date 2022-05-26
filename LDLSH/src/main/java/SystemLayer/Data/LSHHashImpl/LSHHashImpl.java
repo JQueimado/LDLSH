@@ -1,7 +1,6 @@
 package SystemLayer.Data.LSHHashImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.DataObjectsImpl.DataObject;
 
 import java.util.Arrays;
 
@@ -20,7 +19,7 @@ public abstract class LSHHashImpl implements LSHHash{
     }
 
     @Override
-    public void setObject(DataObject object, int n_blocks) {}
+    public void setObject(byte[] object, int n_blocks) {}
 
     @Override
     public byte[] getSignature() {
@@ -42,7 +41,7 @@ public abstract class LSHHashImpl implements LSHHash{
         return Arrays.compare(this.getSignature(), o.getSignature());
     }
 
-    /** Auxiliary **/
+    // Auxiliary
     /**
      * Divides a given signature int a set of signature blocks
      * @param signature given signature
@@ -88,7 +87,7 @@ public abstract class LSHHashImpl implements LSHHash{
         return blockArray;
     }
 
-    /** Subclasses **/
+    // Subclasses
     /**
      * Representation of a signature block
      * @param lshBlock signature block's data
