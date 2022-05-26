@@ -62,7 +62,7 @@ public class StandardQueryWorkerTask implements WorkerTask {
             ErasureCodes erasureCodes = objectMapping.get( multiMapValue.uniqueIdentifier() );
             if( erasureCodes == null ){
                 ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory()
-                        .getNewErasureCodes(erasure_config, appContext);
+                        .getNewErasureCodes(erasure_config);
                 temp_erasure_codes.addBlockAt( multiMapValue.ErasureCode() );
                 objectMapping.put( multiMapValue.uniqueIdentifier(), temp_erasure_codes );
                 hashMapping.put( multiMapValue.uniqueIdentifier(), multiMapValue.lshHash() );

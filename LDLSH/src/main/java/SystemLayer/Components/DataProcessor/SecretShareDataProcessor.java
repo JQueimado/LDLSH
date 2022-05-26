@@ -27,7 +27,6 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
     private String iv_seed;
     private byte[] iv;
 
-
     /**
      * Standard Constructor
      * @param appContext application state

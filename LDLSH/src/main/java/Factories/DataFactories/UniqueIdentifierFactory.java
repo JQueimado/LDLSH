@@ -7,7 +7,7 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 public class UniqueIdentifierFactory implements Factory {
 
-    private final String config_name = "UNIQUE_IDENTIFIER";
+    public static final String config_name = "UNIQUE_IDENTIFIER";
 
     public enum configurations {NONE,SHA256}
     private DataContainer appContext;

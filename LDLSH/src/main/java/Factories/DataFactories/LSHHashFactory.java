@@ -21,12 +21,12 @@ public class LSHHashFactory extends FactoryImpl {
         super(appContext);
     }
 
-    public LSHHash getNewLSHHash() throws Exception {
+    public LSHHash getNewLSHHash() {
         String config = appContext.getConfigurator().getConfig(config_name);
         return getNewLSHHash( config );
     }
 
-    public LSHHash getNewLSHHash(String config_name) throws Exception {
+    public LSHHash getNewLSHHash(String config_name) {
 
         configurations config = configurations.valueOf(config_name);
 

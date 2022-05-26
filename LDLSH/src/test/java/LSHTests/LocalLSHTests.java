@@ -121,7 +121,7 @@ public class LocalLSHTests {
         uid.setObject(object.toByteArray());
 
         ErasureCodes erasureCodes = appContext.getErasureCodesFactory()
-                .getNewErasureCodes("SIMPLE_PARTITION", appContext);
+                .getNewErasureCodes("SIMPLE_PARTITION");
         erasureCodes.encodeDataObject(object.toByteArray(), multiMaps.length);
 
         //Insert

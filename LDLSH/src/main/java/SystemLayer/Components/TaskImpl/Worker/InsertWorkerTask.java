@@ -41,7 +41,7 @@ public class InsertWorkerTask implements WorkerTask {
         object_hash.setObject(object.toByteArray(), bands);
 
         ErasureCodes object_erasure_codes = appContext.getErasureCodesFactory()
-                .getNewErasureCodes( erasure_config, appContext );
+                .getNewErasureCodes( erasure_config );
         object_erasure_codes.encodeDataObject(object.toByteArray(),bands);
 
         UniqueIdentifier object_unique_identifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier(uid_config);

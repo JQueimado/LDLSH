@@ -56,7 +56,7 @@ public class DataContainer {
 
     public ErasureCodesFactory getErasureCodesFactory(){
         if (erasureCodesFactory == null)
-            erasureCodesFactory = new ErasureCodesFactory();
+            erasureCodesFactory = new ErasureCodesFactory(this);
         return erasureCodesFactory;
     }
 

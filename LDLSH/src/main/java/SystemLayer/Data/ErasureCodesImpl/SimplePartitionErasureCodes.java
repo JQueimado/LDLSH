@@ -11,7 +11,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
 
     private static final String total_blocks = "N_BANDS";
 
-    public SimplePartitionErasureCodes(DataContainer context) throws Exception {
+    public SimplePartitionErasureCodes(DataContainer context) {
         super( Integer.parseInt( context.getConfigurator().getConfig(total_blocks)), context);
     }
 
