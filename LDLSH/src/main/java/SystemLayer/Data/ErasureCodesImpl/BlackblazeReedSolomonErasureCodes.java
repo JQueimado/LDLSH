@@ -1,11 +1,11 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodesLib.*;
-import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
+
+    //Cada erasure code block contem um bloco de chave e um blocco de dados
 
     //Encoders
     private static int n; //Total blocks
@@ -45,8 +45,8 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
     boolean[] isPresent;
     int block_size;
 
-    public BlackblazeReedSolomonErasureCodes(DataContainer appContext){
-        super(appContext, n);
+    public BlackblazeReedSolomonErasureCodes( DataContainer appContext){
+        super(n, appContext);
         block_size = -1;
 
         isPresent = new boolean[n];
@@ -56,9 +56,8 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
     }
 
     @Override
-    public void encodeDataObject(DataObject dataObject, int n_blocks) {
-        byte[] data = dataObject.toByteArray();
-        byte[][] shards = byteArrayToShards(data);
+    public void encodeDataObject(byte[] object, int n_blocks) {
+        byte[][] shards = byteArrayToShards(object);
         encoder.encodeParity(shards, 0, shards[0].length);
 
         //Blocks
@@ -74,7 +73,7 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
     }
 
     @Override
-    public DataObject decodeDataObject(DataObject object, UniqueIdentifier validation_identifier)
+    public byte[] decodeDataObject()
             throws IncompleteBlockException, CorruptBlockException {
 
         if( number_of_blocks < n-t ){
@@ -96,9 +95,7 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
         encoder.decodeMissing(matrix,isPresent,0,block_size);
 
         int data_size = k*block_size;
-        byte[] data = shardsToByteArray(matrix, data_size);
-        object.setByteArray(data);
-        return super.decodeDataObject(object, validation_identifier);
+        return shardsToByteArray(matrix, data_size);
     }
 
     @Override
