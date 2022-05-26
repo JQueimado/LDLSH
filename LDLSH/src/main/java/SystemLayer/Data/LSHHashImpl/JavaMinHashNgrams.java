@@ -8,6 +8,8 @@ import java.util.Set;
 
 public class JavaMinHashNgrams extends JavaMinHash{
 
+    private static final String ngrams_config = "NGRAMS_LEVEL";
+
     public static void setupMinHash(
             double error,
             int vector_dimensions,
