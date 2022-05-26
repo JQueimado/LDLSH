@@ -8,10 +8,10 @@ import java.io.Serializable;
 public interface ErasureCodes extends Serializable, Comparable<ErasureCodes> {
     /**
      * Encodes a given data object
-     * @param dataObject object subject to encoding
+     * @param data object subject to encoding
      * @param n_blocks total number of data objects
      */
-    void encodeDataObject( DataObject dataObject, int n_blocks );
+    void encodeDataObject( byte[] data, int n_blocks );
 
     /**
      * Decodes the stored erasure codes into a given data object.
@@ -22,7 +22,7 @@ public interface ErasureCodes extends Serializable, Comparable<ErasureCodes> {
      * sufficient to generate the data object.
      * @throws ErasureCodesImpl.CorruptBlockException thrown when the validation process fails.
      */
-    DataObject decodeDataObject(DataObject object, UniqueIdentifier validation_identifier)
+    byte[] decodeDataObject()
             throws ErasureCodesImpl.IncompleteBlockException, ErasureCodesImpl.CorruptBlockException;
 
     /**

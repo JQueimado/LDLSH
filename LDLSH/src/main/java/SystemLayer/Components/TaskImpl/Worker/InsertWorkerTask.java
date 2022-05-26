@@ -42,10 +42,10 @@ public class InsertWorkerTask implements WorkerTask {
 
         ErasureCodes object_erasure_codes = appContext.getErasureCodesFactory()
                 .getNewErasureCodes( erasure_config, appContext );
-        object_erasure_codes.encodeDataObject(object,bands);
+        object_erasure_codes.encodeDataObject(object.toByteArray(),bands);
 
         UniqueIdentifier object_unique_identifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier(uid_config);
-        object_unique_identifier.setObject(object);
+        object_unique_identifier.setObject(object.toByteArray());
 
         //Package and Insert
         try {

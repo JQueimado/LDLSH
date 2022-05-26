@@ -10,7 +10,7 @@ public class Sha256UniqueIdentifier extends UniqueIdentifierImpl{
 
     public Sha256UniqueIdentifier(DataContainer appContext, DataObject object ){
         super(appContext);
-        setObject(object);
+        setObject(object.toByteArray());
     }
 
     public Sha256UniqueIdentifier(DataContainer appContext){
@@ -18,7 +18,7 @@ public class Sha256UniqueIdentifier extends UniqueIdentifierImpl{
     }
 
     @Override
-    public void setObject(DataObject dataObject) {
-        this.data = Hashing.sha256().hashBytes(dataObject.toByteArray()).asBytes();
+    public void setObject(byte[] object) {
+        this.data = Hashing.sha256().hashBytes(object).asBytes();
     }
 }

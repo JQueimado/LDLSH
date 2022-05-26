@@ -1,7 +1,6 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 import java.util.Arrays;
@@ -18,7 +17,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
      * @param appContext application context
      * @param total_blocks total number of erasure codes that can be stored
      */
-    public ErasureCodesImpl( DataContainer appContext, int total_blocks ){
+    public ErasureCodesImpl( int total_blocks, DataContainer appContext ){
         this.appContext = appContext;
         this.total_blocks = total_blocks;
         this.erasureBlocks = new ErasureBlock[total_blocks];
@@ -26,18 +25,11 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     }
 
     @Override
-    public void encodeDataObject(DataObject dataObject, int n_blocks) {
-
-    }
+    public void encodeDataObject(byte[] object, int n_blocks) {}
 
     @Override
-    public DataObject decodeDataObject(DataObject object, UniqueIdentifier validation_identifier)
-            throws IncompleteBlockException, CorruptBlockException
-    {
-        if( !validate(object, validation_identifier)  )
-            throw new CorruptBlockException();
-
-        return object;
+    public byte[] decodeDataObject() throws IncompleteBlockException, CorruptBlockException {
+        return new byte[0];
     }
 
     @Override
@@ -78,18 +70,18 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
 
     /**
      * Validates a data object face a given UID
-     * @param object object subject to validation
-     * @param validator uid of the original object (preferably cryptographic a uid)
-     * @return true if object is valid, false if object is not valid
+     * @param data object subject to validation
+     * @param validator_uid uid of the original object (preferably cryptographic a uid)
      */
-    private boolean validate( DataObject object, UniqueIdentifier validator ){
-        UniqueIdentifier temp = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier();
-        temp.setObject(object);
-        return temp.equals( validator );
+    protected void validate( byte[] data, UniqueIdentifier validator_uid ) throws CorruptBlockException {
+        //Validation
+        UniqueIdentifier data_uid = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier();
+        data_uid.setObject(data);
+        if ( !data_uid.equals(validator_uid) )
+            throw new CorruptBlockException();
     }
 
     //Subclasses
-
     /**
      * Object representing a single Erasure code
      * @param block_data erasure code's data

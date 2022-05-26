@@ -95,7 +95,7 @@ public class LocalLSHTests {
         //Preprocess assertion
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
                 .getNewUniqueIdentifier("SHA256");
-        uid.setObject(object);
+        uid.setObject(object.toByteArray());
 
         //Assertions (All multi-maps should return the same object)
         Assertions.assertEquals(multiMaps.length, results.size());
@@ -119,11 +119,11 @@ public class LocalLSHTests {
 
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
                 .getNewUniqueIdentifier("SHA256");
-        uid.setObject(object);
+        uid.setObject(object.toByteArray());
 
         ErasureCodes erasureCodes = appContext.getErasureCodesFactory()
                 .getNewErasureCodes("SIMPLE_PARTITION", appContext);
-        erasureCodes.encodeDataObject(object, multiMaps.length);
+        erasureCodes.encodeDataObject(object.toByteArray(), multiMaps.length);
 
         //Insert
         for (MultiMap map : multiMaps) {
@@ -138,7 +138,7 @@ public class LocalLSHTests {
 
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
                 .getNewUniqueIdentifier("SHA256");
-        uid.setObject(queryObject);
+        uid.setObject(queryObject.toByteArray());
 
         List<MultiMap.MultiMapValue> results = new ArrayList<>();
 

@@ -12,16 +12,15 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
     private static final String total_blocks = "N_BANDS";
 
     public SimplePartitionErasureCodes(DataContainer context) throws Exception {
-        super(context, Integer.parseInt( context.getConfigurator().getConfig(total_blocks) ));
+        super( Integer.parseInt( context.getConfigurator().getConfig(total_blocks)), context);
     }
 
     @Override
-    public void encodeDataObject(DataObject dataObject, int n_blocks) {
+    public void encodeDataObject(byte[] object, int n_blocks) {
         super.total_blocks = n_blocks;
         erasureBlocks = new ErasureBlock[n_blocks];
 
-        byte[] data = dataObject.toByteArray();
-        int block_length = data.length / n_blocks + 1;
+        int block_length = object.length / n_blocks + 1;
 
         /*
         byte[] current_block = new byte[block_length];
@@ -46,14 +45,14 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         int c = 0;
         for( int i = 0; i<n_blocks; i++ ){
             byte[] block;
-            if( data.length - c > block_length )
+            if( object.length - c > block_length )
                 block = new byte[block_length];
             else
-                block = new byte[ data.length -c ];
+                block = new byte[ object.length -c ];
             int bc = 0;
 
             while (bc<block.length){
-                block[bc] = data[c];
+                block[bc] = object[c];
                 c++;
                 bc++;
             }
@@ -76,7 +75,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
     }
 
     @Override
-    public DataObject decodeDataObject(DataObject object, UniqueIdentifier validation_identifier)
+    public byte[] decodeDataObject()
             throws IncompleteBlockException, CorruptBlockException {
 
         if(number_of_blocks < super.total_blocks)
@@ -93,8 +92,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
             data[i] = raw_data.get(i);
         }
 
-        object.setByteArray(data);
-        return super.decodeDataObject(object, validation_identifier);
+        return data;
     }
 
 }

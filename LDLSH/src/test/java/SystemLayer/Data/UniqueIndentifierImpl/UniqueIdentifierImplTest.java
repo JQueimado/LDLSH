@@ -29,8 +29,8 @@ class UniqueIdentifierImplTest {
         UniqueIdentifier uniqueIdentifier1 = new Sha256UniqueIdentifier(appContext);
         UniqueIdentifier uniqueIdentifier2 = new Sha256UniqueIdentifier(appContext);
 
-        uniqueIdentifier1.setObject(object1);
-        uniqueIdentifier2.setObject(object2);
+        uniqueIdentifier1.setObject(object1.toByteArray());
+        uniqueIdentifier2.setObject(object2.toByteArray());
 
         assertEquals(0, uniqueIdentifier1.compareTo(uniqueIdentifier2));
     }
@@ -40,8 +40,8 @@ class UniqueIdentifierImplTest {
         UniqueIdentifier uniqueIdentifier1 = new Sha256UniqueIdentifier(appContext);
         UniqueIdentifier uniqueIdentifier2 = new Sha256UniqueIdentifier(appContext);
 
-        uniqueIdentifier1.setObject(object1);
-        uniqueIdentifier2.setObject(object2);
+        uniqueIdentifier1.setObject(object1.toByteArray());
+        uniqueIdentifier2.setObject(object2.toByteArray());
 
         assertEquals(true, uniqueIdentifier1.equals(uniqueIdentifier2));
         assertEquals( uniqueIdentifier1, uniqueIdentifier2);
