@@ -37,4 +37,11 @@ public class StringDataObject implements DataObject<String>{
     public int compareTo( DataObject<String> o) {
         return this.getValues().compareTo(o.getValues());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if( obj.getClass() != StringDataObject.class )
+            return false;
+        return data.equals (((StringDataObject) obj).data);
+    }
 }

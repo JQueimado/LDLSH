@@ -1,28 +1,42 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
-import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.SystemExceptions.IncompleteBlockException;
 
 import java.io.Serializable;
 
 public interface ErasureCodes extends Serializable, Comparable<ErasureCodes> {
-    void encodeDataObject( DataObject dataObject, int n_blocks );
-    DataObject decodeDataObject(DataObject object) throws IncompleteBlockException;
+    /**
+     * Encodes a given data object
+     * @param data object subject to encoding
+     * @param n_blocks total number of data objects
+     */
+    void encodeDataObject( byte[] data, int n_blocks );
 
-    void addBlockAt( ErasureBlock erasureBlock );
+    /**
+     * Decodes the stored erasure codes into a given data object.
+     * @return object destination populated with the decoded data.
+     * @throws IncompleteBlockException thrown when the number of store erasure codes is not
+     * sufficient to generate the data object.
+     */
+    byte[] decodeDataObject()
+            throws IncompleteBlockException;
 
-    ErasureBlock[] getErasureBlocks();
-    ErasureBlock getBlockAt( int blocks );
+    /**
+     * Adds an Erasure block to its predefined position
+     * @param erasureBlock block to be added
+     */
+    void addBlockAt( ErasureCodesImpl.ErasureBlock erasureBlock );
 
-    record ErasureBlock( byte[] block_data, int position ){
-        /**/
-    }
+    /**
+     * Returns all stored blocks
+     * @return and Array containing all stored blocks in their respective positions
+     */
+    ErasureCodesImpl.ErasureBlock[] getErasureBlocks();
 
-    class IncompleteBlockException extends Exception{
-        public IncompleteBlockException( String message ){
-            super(message);
-        }
-        public IncompleteBlockException(){
-            super();
-        }
-    }
+    /**
+     * Returns a single block from a given position
+     * @param position the pretended block's position
+     * @return the pretended block
+     */
+    ErasureCodesImpl.ErasureBlock getBlockAt(int position );
 }

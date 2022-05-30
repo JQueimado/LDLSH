@@ -1,4 +1,4 @@
-package SystemLayer.Components.TaskImpl;
+package SystemLayer.Components.TaskImpl.Worker;
 
 import NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
@@ -8,9 +8,7 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
-import java.io.IOException;
-
-public class InsertTask implements Task{
+public class InsertWorkerTask implements WorkerTask {
 
     private final Message insertRequest;
 
@@ -21,7 +19,7 @@ public class InsertTask implements Task{
     private final String uid_config;
     private final int bands;
 
-    public InsertTask( Message insertRequest, DataContainer appContext ) throws Exception {
+    public InsertWorkerTask(Message insertRequest, DataContainer appContext ) throws Exception {
 
         if( insertRequest.getType() != Message.types.INSERT_REQUEST )
             throw new Exception("Invalid Message type for InsertTask");
@@ -35,18 +33,19 @@ public class InsertTask implements Task{
     }
 
     @Override
-    public DataObject call() {
+    public DataObject call() throws Exception {
         DataObject object = (DataObject) insertRequest.getBody();
 
         //PREPROCESS
-        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(hash_config, appContext);
-        object_hash.setObject(object, bands);
+        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash();
+        object_hash.setObject(object.toByteArray(), bands);
 
-        ErasureCodes object_erasure_codes = appContext.getErasureCodesFactory().getNewErasureCodes(erasure_config);
-        object_erasure_codes.encodeDataObject(object,bands);
+        ErasureCodes object_erasure_codes = appContext.getErasureCodesFactory()
+                .getNewErasureCodes( erasure_config );
+        object_erasure_codes.encodeDataObject(object.toByteArray(),bands);
 
         UniqueIdentifier object_unique_identifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier(uid_config);
-        object_unique_identifier.setObject(object);
+        object_unique_identifier.setObject(object.toByteArray());
 
         //Package and Insert
         try {

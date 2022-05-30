@@ -82,4 +82,5 @@ public class Configurator {
     public void setConfig( String config_name, String config_value ){
         config.setProperty(config_name, config_value);
     }
+
 }

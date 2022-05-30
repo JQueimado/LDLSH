@@ -84,7 +84,7 @@ public class LocalLSHTests {
     }
 
     @Test
-    public void InsertMapTest(){
+    public void InsertMapTest() throws Exception {
         // Insert object 0
         DataObject object = dataObjects[0];
         insert( object, multiMaps );
@@ -95,7 +95,7 @@ public class LocalLSHTests {
         //Preprocess assertion
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
                 .getNewUniqueIdentifier("SHA256");
-        uid.setObject(object);
+        uid.setObject(object.toByteArray());
 
         //Assertions (All multi-maps should return the same object)
         Assertions.assertEquals(multiMaps.length, results.size());
@@ -105,25 +105,24 @@ public class LocalLSHTests {
     }
 
     @Test
-    public void SimilarityTest(){
+    public void SimilarityTest() throws Exception {
         //Insert object 0
         insert(dataObjects[0], multiMaps);
         //Insert object 1
         insert(dataObjects[1], multiMaps );
     }
 
-    private void insert(DataObject object, MultiMap[] multiMaps ){
-        LSHHash hash = appContext.getLshHashFactory()
-                .getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
-        hash.setObject(object, multiMaps.length);
+    private void insert(DataObject object, MultiMap[] multiMaps ) throws Exception {
+        LSHHash hash = appContext.getLshHashFactory().getNewLSHHash();
+        hash.setObject(object.toByteArray(), multiMaps.length);
 
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
                 .getNewUniqueIdentifier("SHA256");
-        uid.setObject(object);
+        uid.setObject(object.toByteArray());
 
         ErasureCodes erasureCodes = appContext.getErasureCodesFactory()
                 .getNewErasureCodes("SIMPLE_PARTITION");
-        erasureCodes.encodeDataObject(object, multiMaps.length);
+        erasureCodes.encodeDataObject(object.toByteArray(), multiMaps.length);
 
         //Insert
         for (MultiMap map : multiMaps) {
@@ -131,14 +130,13 @@ public class LocalLSHTests {
         }
     }
 
-    private List<MultiMap.MultiMapValue> query(DataObject queryObject, MultiMap[] multiMaps ){
-        LSHHash hash = appContext.getLshHashFactory()
-                .getNewLSHHash( configurator.getConfig("LSH_HASH"), appContext );
-        hash.setObject(queryObject, multiMaps.length);
+    private List<MultiMap.MultiMapValue> query(DataObject queryObject, MultiMap[] multiMaps )throws Exception{
+        LSHHash hash = appContext.getLshHashFactory().getNewLSHHash();
+        hash.setObject(queryObject.toByteArray(), multiMaps.length);
 
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
                 .getNewUniqueIdentifier("SHA256");
-        uid.setObject(queryObject);
+        uid.setObject(queryObject.toByteArray());
 
         List<MultiMap.MultiMapValue> results = new ArrayList<>();
 

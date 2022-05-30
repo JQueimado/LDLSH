@@ -1,11 +1,11 @@
 package SystemLayer.Components.MultiMapImpl;
 
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
-import SystemLayer.Data.LSHHashImpl.LSHHash.LSHHashBlock;
+import SystemLayer.Data.LSHHashImpl.LSHHashImpl.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
-
-import static SystemLayer.Data.ErasureCodesImpl.ErasureCodes.*;
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.*;
 
 public interface MultiMap {
 
@@ -20,7 +20,7 @@ public interface MultiMap {
     );
 
     //Searches and Returns an ErasureBlock
-    ErasureBlock complete(
+    ErasureCodesImpl.ErasureBlock complete(
             LSHHash lshHash,
             UniqueIdentifier uniqueIdentifier
     );

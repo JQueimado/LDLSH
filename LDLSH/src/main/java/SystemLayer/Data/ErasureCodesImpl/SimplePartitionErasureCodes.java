@@ -1,38 +1,64 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
-import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Containers.DataContainer;
+import SystemLayer.SystemExceptions.IncompleteBlockException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class SimplePartitionErasureCodes implements ErasureCodes {
+public class SimplePartitionErasureCodes extends ErasureCodesImpl {
 
-    private List<ErasureBlock> erasureBlocks;
-    private int minimum_blocks;
+    public SimplePartitionErasureCodes(DataContainer context) {
+        super( context );
+    }
 
     @Override
-    public void encodeDataObject(DataObject dataObject, int n_blocks) {
-        minimum_blocks = n_blocks;
-        erasureBlocks = new ArrayList<>();
+    public void encodeDataObject(byte[] object, int n_blocks) {
+        super.total_blocks = n_blocks;
+        erasureBlocks = new ErasureBlock[n_blocks];
 
-        byte[] data = dataObject.toByteArray();
-        int block_length = data.length / n_blocks + 1;
+        int block_length = object.length / n_blocks + 1;
 
+        /*
         byte[] current_block = new byte[block_length];
         int c = 0;
         for ( int i = 0; i<data.length; i++ ){
             byte b = data[i];
             current_block[c] = b;
             c++;
+
             if( (c >= block_length) || (i == data.length-1) ){
-                ErasureBlock erasureBlock = new ErasureBlock(current_block, c);
+                ErasureBlock erasureBlock = new ErasureBlock(current_block, erasureBlocks.size());
                 current_block = new byte[block_length];
                 c = 0;
 
                 erasureBlocks.add( erasureBlock );
+            }else {
+
             }
         }
+        */
+
+        int c = 0;
+        for( int i = 0; i<n_blocks; i++ ){
+            byte[] block;
+            if( object.length - c > block_length )
+                block = new byte[block_length];
+            else
+                block = new byte[ object.length -c ];
+            int bc = 0;
+
+            while (bc<block.length){
+                block[bc] = object[c];
+                c++;
+                bc++;
+            }
+
+            ErasureBlock erasureBlock = new ErasureBlock( block, i );
+            erasureBlocks[i] = erasureBlock;
+        }
+
+        number_of_blocks = n_blocks;
 
         //DEBUG
         /*
@@ -46,9 +72,10 @@ public class SimplePartitionErasureCodes implements ErasureCodes {
     }
 
     @Override
-    public DataObject decodeDataObject(DataObject object) throws IncompleteBlockException {
+    public byte[] decodeDataObject()
+            throws IncompleteBlockException {
 
-        if(erasureBlocks.size() < minimum_blocks)
+        if(number_of_blocks < super.total_blocks)
             throw new IncompleteBlockException();
 
         List<Byte> raw_data = new ArrayList<>();
@@ -62,41 +89,7 @@ public class SimplePartitionErasureCodes implements ErasureCodes {
             data[i] = raw_data.get(i);
         }
 
-        object.setByteArray(data);
-        return object;
+        return data;
     }
 
-    @Override
-    public void addBlockAt(ErasureBlock erasureBlock) {
-        erasureBlocks.add( erasureBlock.position(), erasureBlock );
-    }
-
-    @Override
-    public ErasureBlock[] getErasureBlocks() {
-        return erasureBlocks.toArray(new ErasureBlock[erasureBlocks.size()]);
-    }
-
-    @Override
-    public ErasureBlock getBlockAt(int blocks) {
-        return erasureBlocks.get(blocks);
-    }
-
-    @Override
-    public int compareTo(ErasureCodes o) {
-        for ( int i = 0; i<erasureBlocks.size(); i++ ){
-            ErasureBlock A_block = erasureBlocks.get(i);
-            ErasureBlock B_block = o.getBlockAt(i);
-
-            if( A_block == null && B_block != null )
-                return -1;
-
-            if( B_block == null && A_block != null )
-                return -1;
-
-            int r = Arrays.compare(A_block.block_data(), B_block.block_data());
-            if( r != 0 )
-                return -1;
-        }
-        return 0;
-    }
 }
