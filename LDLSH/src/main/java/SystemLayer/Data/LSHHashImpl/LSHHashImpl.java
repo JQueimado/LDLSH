@@ -18,9 +18,11 @@ public abstract class LSHHashImpl implements LSHHash{
         this.appContext = appContext;
     }
 
+    //Abstract methods
     @Override
-    public void setObject(byte[] object, int n_blocks) {}
+    public abstract void setObject(byte[] object, int n_blocks);
 
+    //Standard Methods
     @Override
     public byte[] getSignature() {
         return data;
@@ -39,6 +41,12 @@ public abstract class LSHHashImpl implements LSHHash{
     @Override
     public int compareTo(LSHHash o) {
         return Arrays.compare(this.getSignature(), o.getSignature());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        LSHHashImpl temp = (LSHHashImpl) obj;
+        return this.compareTo(temp) == 0;
     }
 
     // Auxiliary

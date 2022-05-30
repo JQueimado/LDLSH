@@ -8,6 +8,7 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.IncompleteBlockException;
 
 import java.util.*;
 
@@ -81,7 +82,7 @@ public class StandardQueryWorkerTask implements WorkerTask {
                 temporaryObject.setByteArray(tempData);
                 potentialCandidates.add( temporaryObject );
 
-            } catch (ErasureCodesImpl.IncompleteBlockException ibe){
+            } catch (IncompleteBlockException ibe){
                 //If decode fails by an incomplete block error, runs completion TODO: OPTIMIZE COMPLETION
                 LSHHash objectHash = hashMapping.get( uid );
 

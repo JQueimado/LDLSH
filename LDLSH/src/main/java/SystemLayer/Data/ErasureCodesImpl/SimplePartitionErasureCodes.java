@@ -1,18 +1,15 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.DataObjectsImpl.DataObject;
-import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.IncompleteBlockException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SimplePartitionErasureCodes extends ErasureCodesImpl {
 
-    private static final String total_blocks = "N_BANDS";
-
     public SimplePartitionErasureCodes(DataContainer context) {
-        super( Integer.parseInt( context.getConfigurator().getConfig(total_blocks)), context);
+        super( context );
     }
 
     @Override
@@ -76,7 +73,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
 
     @Override
     public byte[] decodeDataObject()
-            throws IncompleteBlockException, CorruptBlockException {
+            throws IncompleteBlockException {
 
         if(number_of_blocks < super.total_blocks)
             throw new IncompleteBlockException();

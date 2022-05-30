@@ -1,14 +1,18 @@
 package SystemLayer.Containers;
 
+import Factories.ComponentFactories.DataProcessorFactory;
 import Factories.ComponentFactories.DistanceMeasurerFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
+import Factories.Factory;
 import Factories.MessageFactory;
+import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.Configurator.Configurator;
+import SystemLayer.SystemExceptions.UnknownConfigException;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +20,8 @@ import java.util.concurrent.ExecutorService;
 
 public class DataContainer {
 
-    private Configurator configurator = null;
+    //Static
+    private static final String nBands_config = "N_BANDS";
 
     //Factories
     private DataObjectFactory dataObjectFactory = null;
@@ -26,9 +31,14 @@ public class DataContainer {
     private MessageFactory messageFactory = null;
 
     //Components
+    private Configurator configurator = null;
     private MultiMap[] multiMaps;
     private ExecutorService executorService;
     private DistanceMeasurer distanceMeasurer = null;
+    private DataProcessor dataProcessor = null;
+
+    //Variables
+    private int numberOfBands = -1;
 
     //Constructor
     public DataContainer( String f_name ){
@@ -43,7 +53,7 @@ public class DataContainer {
     //Creates Data Objects
     public DataObjectFactory getDataObjectFactory(){
         if(dataObjectFactory == null)
-            dataObjectFactory = new DataObjectFactory();
+            dataObjectFactory = new DataObjectFactory(this);
         return dataObjectFactory;
     }
 
@@ -101,4 +111,25 @@ public class DataContainer {
         return distanceMeasurer;
     }
 
+    //DataProcessor
+    public DataProcessor getDataProcessor(){
+        if( dataProcessor == null ){
+            try {
+                DataProcessorFactory dataProcessorFactory = new DataProcessorFactory(this);
+                dataProcessor = dataProcessorFactory.getNewDataProcessor();
+            }catch (UnknownConfigException uce){
+                UnknownConfigException.handler(uce);
+            }
+        }
+        return dataProcessor;
+    }
+
+    //Variables
+    //Number of multi maps
+    public int getNumberOfBands() {
+        if( numberOfBands < 0 ) {
+            numberOfBands = Integer.parseInt(configurator.getConfig(nBands_config));
+        }
+        return numberOfBands;
+    }
 }

@@ -1,7 +1,6 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
-import SystemLayer.Data.DataObjectsImpl.DataObject;
-import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.IncompleteBlockException;
 
 import java.io.Serializable;
 
@@ -16,12 +15,11 @@ public interface ErasureCodes extends Serializable, Comparable<ErasureCodes> {
     /**
      * Decodes the stored erasure codes into a given data object.
      * @return object destination populated with the decoded data.
-     * @throws ErasureCodesImpl.IncompleteBlockException thrown when the number of store erasure codes is not
+     * @throws IncompleteBlockException thrown when the number of store erasure codes is not
      * sufficient to generate the data object.
-     * @throws ErasureCodesImpl.CorruptBlockException thrown when the validation process fails.
      */
     byte[] decodeDataObject()
-            throws ErasureCodesImpl.IncompleteBlockException, ErasureCodesImpl.CorruptBlockException;
+            throws IncompleteBlockException;
 
     /**
      * Adds an Erasure block to its predefined position

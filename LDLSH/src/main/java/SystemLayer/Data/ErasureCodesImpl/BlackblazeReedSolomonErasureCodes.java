@@ -2,6 +2,7 @@ package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodesLib.*;
+import SystemLayer.SystemExceptions.IncompleteBlockException;
 
 public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
@@ -46,7 +47,7 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
     int block_size;
 
     public BlackblazeReedSolomonErasureCodes( DataContainer appContext){
-        super(n, appContext);
+        super( appContext );
         block_size = -1;
 
         isPresent = new boolean[n];
@@ -74,7 +75,7 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
     @Override
     public byte[] decodeDataObject()
-            throws IncompleteBlockException, CorruptBlockException {
+            throws IncompleteBlockException {
 
         if( number_of_blocks < n-t ){
             throw new IncompleteBlockException();

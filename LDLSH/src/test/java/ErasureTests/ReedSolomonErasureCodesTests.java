@@ -5,6 +5,7 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.*;
+import SystemLayer.SystemExceptions.CorruptDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -205,7 +206,7 @@ public class ReedSolomonErasureCodesTests {
         codes1.addBlockAt(random_block); //Inject corrupt code
 
         DataObject<String> object2 = new StringDataObject();
-        assertThrows(ErasureCodesImpl.CorruptBlockException.class, () ->{
+        assertThrows(CorruptDataException.class, () ->{
             byte[] tempData = codes1.decodeDataObject();
             object2.setByteArray(tempData);
         });

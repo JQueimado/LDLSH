@@ -1,7 +1,7 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.IncompleteBlockException;
 
 import java.util.Arrays;
 
@@ -15,23 +15,22 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     /**
      * Erasure codes super constructor
      * @param appContext application context
-     * @param total_blocks total number of erasure codes that can be stored
      */
-    public ErasureCodesImpl( int total_blocks, DataContainer appContext ){
+    public ErasureCodesImpl( DataContainer appContext ){
         this.appContext = appContext;
-        this.total_blocks = total_blocks;
+        this.total_blocks = appContext.getNumberOfBands();
         this.erasureBlocks = new ErasureBlock[total_blocks];
         this.number_of_blocks = 0;
     }
 
+    //Abstract methods
     @Override
-    public void encodeDataObject(byte[] object, int n_blocks) {}
+    public abstract void encodeDataObject(byte[] object, int n_blocks);
 
     @Override
-    public byte[] decodeDataObject() throws IncompleteBlockException, CorruptBlockException {
-        return new byte[0];
-    }
+    public abstract byte[] decodeDataObject() throws IncompleteBlockException;
 
+    //Standard methods
     @Override
     public void addBlockAt(ErasureBlock erasureBlock) {
         if( erasureBlocks[erasureBlock.position()] == null )
@@ -50,7 +49,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     }
 
     @Override
-    public int compareTo(ErasureCodes o) {
+    public int compareTo( ErasureCodes o) {
         for ( int i = 0; i<erasureBlocks.length; i++ ){
             ErasureBlock A_block = erasureBlocks[i];
             ErasureBlock B_block = o.getBlockAt(i);
@@ -61,24 +60,16 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
             if( B_block == null && A_block != null )
                 return -1;
 
-            int r = Arrays.compare(A_block.block_data(), B_block.block_data());
-            if( r != 0 )
+            if( !A_block.equals(B_block))
                 return -1;
         }
         return 0;
     }
 
-    /**
-     * Validates a data object face a given UID
-     * @param data object subject to validation
-     * @param validator_uid uid of the original object (preferably cryptographic a uid)
-     */
-    protected void validate( byte[] data, UniqueIdentifier validator_uid ) throws CorruptBlockException {
-        //Validation
-        UniqueIdentifier data_uid = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier();
-        data_uid.setObject(data);
-        if ( !data_uid.equals(validator_uid) )
-            throw new CorruptBlockException();
+    @Override
+    public boolean equals(Object obj) {
+        ErasureCodesImpl temp = (ErasureCodesImpl) obj;
+        return this.compareTo(temp) == 0;
     }
 
     //Subclasses
@@ -103,23 +94,4 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
         }
     }
 
-    /**IncompleteBlockException**/
-    public static class IncompleteBlockException extends Exception{
-        public IncompleteBlockException( String message ){
-            super(message);
-        }
-        public IncompleteBlockException(){
-            super();
-        }
-    }
-
-    /**CorruptBlockException**/
-    public static class CorruptBlockException extends Exception{
-        public CorruptBlockException( String message ){
-            super(message);
-        }
-        public CorruptBlockException(){
-            super();
-        }
-    }
 }

@@ -8,6 +8,7 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.CorruptDataException;
 
 public class StandardDataProcessor extends DataProcessorImpl{
 
@@ -23,8 +24,8 @@ public class StandardDataProcessor extends DataProcessorImpl{
     }
 
     @Override
-    public ProcessedData preProcessData(DataObject object) throws Exception {
-        int numberOfBlocks = appContext.getMultiMaps().length;
+    public ProcessedData preProcessData(DataObject object){
+        int numberOfBlocks = appContext.getNumberOfBands();
 
         //LSH hash
         LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(LSH_config); //Gets based on config file
@@ -43,7 +44,16 @@ public class StandardDataProcessor extends DataProcessorImpl{
     }
 
     @Override
-    public DataObject postProcess(){
-        return null;
+    public DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier ) throws Exception {
+        DataObject dataObject = appContext.getDataObjectFactory().getNewDataObject();
+        dataObject.setByteArray( erasureCodes.decodeDataObject() );
+
+        if( !validate( dataObject.toByteArray(), uniqueIdentifier ) )
+            throw new CorruptDataException(
+                    "An error occurred while reconstructing the data object",
+                    erasureCodes,
+                    uniqueIdentifier);
+
+        return dataObject;
     }
 }

@@ -5,6 +5,7 @@ import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DataProcessor.SecretShareDataProcessor;
 import SystemLayer.Components.DataProcessor.StandardDataProcessor;
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.SystemExceptions.UnknownConfigException;
 
 public class DataProcessorFactory extends FactoryImpl {
 
@@ -23,7 +24,7 @@ public class DataProcessorFactory extends FactoryImpl {
      * Returns a new instance of a DataProcessor object based on the context configuration
      * @return Instance of DataProcessor, null if no configuration is not present
      */
-    public DataProcessor getNewDataProcessor(){
+    public DataProcessor getNewDataProcessor() throws UnknownConfigException {
         String configuration = appContext.getConfigurator().getConfig(config_name);
         return getNewDataProcessor(configuration);
     }
@@ -33,22 +34,23 @@ public class DataProcessorFactory extends FactoryImpl {
      * @param configuration Object configuration type
      * @return Instance of DataProcessor configured based on the input, null if no configuration is not present
      */
-    public DataProcessor getNewDataProcessor( String configuration ){
-        configs config = configs.valueOf(configuration);
-        switch (config){
+    public DataProcessor getNewDataProcessor( String configuration ) throws UnknownConfigException {
+        try {
+            configs config = configs.valueOf(configuration);
+            switch (config) {
 
-            case STANDARD -> {
-                return new StandardDataProcessor(appContext);
-            }
+                case STANDARD -> {
+                    return new StandardDataProcessor(appContext);
+                }
 
-            case SECRETE_SHARE -> {
-                return new SecretShareDataProcessor(appContext);
+                case SECRETE_SHARE -> {
+                    return new SecretShareDataProcessor(appContext);
+                }
             }
-
-            default -> {
-                return null;
-            }
+        }catch (IllegalArgumentException iae){
+            throw new UnknownConfigException(config_name, configuration);
         }
+        return null;
     }
 
 }

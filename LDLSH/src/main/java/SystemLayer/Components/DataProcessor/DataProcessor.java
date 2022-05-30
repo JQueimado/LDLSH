@@ -7,7 +7,7 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 public interface DataProcessor {
     ProcessedData preProcessData(DataObject object) throws Exception;
-    DataObject postProcess();
+    DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier ) throws Exception ;
 
     record ProcessedData(
             DataObject object,
@@ -15,4 +15,5 @@ public interface DataProcessor {
             UniqueIdentifier object_uid,
             ErasureCodes object_erasureCodes
     ){}
+
 }
