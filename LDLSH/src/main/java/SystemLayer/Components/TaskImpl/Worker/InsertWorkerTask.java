@@ -1,6 +1,7 @@
 package SystemLayer.Components.TaskImpl.Worker;
 
 import NetworkLayer.Message;
+import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
@@ -37,21 +38,17 @@ public class InsertWorkerTask implements WorkerTask {
         DataObject object = (DataObject) insertRequest.getBody();
 
         //PREPROCESS
-        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash();
-        object_hash.setObject(object.toByteArray(), bands);
-
-        ErasureCodes object_erasure_codes = appContext.getErasureCodesFactory()
-                .getNewErasureCodes( erasure_config );
-        object_erasure_codes.encodeDataObject(object.toByteArray(),bands);
-
-        UniqueIdentifier object_unique_identifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier(uid_config);
-        object_unique_identifier.setObject(object.toByteArray());
+        DataProcessor.ProcessedData processedData = appContext.getDataProcessor().preProcessData(object);
 
         //Package and Insert
         try {
             MultiMap[] multiMaps = appContext.getMultiMaps();
             for ( MultiMap multiMap : multiMaps ){
-                multiMap.insert(object_hash, object_unique_identifier, object_erasure_codes);
+                multiMap.insert(
+                        processedData.object_lsh(),
+                        processedData.object_uid(),
+                        processedData.object_erasureCodes()
+                );
             }
         } catch (Exception e) {
             e.printStackTrace();

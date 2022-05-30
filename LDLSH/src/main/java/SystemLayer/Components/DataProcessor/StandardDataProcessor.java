@@ -28,8 +28,7 @@ public class StandardDataProcessor extends DataProcessorImpl{
         int numberOfBlocks = appContext.getNumberOfBands();
 
         //LSH hash
-        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(LSH_config); //Gets based on config file
-        object_hash.setObject(object.toByteArray(),numberOfBlocks);
+        LSHHash object_hash = preprocessLSH(object);
 
         //Erasure codes
         ErasureCodes object_erasureCodes = appContext.getErasureCodesFactory().getNewErasureCodes(Erasure_config);
@@ -55,5 +54,12 @@ public class StandardDataProcessor extends DataProcessorImpl{
                     uniqueIdentifier);
 
         return dataObject;
+    }
+
+    @Override
+    public LSHHash preprocessLSH(DataObject object){
+        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(LSH_config); //Gets based on config file
+        object_hash.setObject(object.toByteArray(),appContext.getNumberOfBands());
+        return object_hash;
     }
 }

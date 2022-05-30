@@ -75,8 +75,7 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
         int n_bands = appContext.getNumberOfBands();
 
         //LSH
-        LSHHash lshHash = appContext.getLshHashFactory().getNewLSHHash(); //Creates LSH value using the raw object
-        lshHash.setObject( object.toByteArray(), n_bands );
+        LSHHash lshHash = preprocessLSH(object);
 
         //Secrete Share build
         SecretKey key = createAESKey(); //Creates a random key object
@@ -125,6 +124,13 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
         object.setByteArray(data);
 
         return object;
+    }
+
+    @Override
+    public LSHHash preprocessLSH(DataObject object) {
+        LSHHash temp = appContext.getLshHashFactory().getNewLSHHash();
+        temp.setObject(object.toByteArray(), appContext.getNumberOfBands());
+        return temp;
     }
 
     //Auxiliary methods

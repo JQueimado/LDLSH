@@ -9,11 +9,12 @@ public interface DataProcessor {
     ProcessedData preProcessData(DataObject object) throws Exception;
     DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier ) throws Exception ;
 
+    LSHHash preprocessLSH( DataObject object ); //Used for querying
+
     record ProcessedData(
             DataObject object,
             LSHHash object_lsh,
             UniqueIdentifier object_uid,
             ErasureCodes object_erasureCodes
     ){}
-
 }

@@ -40,9 +40,7 @@ public class StandardQueryWorkerTask implements WorkerTask {
     public DataObject call() throws Exception {
         //Preprocess
         DataObject queryObject = (DataObject) queryRequest.getBody();
-
-        LSHHash query_hash = appContext.getLshHashFactory().getNewLSHHash();
-        query_hash.setObject(queryObject.toByteArray(), bands);
+        LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
         MultiMap[] multiMaps = appContext.getMultiMaps();
         List<MultiMap.MultiMapValue> results = new ArrayList<>();
@@ -74,12 +72,11 @@ public class StandardQueryWorkerTask implements WorkerTask {
         List<DataObject> potentialCandidates = new ArrayList<>();
         for( UniqueIdentifier uid : objectMapping.keySet() ){
             ErasureCodes codes = objectMapping.get(uid);
-            DataObject temporaryObject = appContext.getDataObjectFactory().getNewDataObject(dataObject_config);
 
-            //Attempt ar decoding
+            //Attempt at decoding
+            DataObject temporaryObject = null;
             try{
-                byte[] tempData = codes.decodeDataObject();
-                temporaryObject.setByteArray(tempData);
+                temporaryObject = appContext.getDataProcessor().postProcess(codes, uid);
                 potentialCandidates.add( temporaryObject );
 
             } catch (IncompleteBlockException ibe){
