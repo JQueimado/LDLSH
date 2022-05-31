@@ -5,6 +5,7 @@ import Factories.FactoryImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
+import SystemLayer.SystemExceptions.UnknownConfigException;
 
 public class DataObjectFactory extends FactoryImpl {
 
@@ -21,27 +22,35 @@ public class DataObjectFactory extends FactoryImpl {
      * @return new DataObject
      */
     public DataObject getNewDataObject(){
-        return getNewDataObject( appContext.getConfigurator().getConfig(config_name) );
+        try {
+            return getNewDataObject(appContext.getConfigurator().getConfig(config_name));
+        }catch (UnknownConfigException e){
+            UnknownConfigException.handler(e);
+            return null;
+        }
     }
 
     /**
      * Returns a new DataObject based ona a given configuration
-     * @param config_name object's configuration
+     * @param config_setting object's configuration
      * @return new DataObject
      */
-    public DataObject getNewDataObject(String config_name){
+    public DataObject getNewDataObject(String config_setting) throws UnknownConfigException {
+        try {
+            configurations config = configurations.valueOf(config_setting);
 
-        configurations config = configurations.valueOf(config_name);
+            switch (config) {
 
-        switch (config){
+                case STRING -> {
+                    return new StringDataObject();
+                }
 
-            case STRING -> {
-                return new StringDataObject();
+                default -> {
+                    return null;
+                }
             }
-
-            default ->{
-                return null;
-            }
+        }catch (IllegalArgumentException e){
+            throw new UnknownConfigException(config_name, config_setting);
         }
     }
 }

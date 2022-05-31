@@ -30,7 +30,7 @@ public class LocalLSHTests {
     MultiMap[] multiMaps;
 
     @BeforeEach
-    public void before() throws IOException {
+    public void before() throws Exception {
         appContext = new DataContainer("");
         configurator = appContext.getConfigurator();
 

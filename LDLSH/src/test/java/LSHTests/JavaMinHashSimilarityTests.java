@@ -4,22 +4,22 @@ import Factories.DataFactories.DataObjectFactory;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import info.debatty.java.lsh.MinHash;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 public class JavaMinHashSimilarityTests {
 
     DataContainer simulatedState;
-    DataObject[] dataObjects;
+    DataObject<String>[] dataObjects;
 
     @BeforeEach
-    void simulateStateAndVectors() throws IOException {
+    void simulateStateAndVectors() throws Exception {
         //State
         simulatedState = new DataContainer("");
         Configurator configurator = simulatedState.getConfigurator();
@@ -30,28 +30,35 @@ public class JavaMinHashSimilarityTests {
         //Vectors
         String data_object_type = "STRING";
         DataObjectFactory dataObjectFactory = simulatedState.getDataObjectFactory();
-        dataObjects = new DataObject[5];
+        dataObjects = new StringDataObject[5];
 
-        dataObjects[0] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[0] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
         dataObjects[0].setValues("12345");
 
         //Jaccard Distance to 0: 0.2
-        dataObjects[1] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[1] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
         dataObjects[1].setValues("12355");
 
         //Jaccard Distance to 0: 0.0
-        dataObjects[2] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[2] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
         dataObjects[2].setValues("12345");
 
         //Jaccard Distance to 0: 0.8
-        dataObjects[3] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[3] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
         dataObjects[3].setValues("55555");
 
-        dataObjects[4] = dataObjectFactory.getNewDataObject( data_object_type );
+        dataObjects[4] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
         dataObjects[4].setValues("54321");
     }
 
-    void similarityTest(DataObject dataObject1, DataObject dataObject2, double expected_similarity ) throws Exception {
+    /**
+     * Evaluates the similarity between 2 data objects against an expected similarity
+     * This test only displays the values since LSH is a probabilistic algorithm and results are not accurate.
+     * @param dataObject1 data object 1
+     * @param dataObject2 data object 2
+     * @param expected_similarity hand calculated similarity
+     */
+    void similarityTest(DataObject<String> dataObject1, DataObject<String> dataObject2, double expected_similarity ){
         JavaMinHash hash = new JavaMinHash(dataObject1, 2, simulatedState);
         byte[] signature = hash.getSignature();
         int[] ints = toIntArray(signature);
@@ -80,27 +87,34 @@ public class JavaMinHashSimilarityTests {
         );
     }
 
+    //Similarity tests
     @Test
-    void getValuesSimilarity_01() throws Exception {
+    void getValuesSimilarity_01() {
         similarityTest(dataObjects[0], dataObjects[1], 0.8 );
     }
 
     @Test
-    void getValuesSimilarity_02() throws Exception {
+    void getValuesSimilarity_02() {
         similarityTest(dataObjects[0], dataObjects[2], 1);
     }
 
     @Test
-    void getValuesSimilarity_03() throws Exception {
+    void getValuesSimilarity_03() {
         similarityTest(dataObjects[0], dataObjects[3], 0.2);
     }
 
     @Test
-    void getValuesSimilarity_04() throws Exception {
+    void getValuesSimilarity_04() {
         similarityTest(dataObjects[0], dataObjects[4], 0.2);
     }
 
     //Auxiliary methods
+
+    /**
+     * transforms an array of bytes into an array of ints byte by byte
+     * @param array input array
+     * @return resulting array
+     */
     private int[] toIntArray( byte[] array ){
         int[] values = new int[array.length];
         int i;
@@ -112,6 +126,11 @@ public class JavaMinHashSimilarityTests {
         return values;
     }
 
+    /**
+     * Transforms an array of bytes into an set of Integers byte by byte;
+     * @param array input array
+     * @return resulting set
+     */
     private Set<Integer> toIntSet(byte[] array ){
         Set<Integer> set = new HashSet<>();
         int i;
