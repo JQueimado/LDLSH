@@ -27,17 +27,25 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
         byte[][] shards = new byte[n][shard_size];
 
         //Copy data to matrix
-        for ( int i=0; i<k; i++ )
-           System.arraycopy(data, i*shard_size, shards[i], 0, shard_size);
+        int c = 0;
+        for ( int i=0; i<shard_size; i++ ) {
+            for (int j = 0; j < k; j++) {
+                shards[j][i] = data[c];
+                c++;
+            }
+        }
 
         return shards;
     }
 
     public static byte[] shardsToByteArray( byte[][] shards, int data_size ){
         byte[] data = new byte[data_size];
-        for(int y = 0; y< k; y++){
-            int block_size = shards[y].length;
-            System.arraycopy(shards[y], 0, data, y*block_size, block_size);
+        int c = 0;
+        for (int i=0; i<shards[0].length; i++) {
+            for (int j = 0; j < k; j++) {
+                data[c] = shards[j][i];
+                c++;
+            }
         }
         return data;
     }

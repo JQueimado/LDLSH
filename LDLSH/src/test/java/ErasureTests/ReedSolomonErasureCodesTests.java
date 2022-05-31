@@ -40,47 +40,48 @@ public class ReedSolomonErasureCodesTests {
     }
 
     /**
-     * Tests the Creation of shards by encoding a Data object into a set of shards and compares it to the original data
+     * Tests the sharding function by comparing its result to a handmade one
      */
     @Test
     public void shardingTest() {
-        //Prof of sharding
-        int c = 0;
-        int row_length = sharding[0].length;
-        byte[] temp;
-        for( byte[] row:sharding ) {
-            System.out.println(Arrays.toString(row));
-            if( c < k ) {
-                //Splits data into an array of the same row size
-                temp = new byte[row_length];
-                System.arraycopy(string_data.toByteArray(), c * row_length, temp, 0, row_length);
-            } else {
-              temp = new byte[row_length];
-            }
-            //Assertions
-            assertArrayEquals( temp, row );
 
-            c++; //Increment
+        byte[] test_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+
+        byte[][] expected_data = new byte[][]{
+                new byte[]{1,5,9,13},
+                new byte[]{2,6,10,14},
+                new byte[]{3,7,11,15},
+                new byte[]{4,8,12,16},
+                new byte[]{0,0,0,0},
+                new byte[]{0,0,0,0}
+        };
+
+        byte[][] sharded_data = BlackblazeReedSolomonErasureCodes.byteArrayToShards(test_data);
+
+        for(int i=0; i<n; i++){
+            assertArrayEquals(expected_data[i], sharded_data[i]);
         }
     }
 
     /**
-     * Tests the reverse sharding process by creating a set of shards using the previously tested function and reverses
-     * the process in order to compare the original object to the object that was sharded and reverse sharded
+     * Tests the reverse sharding by comparing its result to a handmade one
      */
     @Test
     public void reverseSharding(){
-        for( byte[] row:sharding )
-            System.out.println(Arrays.toString(row));
+        byte[][] test_data = new byte[][]{
+                new byte[]{1,5,9,13},
+                new byte[]{2,6,10,14},
+                new byte[]{3,7,11,15},
+                new byte[]{4,8,12,16},
+                new byte[]{0,0,0,0},
+                new byte[]{0,0,0,0}
+        };
 
-        //Revert Sharding
-        byte[] reverseSharding = BlackblazeReedSolomonErasureCodes.shardsToByteArray(
-                sharding,
-                string_data.toByteArray().length
-        );
+        byte[] expected_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 
-        //Assertions
-        assertArrayEquals( string_data.toByteArray(), reverseSharding );
+        byte[] result_data = BlackblazeReedSolomonErasureCodes.shardsToByteArray(test_data, expected_data.length);
+
+        assertArrayEquals(expected_data, result_data);
     }
 
     /**
