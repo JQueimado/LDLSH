@@ -12,15 +12,8 @@ import SystemLayer.SystemExceptions.CorruptDataException;
 
 public class StandardDataProcessor extends DataProcessorImpl{
 
-    private final String LSH_config;
-    private final String Erasure_config;
-    private final String UID_config;
-
     public StandardDataProcessor(DataContainer appContext) {
         super(appContext);
-        this.LSH_config = appContext.getConfigurator().getConfig(LSHHashFactory.config_name );
-        this.Erasure_config = appContext.getConfigurator().getConfig(ErasureCodesFactory.config_name);
-        this.UID_config = appContext.getConfigurator().getConfig(UniqueIdentifierFactory.config_name);
     }
 
     @Override
@@ -31,12 +24,11 @@ public class StandardDataProcessor extends DataProcessorImpl{
         LSHHash object_hash = preprocessLSH(object);
 
         //Erasure codes
-        ErasureCodes object_erasureCodes = appContext.getErasureCodesFactory().getNewErasureCodes(Erasure_config);
+        ErasureCodes object_erasureCodes = appContext.getErasureCodesFactory().getNewErasureCodes();
         object_erasureCodes.encodeDataObject( object.toByteArray(), numberOfBlocks );
 
         //UID
-        UniqueIdentifier object_uniqueIdentifier = appContext.getUniqueIdentifierFactory()
-                .getNewUniqueIdentifier(UID_config);
+        UniqueIdentifier object_uniqueIdentifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier();
         object_uniqueIdentifier.setObject( object.toByteArray() );
 
         return new ProcessedData(object, object_hash, object_uniqueIdentifier, object_erasureCodes);
@@ -54,12 +46,5 @@ public class StandardDataProcessor extends DataProcessorImpl{
                     uniqueIdentifier);
 
         return dataObject;
-    }
-
-    @Override
-    public LSHHash preprocessLSH(DataObject object){
-        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(LSH_config); //Gets based on config file
-        object_hash.setObject(object.toByteArray(),appContext.getNumberOfBands());
-        return object_hash;
     }
 }
