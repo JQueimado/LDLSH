@@ -2,13 +2,27 @@ package SystemLayer.Data.LSHHashImpl;
 
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.DataObjectsImpl.StringDataObject;
+import SystemLayer.SystemExceptions.UnknownConfigException;
 
 public class JavaMinHashNgrams extends JavaMinHash{
 
     private static final String ngrams_config = "NGRAMS_LEVEL";
 
-    public JavaMinHashNgrams( DataContainer appContext ){
+    private static int ngram_level;
+
+    public JavaMinHashNgrams( DataContainer appContext ) throws UnknownConfigException {
         super(appContext);
+
+        String value = "";
+        try{
+            value = appContext.getConfigurator().getConfig(ngrams_config);
+            if( value.isBlank() )
+                throw new Exception();
+            ngram_level = Integer.parseInt(value);
+        }catch (Exception e){
+            throw new UnknownConfigException( ngrams_config, value );
+        }
     }
 
     @Override
@@ -25,6 +39,17 @@ public class JavaMinHashNgrams extends JavaMinHash{
 
         int ngramDimensions = vector_dimensions - level + 1;
         super.setupMinHash(ngramDimensions, appContext);
+    }
+
+    //Auxiliary methods
+    public static byte[][] create_ngrams( byte[] data ){
+        byte[][] ngram_vector = new byte[data.length-ngram_level+1][ngram_level];
+
+        for( int i=0; i< ngram_vector.length; i++ ){
+            System.arraycopy(data, i, ngram_vector[i], 0, ngram_level);
+        }
+
+        return ngram_vector;
     }
 
 }

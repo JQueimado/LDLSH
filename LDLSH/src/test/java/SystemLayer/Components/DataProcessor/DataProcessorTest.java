@@ -169,7 +169,8 @@ class DataProcessorTest {
     }
 
     /**
-     * Tests the Secrete Share Data Processor postprocessor function by comparing its results to the component generated ones
+     * Tests the Secrete Share Data Processor postprocessor function by comparing its results to the component
+     * generated ones
      * @throws Exception in this context if an exception is thrown the test fails
      */
     //@Test
