@@ -29,6 +29,28 @@ class SimplePartitionErasureCodesTest {
                 new ErasureBlock( new byte[]{4,8,12,16}, 3 )
         };
 
+        simulatedState.setObjectByteSize( test_data.length );
+        ErasureCodes erasureCodes = simulatedState.getErasureCodesFactory().getNewErasureCodes();
+        erasureCodes.encodeDataObject(test_data, simulatedState.getNumberOfBands());
+
+        //Assertions
+        for(int i=0; i<expected_data.length; i++){
+            assertEquals( expected_data[i], erasureCodes.getErasureBlocks()[i] );
+        }
+    }
+
+    @Test
+    void encodeDataObjectPaddingTest() {
+        byte[] test_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,};
+
+        ErasureBlock[] expected_data = new ErasureBlock[]{
+                new ErasureBlock( new byte[]{1,5,9,13}, 0 ),
+                new ErasureBlock( new byte[]{2,6,10,14}, 1 ),
+                new ErasureBlock( new byte[]{3,7,11,0}, 2 ),
+                new ErasureBlock( new byte[]{4,8,12,0}, 3 )
+        };
+
+        simulatedState.setObjectByteSize( test_data.length );
         ErasureCodes erasureCodes = simulatedState.getErasureCodesFactory().getNewErasureCodes();
         erasureCodes.encodeDataObject(test_data, simulatedState.getNumberOfBands());
 
@@ -49,6 +71,29 @@ class SimplePartitionErasureCodesTest {
 
         byte[] expected_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 
+        simulatedState.setObjectByteSize( expected_data.length );
+        ErasureCodes erasureCodes = simulatedState.getErasureCodesFactory().getNewErasureCodes();
+        for ( ErasureBlock block : test_data ){
+            erasureCodes.addBlockAt(block);
+        }
+        byte[] resultData = erasureCodes.decodeDataObject();
+
+        //Assertions
+        assertArrayEquals( expected_data, resultData );
+    }
+
+    @Test
+    void decodeDataObjectPaddingTest() throws Exception {
+        ErasureBlock[] test_data = new ErasureBlock[]{
+                new ErasureBlock( new byte[]{1,5,9,13}, 0 ),
+                new ErasureBlock( new byte[]{2,6,10,0}, 1 ),
+                new ErasureBlock( new byte[]{3,7,11,0}, 2 ),
+                new ErasureBlock( new byte[]{4,8,12,0}, 3 )
+        };
+
+        byte[] expected_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13};
+
+        simulatedState.setObjectByteSize( expected_data.length );
         ErasureCodes erasureCodes = simulatedState.getErasureCodesFactory().getNewErasureCodes();
         for ( ErasureBlock block : test_data ){
             erasureCodes.addBlockAt(block);

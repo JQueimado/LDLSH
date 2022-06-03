@@ -39,6 +39,7 @@ public class DataContainer {
 
     //Variables
     private int numberOfBands = -1;
+    private int objectByteSize = -1;
 
     //Constructor
     public DataContainer( String f_name ){
@@ -131,5 +132,15 @@ public class DataContainer {
             numberOfBands = Integer.parseInt(configurator.getConfig(nBands_config));
         }
         return numberOfBands;
+    }
+
+    //Number of bytes each object contains
+    public int getObjectByteSize(){
+        return objectByteSize;
+    }
+
+    public void setObjectByteSize(int size){
+        if (objectByteSize == -1)
+            objectByteSize = size;
     }
 }

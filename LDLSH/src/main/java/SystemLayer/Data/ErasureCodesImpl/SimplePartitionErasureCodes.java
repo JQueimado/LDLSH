@@ -3,10 +3,6 @@ package SystemLayer.Data.ErasureCodesImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class SimplePartitionErasureCodes extends ErasureCodesImpl {
 
     public SimplePartitionErasureCodes(DataContainer context) {
@@ -18,6 +14,10 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         total_blocks = n_blocks;
         number_of_blocks = n_blocks;
         erasureBlocks = new ErasureBlock[n_blocks];
+
+        //padding
+        int data_size = object.length + ( object.length % n_blocks );
+        object = padding(object, data_size);
 
         int block_length = object.length / n_blocks;
 
@@ -55,6 +55,8 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
             }
         }
 
+        //padding
+        data = padding(data, appContext.getObjectByteSize());
         return data;
     }
 

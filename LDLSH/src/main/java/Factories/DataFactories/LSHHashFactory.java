@@ -1,16 +1,11 @@
 package Factories.DataFactories;
 
-
-import Factories.Factory;
 import Factories.FactoryImpl;
-import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.JavaMinHashNgrams;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.SystemExceptions.UnknownConfigException;
-
-import static SystemLayer.Data.LSHHashImpl.JavaMinHash.LSH_SEED;
 
 public class LSHHashFactory extends FactoryImpl {
     //Class context

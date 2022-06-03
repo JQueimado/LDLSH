@@ -2,6 +2,7 @@ package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -49,15 +50,12 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     }
 
     @Override
-    public int compareTo( ErasureCodes o) {
+    public int compareTo( @NotNull ErasureCodes o) {
         for ( int i = 0; i<erasureBlocks.length; i++ ){
             ErasureBlock A_block = erasureBlocks[i];
             ErasureBlock B_block = o.getBlockAt(i);
 
-            if( A_block == null && B_block != null )
-                return -1;
-
-            if( B_block == null && A_block != null )
+            if( A_block == null || B_block == null )
                 return -1;
 
             if( !A_block.equals(B_block))
@@ -67,9 +65,26 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     }
 
     @Override
-    public boolean equals(Object obj) {
-        ErasureCodesImpl temp = (ErasureCodesImpl) obj;
-        return this.compareTo(temp) == 0;
+    public boolean equals( @NotNull Object obj) {
+        try {
+            ErasureCodesImpl temp = (ErasureCodesImpl) obj;
+            return this.compareTo(temp) == 0;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    //Auxiliary classes
+    /**
+     * Adds or removes zero padding from a given byte array
+     * @param data input data
+     * @param size if grater than the data size, add padding. if smaller than data size, removes padding
+     * @return new processed byte array
+     */
+    public static byte[] padding( byte[] data, int size ){
+        byte[] result = new byte[size];
+        System.arraycopy(data, 0, result, 0, Math.min(data.length, size));
+        return result;
     }
 
     //Subclasses

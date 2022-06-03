@@ -66,6 +66,10 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
     @Override
     public void encodeDataObject(byte[] object, int n_blocks) {
+        //Padding
+        int size = object.length + ( object.length % n_blocks );
+        object = padding(object, size);
+
         byte[][] shards = byteArrayToShards(object);
         encoder.encodeParity(shards, 0, shards[0].length);
 
@@ -104,7 +108,9 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
         encoder.decodeMissing(matrix,isPresent,0,block_size);
 
         int data_size = k*block_size;
-        return shardsToByteArray(matrix, data_size);
+        byte[] data = shardsToByteArray(matrix, data_size);
+        data = padding( data, appContext.getObjectByteSize() );
+        return data;
     }
 
     @Override
