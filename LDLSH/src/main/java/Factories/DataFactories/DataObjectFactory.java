@@ -3,6 +3,7 @@ package Factories.DataFactories;
 import Factories.Factory;
 import Factories.FactoryImpl;
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataObjectsImpl.ByteArrayDataObject;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
@@ -11,7 +12,7 @@ public class DataObjectFactory extends FactoryImpl {
 
     private static final String config_name = "OBJECT_TYPE";
 
-    private enum configurations {NONE,STRING}
+    private enum configurations {NONE, STRING, BYTE_ARRAY}
 
     public DataObjectFactory(DataContainer appContext){
         super(appContext);
@@ -43,6 +44,10 @@ public class DataObjectFactory extends FactoryImpl {
 
                 case STRING -> {
                     return new StringDataObject();
+                }
+
+                case BYTE_ARRAY -> {
+                    return new ByteArrayDataObject();
                 }
 
                 default -> {
