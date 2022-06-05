@@ -6,6 +6,7 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.SimplePartitionErasureCodes;
+import SystemLayer.SystemExceptions.UnknownConfigException;
 
 import java.net.PortUnreachableException;
 
@@ -27,18 +28,25 @@ public class ErasureCodesFactory extends FactoryImpl {
 
     //getters
     public ErasureCodes getNewErasureCodes(String config_name) {
-        configurations config = configurations.valueOf(config_name);
-        switch (config){
+        try {
+            configurations config = configurations.valueOf(config_name);
+            switch (config) {
 
-            case REED_SOLOMON ->{
-                return new BlackblazeReedSolomonErasureCodes(appContext);
+                case REED_SOLOMON -> {
+                    return new BlackblazeReedSolomonErasureCodes(appContext);
+                }
+
+                case SIMPLE_PARTITION -> {
+                    return new SimplePartitionErasureCodes(appContext);
+                }
+
+                default -> {
+                    return null;
+                }
             }
-
-            case SIMPLE_PARTITION ->{
-                return new SimplePartitionErasureCodes(appContext);
-            }
-
-            default -> {return null;}
+        }catch (UnknownConfigException e){
+            UnknownConfigException.handler(e);
+            return null;
         }
     }
 }
