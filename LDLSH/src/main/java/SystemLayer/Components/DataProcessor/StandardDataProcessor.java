@@ -9,11 +9,13 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.CorruptDataException;
+import SystemLayer.SystemExceptions.IncompleteBlockException;
 
 public class StandardDataProcessor extends DataProcessorImpl{
 
     public StandardDataProcessor(DataContainer appContext) {
         super(appContext);
+        appContext.setErasureCodesDataSize( appContext.getObjectByteSize() );
     }
 
     @Override
@@ -35,7 +37,9 @@ public class StandardDataProcessor extends DataProcessorImpl{
     }
 
     @Override
-    public DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier ) throws Exception {
+    public DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier )
+            throws CorruptDataException, IncompleteBlockException {
+
         DataObject dataObject = appContext.getDataObjectFactory().getNewDataObject();
         dataObject.setByteArray( erasureCodes.decodeDataObject() );
 
@@ -46,5 +50,13 @@ public class StandardDataProcessor extends DataProcessorImpl{
                     uniqueIdentifier);
 
         return dataObject;
+    }
+
+    @Override
+    public LSHHash preprocessLSH(DataObject object) {
+        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(); //Gets based on config file
+        object_hash.setObject(object.toByteArray(),appContext.getNumberOfBands());
+
+        return object_hash;
     }
 }

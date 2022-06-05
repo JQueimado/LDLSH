@@ -16,6 +16,7 @@ class SimplePartitionErasureCodesTest {
         simulatedState = new DataContainer("");
         simulatedState.getConfigurator().setConfig("ERASURE_CODES", "SIMPLE_PARTITION");
         simulatedState.getConfigurator().setConfig("N_BANDS", "4");
+        simulatedState.getConfigurator().setConfig("OBJECT_TYPE", "BYTE_ARRAY");
     }
 
     @Test
@@ -29,7 +30,8 @@ class SimplePartitionErasureCodesTest {
                 new ErasureBlock( new byte[]{4,8,12,16}, 3 )
         };
 
-        simulatedState.setObjectByteSize( test_data.length );
+        simulatedState.getConfigurator().setConfig("VECTOR_SIZE", "%d".formatted(test_data.length));
+
         ErasureCodes erasureCodes = simulatedState.getErasureCodesFactory().getNewErasureCodes();
         erasureCodes.encodeDataObject(test_data, simulatedState.getNumberOfBands());
 
@@ -41,7 +43,7 @@ class SimplePartitionErasureCodesTest {
 
     @Test
     void encodeDataObjectPaddingTest() {
-        byte[] test_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,};
+        byte[] test_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14};
 
         ErasureBlock[] expected_data = new ErasureBlock[]{
                 new ErasureBlock( new byte[]{1,5,9,13}, 0 ),
@@ -50,7 +52,8 @@ class SimplePartitionErasureCodesTest {
                 new ErasureBlock( new byte[]{4,8,12,0}, 3 )
         };
 
-        simulatedState.setObjectByteSize( test_data.length );
+        simulatedState.getConfigurator().setConfig("VECTOR_SIZE", "%d".formatted(test_data.length));
+
         ErasureCodes erasureCodes = simulatedState.getErasureCodesFactory().getNewErasureCodes();
         erasureCodes.encodeDataObject(test_data, simulatedState.getNumberOfBands());
 
@@ -70,8 +73,12 @@ class SimplePartitionErasureCodesTest {
         };
 
         byte[] expected_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+        simulatedState.getConfigurator().setConfig(
+                "VECTOR_SIZE",
+                "%d".formatted(expected_data.length)
+        );
+        simulatedState.setErasureCodesDataSize(simulatedState.getObjectByteSize());
 
-        simulatedState.setObjectByteSize( expected_data.length );
         ErasureCodes erasureCodes = simulatedState.getErasureCodesFactory().getNewErasureCodes();
         for ( ErasureBlock block : test_data ){
             erasureCodes.addBlockAt(block);
@@ -92,8 +99,12 @@ class SimplePartitionErasureCodesTest {
         };
 
         byte[] expected_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13};
+        simulatedState.getConfigurator().setConfig(
+                "VECTOR_SIZE",
+                "%d".formatted(expected_data.length)
+        );
+        simulatedState.setErasureCodesDataSize(simulatedState.getObjectByteSize());
 
-        simulatedState.setObjectByteSize( expected_data.length );
         ErasureCodes erasureCodes = simulatedState.getErasureCodesFactory().getNewErasureCodes();
         for ( ErasureBlock block : test_data ){
             erasureCodes.addBlockAt(block);

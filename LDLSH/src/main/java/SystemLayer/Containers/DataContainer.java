@@ -6,22 +6,22 @@ import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
-import Factories.Factory;
 import Factories.MessageFactory;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.Configurator.Configurator;
+import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 
 public class DataContainer {
 
     //Static
-    private static final String nBands_config = "N_BANDS";
+    public static final String nBands_config = "N_BANDS";
+    public static final String dataSize_config = "VECTOR_SIZE";
 
     //Factories
     private DataObjectFactory dataObjectFactory = null;
@@ -31,7 +31,7 @@ public class DataContainer {
     private MessageFactory messageFactory = null;
 
     //Components
-    private Configurator configurator = null;
+    private final Configurator configurator;
     private MultiMap[] multiMaps;
     private ExecutorService executorService;
     private DistanceMeasurer distanceMeasurer = null;
@@ -40,6 +40,7 @@ public class DataContainer {
     //Variables
     private int numberOfBands = -1;
     private int objectByteSize = -1;
+    private int erasureCodesDataSize = -1;
 
     //Constructor
     public DataContainer( String f_name ){
@@ -136,11 +137,26 @@ public class DataContainer {
 
     //Number of bytes each object contains
     public int getObjectByteSize(){
+        if( objectByteSize == -1 ) {
+            String value = "";
+            try {
+                value = configurator.getConfig(dataSize_config);
+                DataObject temp = getDataObjectFactory().getNewDataObject();
+                objectByteSize = temp.objectByteSize( Integer.parseInt(value) );
+            } catch (Exception e) {
+                UnknownConfigException.handler(new UnknownConfigException(dataSize_config, value));
+            }
+        }
         return objectByteSize;
     }
 
-    public void setObjectByteSize(int size){
-        if (objectByteSize == -1)
-            objectByteSize = size;
+    //Erasure codes data size
+    public void setErasureCodesDataSize(int size){
+        if( erasureCodesDataSize == -1 )
+            erasureCodesDataSize = size;
+    }
+
+    public int getErasureCodesDataSize(){
+        return erasureCodesDataSize;
     }
 }

@@ -16,11 +16,13 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         erasureBlocks = new ErasureBlock[n_blocks];
 
         //padding
-        int data_size = object.length + ( object.length % n_blocks );
-        object = padding(object, data_size);
+        int data_size = object.length;
+        if ( object.length % n_blocks != 0 ) {
+            data_size = ((object.length / n_blocks) * n_blocks) + n_blocks;
+            object = padding(object, data_size);
+        }
 
-        int block_length = object.length / n_blocks;
-
+        int block_length = data_size / n_blocks;
         //Create Blocks
         for( int i = 0; i<n_blocks; i++ ){
             byte[] block = new byte[block_length];
@@ -44,8 +46,9 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         if(number_of_blocks < super.total_blocks)
             throw new IncompleteBlockException();
 
-        int block_size = erasureBlocks[0].block_data().length;
-        byte[] data = new byte[ block_size * block_size ];
+        int block_size = erasureBlocks[0].block_data().length; //All blocks have the same length
+        int data_size = erasureBlocks.length * block_size;
+        byte[] data = new byte[ data_size ];
 
         int c=0;
         for(int i=0; i<block_size; i++){
@@ -56,7 +59,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         }
 
         //padding
-        data = padding(data, appContext.getObjectByteSize());
+        data = padding(data, appContext.getErasureCodesDataSize());
         return data;
     }
 

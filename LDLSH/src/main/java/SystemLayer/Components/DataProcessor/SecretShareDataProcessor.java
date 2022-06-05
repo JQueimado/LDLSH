@@ -68,6 +68,9 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
         }catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalArgumentException e){
             throw new UnknownConfigException( CIPHER_ALGORITHM, algorithm );
         }
+        int data_size = appContext.getObjectByteSize();
+        int cypher_size = ( data_size/iv_size ) * ( iv_size + 1 );
+        appContext.setErasureCodesDataSize( cypher_size + key_size );
     }
 
     @Override
@@ -128,9 +131,10 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
 
     @Override
     public LSHHash preprocessLSH(DataObject object) {
-        LSHHash temp = appContext.getLshHashFactory().getNewLSHHash();
-        temp.setObject(object.toByteArray(), appContext.getNumberOfBands());
-        return temp;
+        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(); //Gets based on config file
+        object_hash.setObject(object.toByteArray(),appContext.getNumberOfBands());
+
+        return object_hash;
     }
 
     //Auxiliary methods

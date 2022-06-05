@@ -21,11 +21,7 @@ public abstract class DataProcessorImpl implements DataProcessor {
     public abstract DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier ) throws Exception;
 
     @Override
-    public LSHHash preprocessLSH(DataObject object){
-        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(); //Gets based on config file
-        object_hash.setObject(object.toByteArray(),appContext.getNumberOfBands());
-        return object_hash;
-    }
+    public abstract LSHHash preprocessLSH(DataObject object);
 
     //Auxiliary methods
     protected boolean validate( byte [] data, UniqueIdentifier validation_uid ){
