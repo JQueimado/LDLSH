@@ -1,4 +1,4 @@
-package LSHTests;
+package SystemLayer.Data.LSHTests;
 
 import Factories.DataFactories.DataObjectFactory;
 import SystemLayer.Containers.Configurator.Configurator;
@@ -6,12 +6,21 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
+import SystemLayer.Data.LSHHashImpl.LSHHash;
+import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
 import info.debatty.java.lsh.MinHash;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class JavaMinHashSimilarityTests {
 
@@ -26,6 +35,7 @@ public class JavaMinHashSimilarityTests {
         configurator.setConfig("ERROR", "0.1");
         configurator.setConfig("VECTOR_DIMENSIONS", "5");
         configurator.setConfig("LSH_SEED", "11111");
+        configurator.setConfig("LSH_HASH", "JAVA_MINHASH");
 
         //Vectors
         String data_object_type = "STRING";
@@ -67,7 +77,11 @@ public class JavaMinHashSimilarityTests {
         byte[] signature2 = hash2.getSignature();
         int[] ints2 = toIntArray(signature2);
 
-        double similarity = JavaMinHash.getMinHash().similarity(ints, ints2);
+        double error = Double.parseDouble( simulatedState.getConfigurator().getConfig("ERROR") );
+        long seed = Long.parseLong( simulatedState.getConfigurator().getConfig("LSH_SEED") );
+
+        MinHash minHash = new MinHash(error, dataObject1.objectByteSize(5),seed);
+        double similarity = minHash.similarity(ints, ints2);
         double jaccard_similarity = MinHash.jaccardIndex(
                 toIntSet( dataObject1.toByteArray() ),
                 toIntSet( dataObject2.toByteArray() )
@@ -140,5 +154,66 @@ public class JavaMinHashSimilarityTests {
             set.add( value );
         }
         return set;
+    }
+
+    /* Component Tests */
+
+    /**
+     * Tests the set object and get signature functions by encoding its components and return the result value
+     */
+    @Test
+    void setObjectGetSignature() {
+        LSHHash hash1 = simulatedState.getLshHashFactory().getNewLSHHash();
+        hash1.setObject(dataObjects[0].toByteArray(), 2);
+
+        LSHHash hash2 = simulatedState.getLshHashFactory().getNewLSHHash();
+        hash2.setObject(dataObjects[2].toByteArray(), 2);
+
+        assertArrayEquals(hash1.getSignature(), hash2.getSignature());
+        hash1.setObject(dataObjects[1].toByteArray(), 2);
+        MatcherAssert.assertThat(hash1.getSignature(), IsNot.not( IsEqual.equalTo( hash2.getSignature() ) ) );
+    }
+
+    @Test
+    void getBlocks(){
+        int n_blocks = 6;
+        LSHHash hash = simulatedState.getLshHashFactory().getNewLSHHash();
+        hash.setObject(dataObjects[0].toByteArray(), n_blocks);
+        LSHHashImpl.LSHHashBlock[] blocks = hash.getBlocks();
+        assertNotNull(blocks);
+        assertEquals(blocks.length, n_blocks);
+
+        byte[] signature = hash.getSignature();
+        String signature_String = new String(signature, StandardCharsets.UTF_8);
+
+        StringBuilder rebuilt_signature = new StringBuilder();
+        for ( LSHHashImpl.LSHHashBlock block : blocks ){
+            rebuilt_signature.append(new String(block.lshBlock(), StandardCharsets.UTF_8));
+        }
+
+        assertEquals(signature_String, rebuilt_signature.toString());
+    }
+
+    @Test
+    void getBlockAt_SingleBlock(){
+        int n_blocks = 1;
+        int position = 0;
+        LSHHash hash = simulatedState.getLshHashFactory().getNewLSHHash();
+        hash.setObject(dataObjects[0].toByteArray(), n_blocks);
+        LSHHashImpl.LSHHashBlock[] blocks = hash.getBlocks();
+        LSHHashImpl.LSHHashBlock block = hash.getBlockAt(position);
+        assertArrayEquals(blocks[position].lshBlock(), block.lshBlock());
+    }
+
+    @Test
+    void getBlockAt_AllBlocks(){
+        int n_blocks = 6;
+        LSHHash hash = simulatedState.getLshHashFactory().getNewLSHHash();
+        hash.setObject(dataObjects[0].toByteArray(), n_blocks);
+        LSHHashImpl.LSHHashBlock[] blocks = hash.getBlocks();
+        for (int i = 0; i<n_blocks; i++) {
+            LSHHashImpl.LSHHashBlock block = hash.getBlockAt(i);
+            assertArrayEquals(blocks[i].lshBlock(), block.lshBlock());
+        }
     }
 }

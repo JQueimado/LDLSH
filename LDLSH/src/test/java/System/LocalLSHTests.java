@@ -1,4 +1,4 @@
-package LSHTests;
+package System;
 
 import Factories.ComponentFactories.MultimapFactory;
 import Factories.DataFactories.DataObjectFactory;
