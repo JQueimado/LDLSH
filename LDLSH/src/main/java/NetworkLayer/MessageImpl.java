@@ -1,27 +1,26 @@
 package NetworkLayer;
 
+import java.io.Serializable;
+import java.util.List;
+
 public class MessageImpl implements Message {
 
     //Message Contents
-    private Object body;
+    private List<Serializable> body;
     private types type;
 
     //Constructors
-    public MessageImpl( types type, Object body ){
-        this.type = type;
-        this.body = body;
-    }
-
-    public MessageImpl( types type ){
-        this( type, null );
+    public MessageImpl( types type, List<Serializable> body ){
+        this.setType(type);
+        this.setBody(body);
     }
 
     //getters and setters
-    public Object getBody() {
+    public List<Serializable> getBody() {
         return body;
     }
 
-    public void setBody(Object body) {
+    public void setBody(List<Serializable> body) {
         this.body = body;
     }
 

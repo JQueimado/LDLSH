@@ -9,6 +9,7 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
+import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
 import java.util.*;
 
@@ -38,6 +39,10 @@ public class StandardQueryWorkerTask implements WorkerTask {
 
     @Override
     public DataObject call() throws Exception {
+
+        if( queryRequest.getType() != Message.types.QUERY_REQUEST )
+            throw new InvalidMessageTypeException( Message.types.QUERY_REQUEST, queryRequest.getType() );
+
         //Preprocess
         DataObject queryObject = (DataObject) queryRequest.getBody();
         LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);

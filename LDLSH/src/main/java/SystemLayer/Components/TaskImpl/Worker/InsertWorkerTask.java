@@ -8,6 +8,7 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
 public class InsertWorkerTask implements WorkerTask {
 
@@ -35,7 +36,12 @@ public class InsertWorkerTask implements WorkerTask {
 
     @Override
     public DataObject call() throws Exception {
-        DataObject object = (DataObject) insertRequest.getBody();
+        if( insertRequest.getType() != Message.types.INSERT_REQUEST )
+            throw new InvalidMessageTypeException(
+                    Message.types.INSERT_REQUEST,
+                    insertRequest.getType());
+
+        DataObject object = (DataObject) insertRequest.getBody().get(0);
 
         //PREPROCESS
         DataProcessor.ProcessedData processedData = appContext.getDataProcessor().preProcessData(object);

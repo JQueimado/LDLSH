@@ -1,8 +1,10 @@
 package NetworkLayer;
 
 import java.io.Serializable;
+import java.util.List;
 
 public interface Message extends Serializable {
+
     enum types{
         NONE,
         COMPLETION_MESSAGE,
@@ -18,8 +20,27 @@ public interface Message extends Serializable {
         QUERY_REQUEST_RESPONSE
     }
 
-    public Object getBody();
-    public void setBody(Object body);
-    public types getType();
-    public void setType(types type);
+    /**
+     * Returns the message's body
+     * @return message body as an object
+     */
+    List<Serializable> getBody();
+
+    /**
+     * Stets the message body value
+     * @param body body value
+     */
+    void setBody(List<Serializable> body);
+
+    /**
+     * Returns the message value
+     * @return message type
+     */
+    types getType();
+
+    /**
+     * Set the message type
+     * @param type message type
+     */
+    void setType(types type);
 }

@@ -6,7 +6,6 @@ import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
-import Factories.MessageFactory;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
@@ -28,7 +27,6 @@ public class DataContainer {
     private LSHHashFactory lshHashFactory = null;
     private ErasureCodesFactory erasureCodesFactory = null;
     private UniqueIdentifierFactory uniqueIdentifierFactory = null;
-    private MessageFactory messageFactory = null;
 
     //Components
     private final Configurator configurator;
@@ -76,12 +74,6 @@ public class DataContainer {
         if(uniqueIdentifierFactory == null)
             uniqueIdentifierFactory = new UniqueIdentifierFactory(this);
         return uniqueIdentifierFactory;
-    }
-
-    public MessageFactory getMessageFactory(){
-        if(messageFactory == null)
-            messageFactory = new MessageFactory();
-        return messageFactory;
     }
 
     //Components

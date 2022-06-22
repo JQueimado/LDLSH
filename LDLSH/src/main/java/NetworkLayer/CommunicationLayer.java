@@ -5,6 +5,6 @@ public interface CommunicationLayer {
     public void send( Message message );
 
     public interface Receiver {
-        public void run();
+        public void run() throws Exception;
     }
 }

@@ -2,6 +2,7 @@ package SystemLayer.Components.SystemServer;
 
 import Factories.ComponentFactories.MultimapFactory;
 import NetworkLayer.Message;
+import NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Components.TaskImpl.Worker.InsertWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.StandardQueryWorkerTask;
@@ -10,6 +11,9 @@ import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -46,16 +50,18 @@ public class CentralizedSystem implements SystemServer {
 
     @Override
     public Future insert(DataObject object) throws Exception {
-        Message insertMessage = context.getMessageFactory().getMessage( Message.types.INSERT_REQUEST );
-        insertMessage.setBody( object );
+        List<Serializable> objectList = new ArrayList<>();
+        objectList.add(object);
+        Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
         WorkerTask insertWorkerTask = new InsertWorkerTask(insertMessage, context );
         return context.getExecutorService().submit(insertWorkerTask);
     }
 
     @Override
     public DataObject query(DataObject queryObject) throws Exception {
-        Message queryMessage = context.getMessageFactory().getMessage( Message.types.QUERY_REQUEST );
-        queryMessage.setBody( queryObject );
+        List<Serializable> objectList = new ArrayList<>();
+        objectList.add(queryObject);
+        Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
         WorkerTask queryWorkerTask = new StandardQueryWorkerTask(queryMessage, context );
         Future<DataObject> response = context.getExecutorService().submit(queryWorkerTask);
         return response.get();
