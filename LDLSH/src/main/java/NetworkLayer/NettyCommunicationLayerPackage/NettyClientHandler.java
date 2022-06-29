@@ -6,9 +6,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class NettyProcessingHandler extends ChannelInboundHandlerAdapter {
+public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     private ByteBuf tmp;
     private DataContainer appContext;
+
+    public NettyClientHandler(  ){
+
+    }
 
     public void setAppContext( DataContainer appContext ){
         this.appContext = appContext;
@@ -16,17 +20,16 @@ public class NettyProcessingHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        System.out.println("Handler added");
         tmp = ctx.alloc().buffer(4);
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        System.out.println("Handler removed");
         tmp.release();
         tmp = null;
     }
 
+    //Server Responses
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ByteBuf m = (ByteBuf) msg;
@@ -35,7 +38,13 @@ public class NettyProcessingHandler extends ChannelInboundHandlerAdapter {
         if (tmp.readableBytes() >= 4) {
             Message message = (Message) msg;
             //Process
-            appContext.
+            try {
+                switch (message.getType()) {
+
+                }
+            }catch (Exception e ){
+                e.printStackTrace();
+            }
         }
     }
 }
