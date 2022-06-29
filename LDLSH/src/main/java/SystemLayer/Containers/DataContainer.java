@@ -1,19 +1,24 @@
 package SystemLayer.Containers;
 
+import Factories.CommunicationLayerFactory;
 import Factories.ComponentFactories.DataProcessorFactory;
 import Factories.ComponentFactories.DistanceMeasurerFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
+import NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class DataContainer {
@@ -21,6 +26,7 @@ public class DataContainer {
     //Static
     public static final String nBands_config = "N_BANDS";
     public static final String dataSize_config = "VECTOR_SIZE";
+    public static final String nThreads_config = "N_THREADS";
 
     //Factories
     private DataObjectFactory dataObjectFactory = null;
@@ -31,9 +37,10 @@ public class DataContainer {
     //Components
     private final Configurator configurator;
     private MultiMap[] multiMaps;
-    private ExecutorService executorService;
+    private ListeningExecutorService executorService;
     private DistanceMeasurer distanceMeasurer = null;
     private DataProcessor dataProcessor = null;
+    private CommunicationLayer communicationLayer = null;
 
     //Variables
     private int numberOfBands = -1;
@@ -87,10 +94,17 @@ public class DataContainer {
     }
 
     //-Executor Service
-    public void setExecutorService( ExecutorService executorService ){
-        this.executorService = executorService;
-    }
-    public ExecutorService getExecutorService( ){
+    public ListeningExecutorService getExecutorService( ){
+        if (executorService == null){
+            String nThreadString = "";
+            try {
+                nThreadString = configurator.getConfig( nThreads_config );
+                int n_threads = Integer.parseInt( nThreadString );
+                executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(n_threads));
+            }catch (Exception e){
+                UnknownConfigException.handler( new UnknownConfigException( nThreads_config, nThreadString ) );
+            }
+        }
         return this.executorService;
     }
 
@@ -116,6 +130,14 @@ public class DataContainer {
             }
         }
         return dataProcessor;
+    }
+
+    //Communication Layer
+    public CommunicationLayer getCommunicationLayer(){
+        if(communicationLayer == null){
+            communicationLayer = (new CommunicationLayerFactory(this)).getNewCommunicationLayer();
+        }
+        return communicationLayer;
     }
 
     //Variables
