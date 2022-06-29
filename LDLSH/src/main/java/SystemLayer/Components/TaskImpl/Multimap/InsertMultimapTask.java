@@ -1,28 +1,29 @@
 package SystemLayer.Components.TaskImpl.Multimap;
 
+import NetworkLayer.Message;
+import NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 public class InsertMultimapTask implements MultimapTask<Boolean> {
 
-    private final LSHHash object_hash;
-    private final UniqueIdentifier object_unique_identifier;
-    private final ErasureCodes object_erasure_codes;
-    private final DataContainer appContext;
+    private LSHHash hash;
+    private UniqueIdentifier uid;
+    private ErasureBlock block;
+    private DataContainer appContext;
 
-    public InsertMultimapTask(
-            LSHHash object_hash,
-            UniqueIdentifier object_unique_identifier,
-            ErasureCodes object_erasure_codes,
-            DataContainer appContext)
-    {
+    public InsertMultimapTask( Message insertMessage, DataContainer appContext ) throws Exception {
+        if( insertMessage.getBody().size() != 3 )
+            throw new Exception("Invalid body Size for message type: INSERT_MESSAGE");
+        this.hash = (LSHHash) insertMessage.getBody().get(0);
+        this.uid = (UniqueIdentifier) insertMessage.getBody().get(1);
+        this.block = (ErasureBlock) insertMessage.getBody().get(2);
         this.appContext = appContext;
-        this.object_hash = object_hash;
-        this.object_unique_identifier = object_unique_identifier;
-        this.object_erasure_codes = object_erasure_codes;
     }
 
     @Override
@@ -30,11 +31,11 @@ public class InsertMultimapTask implements MultimapTask<Boolean> {
         try {
             MultiMap[] multiMaps = appContext.getMultiMaps();
             for ( MultiMap multiMap : multiMaps ){
-                multiMap.insert(object_hash, object_unique_identifier, object_erasure_codes);
+                multiMap.insert(hash, uid, block);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            appContext.getCommunicationLayer();
         }
         return true;
     }
