@@ -4,6 +4,7 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 public abstract class ErasureCodesImpl implements ErasureCodes{
@@ -93,7 +94,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
      * @param block_data erasure code's data
      * @param position erasure code's position
      */
-    public record ErasureBlock( byte[] block_data, int position ) implements Comparable<ErasureBlock> {
+    public record ErasureBlock( byte[] block_data, int position ) implements Comparable<ErasureBlock>, Serializable {
         @Override
         public int compareTo(ErasureBlock o) {
             if ( position != o.position )
