@@ -10,6 +10,11 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 public class InsertWorkerTask implements WorkerTask {
 
     private final Message insertRequest;
@@ -49,11 +54,20 @@ public class InsertWorkerTask implements WorkerTask {
         //Package and Insert
         try {
             MultiMap[] multiMaps = appContext.getMultiMaps();
-            for ( MultiMap multiMap : multiMaps ){
+            //Shuffle indexes
+            List<Integer> indexes = new ArrayList<>();
+            for ( int i=0; i<multiMaps.length; i++ ){
+                indexes.add( i );
+            }
+            Collections.shuffle(indexes);
+
+            //Insert
+            for ( int i = 0; i<multiMaps.length; i++ ){
+                MultiMap multiMap = multiMaps[i];
                 multiMap.insert(
                         processedData.object_lsh(),
                         processedData.object_uid(),
-                        processedData.object_erasureCodes()
+                        processedData.object_erasureCodes().getBlockAt(indexes.get(i))
                 );
             }
         } catch (Exception e) {
