@@ -2,6 +2,7 @@ package SystemLayer.Data.LSHHashImpl;
 
 import SystemLayer.Containers.DataContainer;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 public abstract class LSHHashImpl implements LSHHash{
@@ -100,7 +101,7 @@ public abstract class LSHHashImpl implements LSHHash{
      * Representation of a signature block
      * @param lshBlock signature block's data
      */
-    public record LSHHashBlock(byte[] lshBlock ) implements Comparable<LSHHashBlock>{
+    public record LSHHashBlock(byte[] lshBlock ) implements Comparable<LSHHashBlock>, Serializable {
         @Override
         public int compareTo(LSHHashBlock o) {
             return Arrays.compare(lshBlock, o.lshBlock);
