@@ -7,6 +7,10 @@ import SystemLayer.Data.LSHHashImpl.LSHHashImpl.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.*;
 
+import java.io.Serializable;
+
+import static SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.*;
+
 public interface MultiMap {
 
     //Finds and returns a reference to the LSHHashBlock stored in the multimap that corresponds to the given LSHHash
@@ -16,17 +20,17 @@ public interface MultiMap {
     void insert(
             LSHHash lshHash,
             UniqueIdentifier uniqueIdentifier,
-            ErasureCodes erasureCodes
+            ErasureBlock erasureBlock
     );
 
     //Searches and Returns an ErasureBlock
-    ErasureCodesImpl.ErasureBlock complete(
+    ErasureBlock complete(
             LSHHash lshHash,
             UniqueIdentifier uniqueIdentifier
     );
 
     //All results for a given lshHash
-    MultiMapValue[] query( LSHHash lshHash );
+    MultiMapValue[] query( LSHHashBlock lshHash );
 
     //Extras
     void setHashBlockPosition(int position);
@@ -35,9 +39,9 @@ public interface MultiMap {
     void setTotalBlocks( int totalBlocks );
     int getTotalBlocks();
 
-    public record MultiMapValue(
+    record MultiMapValue (
             LSHHash lshHash,
             UniqueIdentifier uniqueIdentifier,
             ErasureBlock ErasureCode
-    ){/**/}
+    ) implements Serializable {/**/}
 }
