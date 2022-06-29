@@ -1,5 +1,6 @@
 package SystemLayer.Components.MultiMapImpl;
 
+import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
@@ -10,7 +11,7 @@ import com.google.common.collect.*;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class GuavaInMemoryMultiMap implements MultiMap{
+public class GuavaInMemoryMultiMap extends MultiMapImpl{
 
     private final String hash_position_config = "HASH_POSITION";
     private final String number_hashes_config = "TOTAL_HASH";
@@ -19,13 +20,14 @@ public class GuavaInMemoryMultiMap implements MultiMap{
     private int total_hash_blocks;
 
     //Constructors
-    public GuavaInMemoryMultiMap(int hash_position, int total_hash_blocks){
-        this();
+    public GuavaInMemoryMultiMap(int hash_position, int total_hash_blocks, DataContainer appContext){
+        this(appContext);
         setHashBlockPosition(hash_position);
         setTotalBlocks(total_hash_blocks);
     }
 
-    public GuavaInMemoryMultiMap(){
+    public GuavaInMemoryMultiMap(DataContainer appContext){
+        super(appContext);
         this.multiMap = HashMultimap.create();
     }
 
@@ -43,12 +45,12 @@ public class GuavaInMemoryMultiMap implements MultiMap{
     }
 
     @Override
-    public void insert(LSHHash lshHash, UniqueIdentifier uniqueIdentifier, ErasureCodes erasureCodes) {
+    public void insert(LSHHash lshHash, UniqueIdentifier uniqueIdentifier, ErasureBlock erasureBlock) {
         //Build value
         MultiMapValue mapValue = new MultiMapValue(
                 lshHash,
                 uniqueIdentifier,
-                erasureCodes.getBlockAt(hash_position)
+                erasureBlock
         );
 
         //Insert Values
@@ -64,35 +66,14 @@ public class GuavaInMemoryMultiMap implements MultiMap{
                 return multiMapValue.ErasureCode();
             }
         }
-
         return null;
     }
 
     @Override
-    public MultiMapValue[] query(LSHHash lshHash) {
-        Collection<MultiMapValue> collection = multiMap.get( lshHash.getBlockAt(hash_position) );
+    public MultiMapValue[] query(LSHHashImpl.LSHHashBlock lshHash) {
+        Collection<MultiMapValue> collection = multiMap.get( lshHash );
         MultiMapValue[] result = new MultiMapValue[collection.size()];
         collection.toArray(result);
         return result;
-    }
-
-    @Override
-    public void setHashBlockPosition(int position) {
-        this.hash_position = position;
-    }
-
-    @Override
-    public int getHashBlockPosition() {
-        return hash_position;
-    }
-
-    @Override
-    public void setTotalBlocks(int totalBlocks) {
-        this.total_hash_blocks = totalBlocks;
-    }
-
-    @Override
-    public int getTotalBlocks() {
-        return total_hash_blocks;
     }
 }
