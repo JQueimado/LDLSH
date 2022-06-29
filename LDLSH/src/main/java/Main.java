@@ -1,4 +1,5 @@
 import Factories.ComponentFactories.SystemServerFactory;
+import SystemLayer.Components.SystemServer.SystemImpl;
 import SystemLayer.Components.SystemServer.SystemServer;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
@@ -13,8 +14,7 @@ public class Main {
         DataContainer dataContainer = new DataContainer(args[0]);
 
         //Crete application
-        SystemServerFactory systemServerFactory = new SystemServerFactory();
-        SystemServer system = systemServerFactory.newSystemServer(dataContainer);
+        SystemServer system = new SystemImpl(dataContainer);
 
         //UI configurations
         Scanner scanner = new Scanner(System.in);

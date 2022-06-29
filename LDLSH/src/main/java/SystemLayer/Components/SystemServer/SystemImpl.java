@@ -14,15 +14,13 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class CentralizedSystem implements SystemServer {
+public class SystemImpl implements SystemServer {
 
     private DataContainer context;
 
-    public CentralizedSystem( DataContainer context ) throws Exception {
+    public SystemImpl(DataContainer context ) throws Exception {
         this.context = context;
 
         //Setup
@@ -40,12 +38,6 @@ public class CentralizedSystem implements SystemServer {
             multiMaps[i] = current;
         }
         context.setMultiMaps(multiMaps);
-
-        //-Executor Service
-        int threads = Integer.parseInt( configurator.getConfig("N_THREADS") );
-        ExecutorService executorService = Executors.newFixedThreadPool( threads );
-        context.setExecutorService(executorService);
-
     }
 
     @Override
