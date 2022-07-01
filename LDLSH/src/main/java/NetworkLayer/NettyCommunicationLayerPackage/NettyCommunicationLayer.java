@@ -12,6 +12,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 
 import java.util.HashMap;
@@ -87,7 +89,12 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         Promise<Message> promise = channel.eventLoop().newPromise();
         client_queue.offer(promise);
 
-        channel.writeAndFlush(message).get();
+        channel.writeAndFlush(message).addListener( future -> {
+            if( future.isDone() )
+                System.out.println("Message Sent to: "+ channel.remoteAddress());
+            else
+                System.out.println("Error sending message to: " + channel.remoteAddress());
+        }).get();
 
         return promise;
     }
