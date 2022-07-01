@@ -10,6 +10,7 @@ import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.SystemExceptions.UnknownConfigException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,17 +19,26 @@ import java.util.concurrent.Future;
 
 public class SystemImpl implements SystemServer {
 
-    private DataContainer context;
+    private static final String nBands_config = "N_BANDS";
+
+    private final DataContainer context;
 
     public SystemImpl(DataContainer context ) throws Exception {
         this.context = context;
 
         //Setup
         Configurator configurator = context.getConfigurator();
-        int bands = Integer.parseInt( configurator.getConfig("N_BANDS") );
+        String bands_string = "";
+        int bands = 0;
+        try {
+            bands_string = configurator.getConfig(nBands_config);
+            bands = Integer.parseInt(bands_string);
+        }catch (Exception e){
+            UnknownConfigException.handler( new UnknownConfigException(nBands_config, bands_string));
+        }
 
         //-MultiMaps
-        MultimapFactory multimapFactory = new MultimapFactory();
+        MultimapFactory multimapFactory = new MultimapFactory(context);
         String multimapConfig = configurator.getConfig("MULTIMAP");
         MultiMap[] multiMaps = new MultiMap[bands];
         for ( int i = 0; i<bands; i++ ){
@@ -38,11 +48,14 @@ public class SystemImpl implements SystemServer {
             multiMaps[i] = current;
         }
         context.setMultiMaps(multiMaps);
+
+        //-Communication
+        context.getCommunicationLayer();
     }
 
     @Override
     public Future insert(DataObject object) throws Exception {
-        List<Serializable> objectList = new ArrayList<>();
+        List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
         WorkerTask insertWorkerTask = new InsertWorkerTask(insertMessage, context );
@@ -51,7 +64,7 @@ public class SystemImpl implements SystemServer {
 
     @Override
     public DataObject query(DataObject queryObject) throws Exception {
-        List<Serializable> objectList = new ArrayList<>();
+        List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
         WorkerTask queryWorkerTask = new StandardQueryWorkerTask(queryMessage, context );
