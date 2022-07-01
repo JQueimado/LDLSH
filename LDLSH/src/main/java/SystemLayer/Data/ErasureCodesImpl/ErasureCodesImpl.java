@@ -1,9 +1,12 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -86,6 +89,21 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
         byte[] result = new byte[size];
         System.arraycopy(data, 0, result, 0, Math.min(data.length, size));
         return result;
+    }
+
+    //Serialization
+    @Serial
+    private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
+        stream.writeObject(erasureBlocks);
+        stream.writeInt(number_of_blocks);
+        stream.writeObject(total_blocks);
+    }
+
+    @Serial
+    private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        erasureBlocks = (ErasureBlock[]) stream.readObject();
+        number_of_blocks = stream.readInt();
+        total_blocks = stream.readInt();
     }
 
     //Subclasses
