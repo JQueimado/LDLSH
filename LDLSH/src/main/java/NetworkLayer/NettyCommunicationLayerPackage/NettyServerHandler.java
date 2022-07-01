@@ -2,7 +2,7 @@ package NetworkLayer.NettyCommunicationLayerPackage;
 
 import NetworkLayer.Message;
 import NetworkLayer.MessageImpl;
-import SystemLayer.Components.MultiMapImpl.MultiMap.MultiMapValue;
+import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Components.TaskImpl.Multimap.CompletionMultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.InsertMultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.MultimapTask;
@@ -12,105 +12,95 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class NettyServerHandler extends ChannelInboundHandlerAdapter {
-    private ByteBuf tmp;
+public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
     private DataContainer appContext;
+    private ExecutorService callBackExecutor;
 
     public void setAppContext( DataContainer appContext ){
         this.appContext = appContext;
+        this.callBackExecutor = Executors.newFixedThreadPool(5);
     }
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        System.out.println("Handler added");
-        tmp = ctx.alloc().buffer(4);
+        System.out.println("Handler added from" + ctx.channel().remoteAddress());
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        System.out.println("Handler removed");
-        tmp.release();
-        tmp = null;
+        System.out.println("Handler removed from "  + ctx.channel().remoteAddress());
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        ByteBuf m = (ByteBuf) msg;
-        tmp.writeBytes(m);
-        m.release();
-        if (tmp.readableBytes() >= 4) {
-            Message message = (Message) msg;
-            //Process
-            try {
-                switch (message.getType()) {
-                    case COMPLETION_MESSAGE -> {
-                        if( message.getBody().size() != 2 )
-                            throw new Exception("Invalid body Size for message type: COMPLETION_MESSAGE");
+    public void channelRead0(ChannelHandlerContext ctx, Message message) {
+        System.out.println( "Received message from " + ctx.channel().remoteAddress() + "->" + message.getType() );
 
-                        LSHHash hash = (LSHHash) message.getBody().get(0);
-                        UniqueIdentifier uid = (UniqueIdentifier) message.getBody().get(1);
-
-                        MultimapTask task = new CompletionMultimapTask(hash, uid, appContext);
-                        appContext.getExecutorService().submit(task);
-                    }
-
-                    case COMPLETION_RESPONSE -> {
-
-                    }
-
-                    case INSERT_MESSAGE -> {
-                        if( message.getBody().size() != 3 )
-                            throw new Exception("Invalid body Size for message type: INSERT_MESSAGE");
-
-                        MultimapTask<Boolean> task = new InsertMultimapTask(message, appContext);
-                        ListenableFuture<Boolean> result = appContext.getExecutorService().submit(task);
-                        result.addListener(() ->{
-                            Boolean bool;
-                            try {
-                                bool = result.get();
-                            }catch (Exception e){
-                                bool = false;
-                            }
-                            List<Serializable> responseBody = new ArrayList<>();
-                            responseBody.add(bool);
-                            Message response = new MessageImpl(Message.types.QUERY_RESPONSE, responseBody);
-                            ctx.writeAndFlush(response);
-                        }, appContext.getExecutorService());
-                    }
-
-                    case QUERY_MESSAGE_SINGLE_BLOCK -> {
-                        if( message.getBody().size() != 1 ){
-                            throw new Exception("Invalid body Size for message type: QUERY_MESSAGE_SINGLE_BLOCK");
+        //Process
+        try {
+            switch (message.getType()) {
+                //Multimap Server Side
+                case COMPLETION_MESSAGE -> {
+                    MultimapTask task = new CompletionMultimapTask(message, appContext);
+                    ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
+                    responseFuture.addListener( ()->{
+                        try {
+                            Message response = responseFuture.get();
+                            ctx.writeAndFlush( response );
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            ctx.writeAndFlush("ERROR:Performing operation");
                         }
-
-                        LSHHashImpl.LSHHashBlock block = (LSHHashImpl.LSHHashBlock) message.getBody().get(0);
-
-                        QueryMultimapTask task = new QueryMultimapTask(block, appContext);
-                        ListenableFuture<List<MultiMapValue>> result = appContext.getExecutorService().submit(task);
-                        result.addListener( () ->{
-                            List<Serializable> responseBody;
-                            try {
-                                responseBody = result.get();
-                            }catch ( Exception e ){
-                                responseBody = new ArrayList<>();
-                                responseBody.add("Error:"+e.getMessage());
-                            }
-                            Message queryResult = new MessageImpl(Message.types.QUERY_RESPONSE, responseBody);
-                            ctx.writeAndFlush(queryResult);
-                        } );
-                    }
+                    }, callBackExecutor);
                 }
-            }catch (Exception e ){
-                e.printStackTrace();
+
+                case INSERT_MESSAGE -> {
+                    if( message.getBody().size() != 3 )
+                        throw new Exception("Invalid body Size for message type: INSERT_MESSAGE");
+
+                    MultimapTask task = new InsertMultimapTask(message, appContext);
+                    ListenableFuture<Message> result = appContext.getExecutorService().submit(task);
+                    result.addListener(() ->{
+                        try {
+                            Message response = result.get();
+                            ctx.writeAndFlush( response );
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            ctx.writeAndFlush("ERROR:Performing operation");
+                        }
+                    }, callBackExecutor);
+                }
+
+                //Queries a message through the multi maps.
+                case QUERY_MESSAGE_SINGLE_BLOCK -> {
+                    //Query
+                    QueryMultimapTask task = new QueryMultimapTask(message, appContext);
+                    ListenableFuture<Message> result = appContext.getExecutorService().submit(task);
+                    //Add listener to resulting future
+                    result.addListener( () ->{
+                        try {
+                            Message response = result.get();
+                            ctx.writeAndFlush(response);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            ctx.writeAndFlush("ERROR:Performing operation");
+                        }
+                    }, callBackExecutor );
+                }
             }
+        }catch (Exception e ){
+            e.printStackTrace();
         }
     }
 }

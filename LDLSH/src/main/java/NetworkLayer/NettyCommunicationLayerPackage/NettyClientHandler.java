@@ -1,50 +1,36 @@
 package NetworkLayer.NettyCommunicationLayerPackage;
 
 import NetworkLayer.Message;
-import SystemLayer.Containers.DataContainer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.concurrent.Promise;
 
-public class NettyClientHandler extends ChannelInboundHandlerAdapter {
-    private ByteBuf tmp;
-    private DataContainer appContext;
+import java.util.concurrent.SynchronousQueue;
 
-    public NettyClientHandler(  ){
+public class NettyClientHandler extends SimpleChannelInboundHandler<Message> {
 
-    }
+    private final SynchronousQueue<Promise<Message>> queue;
 
-    public void setAppContext( DataContainer appContext ){
-        this.appContext = appContext;
+    public NettyClientHandler( SynchronousQueue<Promise<Message>> queue ){
+        super();
+        this.queue = queue;
     }
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        tmp = ctx.alloc().buffer(4);
+        System.out.println("Handler added for" + ctx.channel().remoteAddress());
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        tmp.release();
-        tmp = null;
+        System.out.println("Handler removed for "  + ctx.channel().remoteAddress());
     }
 
     //Server Responses
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        ByteBuf m = (ByteBuf) msg;
-        tmp.writeBytes(m);
-        m.release();
-        if (tmp.readableBytes() >= 4) {
-            Message message = (Message) msg;
-            //Process
-            try {
-                switch (message.getType()) {
-
-                }
-            }catch (Exception e ){
-                e.printStackTrace();
-            }
-        }
+    public void channelRead0(ChannelHandlerContext ctx, Message msg) {
+        this.queue.remove().setSuccess(msg);
     }
 }

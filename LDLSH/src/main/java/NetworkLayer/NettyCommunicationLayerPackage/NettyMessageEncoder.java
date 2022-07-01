@@ -16,7 +16,7 @@ public class NettyMessageEncoder extends MessageToByteEncoder<Message> {
         //Body encode
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream( bos );
-        for (Serializable object : message.getBody()) {
+        for (Object object : message.getBody()) {
             oos.writeObject( object );
             oos.flush();
         }
