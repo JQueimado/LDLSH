@@ -1,7 +1,7 @@
 package SystemLayer.Components.MultiMapImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
+import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
@@ -63,7 +63,7 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
 
         for( MultiMapValue multiMapValue: multiMapValues ){
             if( uniqueIdentifier.compareTo( multiMapValue.uniqueIdentifier() ) == 0 ){
-                return multiMapValue.ErasureCode();
+                return multiMapValue.erasureCode();
             }
         }
         return null;
