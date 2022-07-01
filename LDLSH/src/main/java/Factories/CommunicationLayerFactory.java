@@ -30,7 +30,7 @@ public class CommunicationLayerFactory extends FactoryImpl {
             switch (type) {
 
                 case Netty -> {
-                    return new NettyCommunicationLayer();
+                    return new NettyCommunicationLayer(appContext);
                 }
 
                 default -> {

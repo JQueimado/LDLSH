@@ -4,25 +4,30 @@ import NetworkLayer.CommunicationLayer;
 import NetworkLayer.Message;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
+import com.google.common.util.concurrent.ListenableFutureTask;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.concurrent.Promise;
+
+import java.util.HashMap;
+import java.util.concurrent.SynchronousQueue;
 
 public class NettyCommunicationLayer implements CommunicationLayer {
 
-    private static String hasClient_config = "HAS_CLIENT";
-    private static String hasServer_config = "HAS_SERVER";
+    private static final String hasClient_config = "HAS_CLIENT";
+    private static final String hasServer_config = "HAS_SERVER";
 
     Bootstrap clientBootstrap;
     NettyReceiver nettyReceiver;
     EventLoopGroup eventExecutors;
+    SynchronousQueue<Promise<Message>> client_queue;
+
+    HashMap<String, ChannelFuture> connections;
 
     public NettyCommunicationLayer( DataContainer appContext ) throws UnknownConfigException {
         //Client
@@ -31,6 +36,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
             hasClient_string = appContext.getConfigurator().getConfig(hasClient_config);
             boolean hasClient = Boolean.parseBoolean(hasClient_string);
             if (hasClient) {
+                client_queue = new SynchronousQueue<>();
                 eventExecutors = new NioEventLoopGroup();
                 clientBootstrap = new Bootstrap();
                 clientBootstrap.group(eventExecutors);
@@ -42,10 +48,12 @@ public class NettyCommunicationLayer implements CommunicationLayer {
                         socketChannel.pipeline().addLast(
                                 new NettyMessageEncoder(),
                                 new NettyMessageDecoder(),
-                                new NettyClientHandler()
+                                new NettyClientHandler(client_queue)
                         );
                     }
                 });
+
+                connections = new HashMap<>();
             }
         }catch (IllegalArgumentException e){
             throw new UnknownConfigException( hasClient_config,  hasClient_string);
@@ -58,15 +66,30 @@ public class NettyCommunicationLayer implements CommunicationLayer {
             boolean hasServer = Boolean.parseBoolean(hasServer_string);
             if( hasServer ) {
                 nettyReceiver = new NettyReceiver(appContext);
+                nettyReceiver.run();
             }
-        }catch ( IllegalArgumentException e){
+        }catch ( Exception e){
             throw new UnknownConfigException( hasServer_config,  hasServer_string);
         }
     }
 
     @Override
-    public Message send(Message message, String hostname, int port) {
-        ChannelFuture channelFuture =
+    public Promise<Message> send(Message message, String hostname, int port) throws Exception {
+        String connectionName = hostname + ":" + port;
+        ChannelFuture channelFuture;
+        if( ( channelFuture = connections.get(connectionName) ) == null ) {
+            channelFuture = clientBootstrap.connect(hostname, port).sync();
+            connections.put( connectionName, channelFuture );
+            channelFuture.await();
+        }
+        Channel channel = channelFuture.channel();
+
+        Promise<Message> promise = channel.eventLoop().newPromise();
+        client_queue.offer(promise);
+
+        channel.writeAndFlush(message).get();
+
+        return promise;
     }
 
     //Receiver | Server side
@@ -112,6 +135,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
                         .childOption( ChannelOption.SO_KEEPALIVE, true );
 
                 ChannelFuture f = b.bind(server_port).sync();
+                System.out.println( "Server opened at port " + server_port );
                 f.channel().closeFuture().sync();
             }catch (Exception e){
                 throw new NettyServerException(e.getMessage());
