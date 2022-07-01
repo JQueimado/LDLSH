@@ -6,21 +6,21 @@ import java.util.List;
 public class MessageImpl implements Message {
 
     //Message Contents
-    private List<Serializable> body;
+    private List<Object> body;
     private types type;
 
     //Constructors
-    public MessageImpl( types type, List<Serializable> body ){
+    public MessageImpl( types type, List<Object> body ){
         this.setType(type);
         this.setBody(body);
     }
 
     //getters and setters
-    public List<Serializable> getBody() {
+    public List<Object> getBody() {
         return body;
     }
 
-    public void setBody(List<Serializable> body) {
+    public void setBody(List<Object> body) {
         this.body = body;
     }
 

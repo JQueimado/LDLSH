@@ -25,13 +25,13 @@ public interface Message extends Serializable {
      * Returns the message's body
      * @return message body as an object
      */
-    List<Serializable> getBody();
+    List<Object> getBody();
 
     /**
      * Stets the message body value
      * @param body body value
      */
-    void setBody(List<Serializable> body);
+    void setBody(List<Object> body);
 
     /**
      * Returns the message value
