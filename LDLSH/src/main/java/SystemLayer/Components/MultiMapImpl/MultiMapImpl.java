@@ -1,6 +1,7 @@
 package SystemLayer.Components.MultiMapImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
@@ -13,8 +14,8 @@ public abstract class MultiMapImpl implements MultiMap{
 
     private DataContainer appContext;
 
-    private int hash_position;
-    private int total_hash_blocks;
+    protected int hash_position;
+    protected int total_hash_blocks;
 
     public MultiMapImpl( DataContainer appContext ){
         this.appContext = appContext;
@@ -30,13 +31,13 @@ public abstract class MultiMapImpl implements MultiMap{
             LSHHash lshHash,
             UniqueIdentifier uniqueIdentifier,
             ErasureBlock erasureBlock
-    );
+    ) throws Exception ;
 
     @Override
-    public abstract ErasureBlock complete(LSHHash lshHash, UniqueIdentifier uniqueIdentifier);
+    public abstract ErasureBlock complete(LSHHash lshHash, UniqueIdentifier uniqueIdentifier) throws Exception ;
 
     @Override
-    public abstract MultiMapValue[] query(LSHHashImpl.LSHHashBlock lshHash);
+    public abstract MultiMapValue[] query(LSHHashImpl.LSHHashBlock lshHash) throws Exception ;
 
     @Override
     public void setHashBlockPosition(int position) {
@@ -57,4 +58,5 @@ public abstract class MultiMapImpl implements MultiMap{
     public int getTotalBlocks() {
         return total_hash_blocks;
     }
+
 }
