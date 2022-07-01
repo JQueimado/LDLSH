@@ -4,6 +4,7 @@ import NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
@@ -48,10 +49,11 @@ public class StandardQueryWorkerTask implements WorkerTask {
         LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
         MultiMap[] multiMaps = appContext.getMultiMaps();
-        List<MultiMap.MultiMapValue> results = new ArrayList<>();
+        List<MultiMapValue> results = new ArrayList<>();
 
-        for ( MultiMap multiMap : multiMaps ){
-            MultiMap.MultiMapValue[] multimap_results = multiMap.query( query_hash );
+        for ( int i=0; i<multiMaps.length; i++ ){
+            MultiMap multiMap = multiMaps[i];
+            MultiMapValue[] multimap_results = multiMap.query( query_hash.getBlockAt(i) );
             Collections.addAll(results, multimap_results);
         }
 
@@ -62,12 +64,12 @@ public class StandardQueryWorkerTask implements WorkerTask {
         Map<UniqueIdentifier, ErasureCodes> objectMapping = new HashMap<>();
         Map<UniqueIdentifier, LSHHash> hashMapping = new HashMap<>();
         //-group erasure codes
-        for(MultiMap.MultiMapValue multiMapValue: results){
+        for(MultiMapValue multiMapValue: results){
             ErasureCodes erasureCodes = objectMapping.get( multiMapValue.uniqueIdentifier() );
             if( erasureCodes == null ){
                 ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory()
                         .getNewErasureCodes(erasure_config);
-                temp_erasure_codes.addBlockAt( multiMapValue.ErasureCode() );
+                temp_erasure_codes.addBlockAt( multiMapValue.erasureCode() );
                 objectMapping.put( multiMapValue.uniqueIdentifier(), temp_erasure_codes );
                 hashMapping.put( multiMapValue.uniqueIdentifier(), multiMapValue.lshHash() );
             }

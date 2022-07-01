@@ -1,39 +1,43 @@
 package SystemLayer.Components.TaskImpl.Multimap;
 
+import NetworkLayer.Message;
+import NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompletionMultimapTask implements MultimapTask<ErasureCodesImpl.ErasureBlock[]> {
+import static SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.*;
 
+public class CompletionMultimapTask implements MultimapTask {
+
+    private final Message completion_message;
     private final DataContainer appContext;
-    private final LSHHash object_hash;
-    private final UniqueIdentifier uniqueIdentifier;
 
-    public CompletionMultimapTask(
-            LSHHash object_hash,
-            UniqueIdentifier uniqueIdentifier,
-            DataContainer appContext
-    ){
-        this.object_hash = object_hash;
-        this.uniqueIdentifier = uniqueIdentifier;
+    public CompletionMultimapTask( Message completion_message, DataContainer appContext ){
+        this.completion_message = completion_message;
         this.appContext = appContext;
     }
 
     @Override
-    public ErasureCodesImpl.ErasureBlock[] call() throws Exception {
+    public Message call() throws Exception {
+        if (completion_message.getBody().size() != 2)
+            throw new Exception("Invalid body Size for message type: COMPLETION_MESSAGE");
+
+        LSHHash hash = (LSHHash) completion_message.getBody().get(0);
+        UniqueIdentifier uid = (UniqueIdentifier) completion_message.getBody().get(1);
+
         MultiMap[] multiMaps = appContext.getMultiMaps();
-        List<ErasureCodesImpl.ErasureBlock> results = new ArrayList<>();
-        for ( MultiMap multiMap: multiMaps ){
-            ErasureCodesImpl.ErasureBlock block = multiMap.complete(object_hash, uniqueIdentifier);
+        List<ErasureBlock> results = new ArrayList<>();
+        for (MultiMap multiMap : multiMaps) {
+            ErasureBlock block = multiMap.complete(hash, uid);
             if (block != null)
                 results.add(block);
         }
-        return results.toArray(new ErasureCodesImpl.ErasureBlock[0]);
+        List<Object> responseBody = new ArrayList<>(results);
+        return new MessageImpl(Message.types.COMPLETION_RESPONSE, responseBody);
     }
 }
