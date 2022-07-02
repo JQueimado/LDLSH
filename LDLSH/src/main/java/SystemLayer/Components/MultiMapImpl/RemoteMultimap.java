@@ -10,6 +10,13 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.UnknownConfigException;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListenableFutureTask;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
+import io.netty.util.concurrent.Promise;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,15 +45,32 @@ public class RemoteMultimap extends MultiMapImpl{
         messageBody.add(uniqueIdentifier);
         messageBody.add(erasureBlock);
         Message insertMessage = new MessageImpl(Message.types.INSERT_MESSAGE, messageBody);
-        Message response = communicationLayer.send(insertMessage, host, port).get();
+        Promise<Message> responsePromise = communicationLayer.send(insertMessage, host, port);
 
-        if( response.getType() != Message.types.INSERT_MESSAGE_RESPONSE || response.getBody().size() != 1 ){
-            throw new Exception( "ERROR: Invalid response format" );
-        }
-        boolean result = (Boolean) response.getBody().get(0);
-        if( !result )
-            throw new Exception( "ERROR: Remote Operation failed" );
+        responsePromise.addListener(responseFuture -> {
+            try {
+                if (responseFuture.isSuccess()) {
+                    Message response = (Message) responseFuture.get();
+                    //Message type
+                    if (response.getType() != Message.types.INSERT_MESSAGE_RESPONSE) {
+                        System.err.println("Invalid response type: " + response.getType());
+                    }
 
+                    if (response.getBody().size() == 1) {
+                        System.out.println("Insert Complete");
+                    } else {
+                        System.err.println( "Remote error:\n" +
+                                (String) response.getBody().get(0) + "\n" +
+                                (String) response.getBody().get(1)
+                        );
+                    }
+                } else {
+                    System.err.println( "Unknown Server Error" );
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override

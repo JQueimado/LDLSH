@@ -13,11 +13,7 @@ import java.util.Collection;
 
 public class GuavaInMemoryMultiMap extends MultiMapImpl{
 
-    private final String hash_position_config = "HASH_POSITION";
-    private final String number_hashes_config = "TOTAL_HASH";
     private final Multimap<LSHHashImpl.LSHHashBlock, MultiMapValue> multiMap;
-    private int hash_position;
-    private int total_hash_blocks;
 
     //Constructors
     public GuavaInMemoryMultiMap(int hash_position, int total_hash_blocks, DataContainer appContext){

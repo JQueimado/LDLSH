@@ -45,7 +45,7 @@ public class StandardQueryWorkerTask implements WorkerTask {
             throw new InvalidMessageTypeException( Message.types.QUERY_REQUEST, queryRequest.getType() );
 
         //Preprocess
-        DataObject queryObject = (DataObject) queryRequest.getBody();
+        DataObject queryObject = (DataObject) queryRequest.getBody().get(0);
         LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
         MultiMap[] multiMaps = appContext.getMultiMaps();

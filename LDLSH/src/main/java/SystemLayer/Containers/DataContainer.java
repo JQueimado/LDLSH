@@ -27,6 +27,7 @@ public class DataContainer {
     public static final String nBands_config = "N_BANDS";
     public static final String dataSize_config = "VECTOR_SIZE";
     public static final String nThreads_config = "N_THREADS";
+    public static final String nCallbackThreads_config = "N_CALLBACK_THREADS";
 
     //Factories
     private DataObjectFactory dataObjectFactory = null;
@@ -41,6 +42,7 @@ public class DataContainer {
     private DistanceMeasurer distanceMeasurer = null;
     private DataProcessor dataProcessor = null;
     private CommunicationLayer communicationLayer = null;
+    private ExecutorService callbackExecutor = null;
 
     //Variables
     private int numberOfBands = -1;
@@ -106,6 +108,21 @@ public class DataContainer {
             }
         }
         return this.executorService;
+    }
+
+    //CallBack Executor
+    public ExecutorService getCallbackExecutor(){
+        if (callbackExecutor == null){
+            String nThreadString = "";
+            try {
+                nThreadString = configurator.getConfig( nCallbackThreads_config );
+                int n_threads = Integer.parseInt( nThreadString );
+                callbackExecutor = Executors.newFixedThreadPool(n_threads);
+            }catch (Exception e){
+                UnknownConfigException.handler( new UnknownConfigException( nThreads_config, nThreadString ) );
+            }
+        }
+        return this.callbackExecutor;
     }
 
     //Distance Measurer
