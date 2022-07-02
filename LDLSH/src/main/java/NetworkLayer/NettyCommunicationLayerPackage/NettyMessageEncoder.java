@@ -11,15 +11,10 @@ public class NettyMessageEncoder extends MessageToByteEncoder<Message> {
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Message message, ByteBuf byteBuf)
             throws Exception {
-        byteBuf.writeByte( message.getType().ordinal() ); //Message type
-
-        //Body encode
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream( bos );
-        for (Object object : message.getBody()) {
-            oos.writeObject( object );
-            oos.flush();
-        }
+        oos.writeObject( message );
         byteBuf.writeBytes(bos.toByteArray());
+        System.out.println( byteBuf.readableBytes() );
     }
 }

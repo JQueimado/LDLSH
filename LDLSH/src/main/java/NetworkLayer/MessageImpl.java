@@ -1,6 +1,11 @@
 package NetworkLayer;
 
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
+
+import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MessageImpl implements Message {
@@ -30,5 +35,22 @@ public class MessageImpl implements Message {
 
     public void setType(types type) {
         this.type = type;
+    }
+
+    @Serial
+    private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
+        stream.writeInt( type.ordinal() );
+        stream.writeObject( body );
+        //for( Object object : body )
+        //    stream.writeObject(object);
+    }
+
+    @Serial
+    private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        type = types.values()[ stream.readInt() ];
+        body = (List<Object>) stream.readObject();
+        //body = new ArrayList<>();
+        //while (stream. > 0)
+        //    body.add( stream.readObject() );
     }
 }
