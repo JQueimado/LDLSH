@@ -7,30 +7,35 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 
-public class NettyClientHandler extends SimpleChannelInboundHandler<Message> {
+public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
-    private final SynchronousQueue<Promise<Message>> queue;
+    private final ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
 
-    public NettyClientHandler( SynchronousQueue<Promise<Message>> queue ){
+    public NettyClientHandler( ConcurrentHashMap<Integer, Promise<Message>> transactionMap ){
         super();
-        this.queue = queue;
+        this.transactionMap = transactionMap;
     }
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        System.out.println("Handler added for" + ctx.channel().remoteAddress());
+        System.out.println("Handler added for" + ctx.channel().localAddress());
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        System.out.println("Handler removed for "  + ctx.channel().remoteAddress());
+        System.out.println("Handler removed for "  + ctx.channel().localAddress());
     }
 
     //Server Responses
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, Message msg) {
-        this.queue.remove().setSuccess(msg);
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        Message response = (Message) msg;
+        int transactionId = response.getTransactionId();
+        Promise<Message> responsePromise = transactionMap.get(transactionId);
+        transactionMap.remove( transactionId );
+        responsePromise.setSuccess( response );
     }
 }

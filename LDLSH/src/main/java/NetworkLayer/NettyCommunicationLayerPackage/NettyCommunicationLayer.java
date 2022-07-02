@@ -17,17 +17,22 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class NettyCommunicationLayer implements CommunicationLayer {
 
     private static final String hasClient_config = "HAS_CLIENT";
     private static final String hasServer_config = "HAS_SERVER";
 
-    Bootstrap clientBootstrap;
-    NettyReceiver nettyReceiver;
-    EventLoopGroup eventExecutors;
-    SynchronousQueue<Promise<Message>> client_queue;
+    private final boolean hasClient;
+
+    private Bootstrap clientBootstrap;
+    private NettyReceiver nettyReceiver;
+    private EventLoopGroup eventExecutors;
+    private ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
+    private final AtomicInteger transactionIdGenerator = new AtomicInteger();
 
     HashMap<String, ChannelFuture> connections;
 
@@ -36,9 +41,9 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         String hasClient_string = "";
         try {
             hasClient_string = appContext.getConfigurator().getConfig(hasClient_config);
-            boolean hasClient = Boolean.parseBoolean(hasClient_string);
+            hasClient = Boolean.parseBoolean(hasClient_string);
             if (hasClient) {
-                client_queue = new SynchronousQueue<>();
+                transactionMap = new ConcurrentHashMap<>();
                 eventExecutors = new NioEventLoopGroup();
                 clientBootstrap = new Bootstrap();
                 clientBootstrap.group(eventExecutors);
@@ -50,7 +55,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
                         socketChannel.pipeline().addLast(
                                 new NettyMessageEncoder(),
                                 new NettyMessageDecoder(),
-                                new NettyClientHandler(client_queue)
+                                new NettyClientHandler(transactionMap)
                         );
                     }
                 });
@@ -77,26 +82,30 @@ public class NettyCommunicationLayer implements CommunicationLayer {
 
     @Override
     public Promise<Message> send(Message message, String hostname, int port) throws Exception {
+        if( ! hasClient )
+            throw new Exception("Node has no initialized client");
+
         String connectionName = hostname + ":" + port;
         ChannelFuture channelFuture;
         if( ( channelFuture = connections.get(connectionName) ) == null ) {
             channelFuture = clientBootstrap.connect(hostname, port).sync();
             connections.put( connectionName, channelFuture );
-            channelFuture.await();
         }
         Channel channel = channelFuture.channel();
 
-        Promise<Message> promise = channel.eventLoop().newPromise();
-        client_queue.offer(promise);
+        Promise<Message> promise = channel.eventLoop().newPromise(); //Creates a response promise
 
-        channel.writeAndFlush(message).addListener( future -> {
-            if( future.isDone() )
-                System.out.println("Message Sent to: "+ channel.remoteAddress());
-            else
-                System.out.println("Error sending message to: " + channel.remoteAddress());
-        }).get();
+        //Creates a unique transaction id
+        int transactionId;
+        synchronized ( transactionIdGenerator ){
+            transactionId = transactionIdGenerator.getAndIncrement();
+        }
+        message.setTransactionId(transactionId); //Sets the message transaction id
+        transactionMap.put( transactionId, promise ); //Adds transaction to the map
 
-        return promise;
+        channel.writeAndFlush(message); //Sends message to server
+
+        return promise; //Returns the response promise
     }
 
     //Receiver | Server side
@@ -136,7 +145,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
                                 socketChannel.pipeline().addLast(
                                         new NettyMessageDecoder(),
                                         new NettyMessageEncoder(),
-                                        new NettyServerHandler());
+                                        new NettyServerHandler( appContext ));
                             }
                         }).option(ChannelOption.SO_BACKLOG, 128 )
                         .childOption( ChannelOption.SO_KEEPALIVE, true );

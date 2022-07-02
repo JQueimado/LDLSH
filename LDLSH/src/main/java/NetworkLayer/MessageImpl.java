@@ -11,6 +11,7 @@ import java.util.List;
 public class MessageImpl implements Message {
 
     //Message Contents
+    private int transaction_id;
     private List<Object> body;
     private types type;
 
@@ -18,6 +19,16 @@ public class MessageImpl implements Message {
     public MessageImpl( types type, List<Object> body ){
         this.setType(type);
         this.setBody(body);
+    }
+
+    @Override
+    public int getTransactionId() {
+        return transaction_id;
+    }
+
+    @Override
+    public void setTransactionId(int transactionId) {
+        this.transaction_id = transactionId;
     }
 
     //getters and setters
@@ -39,18 +50,15 @@ public class MessageImpl implements Message {
 
     @Serial
     private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
-        stream.writeInt( type.ordinal() );
-        stream.writeObject( body );
-        //for( Object object : body )
-        //    stream.writeObject(object);
+        stream.writeInt(  getTransactionId() );
+        stream.writeInt( getType().ordinal() );
+        stream.writeObject( getBody() );
     }
 
     @Serial
     private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
-        type = types.values()[ stream.readInt() ];
-        body = (List<Object>) stream.readObject();
-        //body = new ArrayList<>();
-        //while (stream. > 0)
-        //    body.add( stream.readObject() );
+        setTransactionId( stream.readInt() );
+        setType( types.values()[ stream.readInt() ] );
+        setBody( (List<Object>) stream.readObject() );
     }
 }

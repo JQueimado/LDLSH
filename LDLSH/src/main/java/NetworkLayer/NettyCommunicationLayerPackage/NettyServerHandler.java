@@ -11,12 +11,16 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.concurrent.FutureListener;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,9 +28,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
+public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private DataContainer appContext;
     private ExecutorService callBackExecutor;
+
+    public NettyServerHandler( DataContainer appContext ){
+        setAppContext( appContext );
+    }
 
     public void setAppContext( DataContainer appContext ){
         this.appContext = appContext;
@@ -35,7 +43,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        System.out.println("Handler added from" + ctx.channel().remoteAddress());
+        System.out.println("Handler added from " + ctx.channel().remoteAddress() + " to: " + ctx.channel().localAddress());
+
     }
 
     @Override
@@ -44,9 +53,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, Message message) {
-        System.out.println( "Received message from " + ctx.channel().remoteAddress() + "->" + message.getType() );
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        Message message = (Message) msg;
 
+        System.out.println( "Received message from " + ctx.channel().remoteAddress() + "->" + message.getType() );
         //Process
         try {
             switch (message.getType()) {
@@ -54,15 +64,26 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
                 case COMPLETION_MESSAGE -> {
                     MultimapTask task = new CompletionMultimapTask(message, appContext);
                     ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
-                    responseFuture.addListener( ()->{
-                        try {
-                            Message response = responseFuture.get();
-                            ctx.writeAndFlush( response );
-                        }catch (Exception e){
-                            e.printStackTrace();
-                            ctx.writeAndFlush("ERROR:Performing operation");
+
+                    FutureCallback<Message> responseCallback = new FutureCallback<Message>() {
+                        @Override
+                        public void onSuccess(Message response) {
+                            response.setTransactionId(message.getTransactionId());
+                            ctx.writeAndFlush(response);
                         }
-                    }, callBackExecutor);
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            //Create message body
+                            List<Object> responseBody = new ArrayList<>();
+                            responseBody.add("ERROR:Performing operation");
+                            responseBody.add(throwable.getMessage() );
+                            Message response = new MessageImpl( Message.types.COMPLETION_RESPONSE, responseBody );//Create response
+                            response.setTransactionId(message.getTransactionId() ); //Assign transaction id
+                            ctx.writeAndFlush(response); //Send response
+                        }
+                    };
+                    Futures.addCallback( responseFuture, responseCallback, callBackExecutor );
                 }
 
                 case INSERT_MESSAGE -> {
@@ -70,33 +91,52 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Message> {
                         throw new Exception("Invalid body Size for message type: INSERT_MESSAGE");
 
                     MultimapTask task = new InsertMultimapTask(message, appContext);
-                    ListenableFuture<Message> result = appContext.getExecutorService().submit(task);
-                    result.addListener(() ->{
-                        try {
-                            Message response = result.get();
-                            ctx.writeAndFlush( response );
-                        }catch (Exception e){
-                            e.printStackTrace();
-                            ctx.writeAndFlush("ERROR:Performing operation");
+                    ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
+                    FutureCallback<Message> responseCallback = new FutureCallback<Message>() {
+                        @Override
+                        public void onSuccess(Message response) {
+                            response.setTransactionId(message.getTransactionId());
+                            ctx.writeAndFlush(response);
                         }
-                    }, callBackExecutor);
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            //Create message body
+                            List<Object> responseBody = new ArrayList<>();
+                            responseBody.add("ERROR:Performing operation");
+                            responseBody.add(throwable.getMessage() );
+                            Message response = new MessageImpl( Message.types.INSERT_MESSAGE_RESPONSE, responseBody );//Create response
+                            response.setTransactionId(message.getTransactionId() ); //Assign transaction id
+                            ctx.writeAndFlush(response); //Send response
+                        }
+                    };
+                    Futures.addCallback( responseFuture, responseCallback, callBackExecutor );
                 }
 
                 //Queries a message through the multi maps.
                 case QUERY_MESSAGE_SINGLE_BLOCK -> {
                     //Query
                     QueryMultimapTask task = new QueryMultimapTask(message, appContext);
-                    ListenableFuture<Message> result = appContext.getExecutorService().submit(task);
-                    //Add listener to resulting future
-                    result.addListener( () ->{
-                        try {
-                            Message response = result.get();
+                    ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
+                    FutureCallback<Message> responseCallback = new FutureCallback<Message>() {
+                        @Override
+                        public void onSuccess(Message response) {
+                            response.setTransactionId(message.getTransactionId());
                             ctx.writeAndFlush(response);
-                        }catch (Exception e){
-                            e.printStackTrace();
-                            ctx.writeAndFlush("ERROR:Performing operation");
                         }
-                    }, callBackExecutor );
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            //Create message body
+                            List<Object> responseBody = new ArrayList<>();
+                            responseBody.add("ERROR:Performing operation");
+                            responseBody.add(throwable.getMessage() );
+                            Message response = new MessageImpl( Message.types.QUERY_RESPONSE, responseBody );//Create response
+                            response.setTransactionId(message.getTransactionId() ); //Assign transaction id
+                            ctx.writeAndFlush(response); //Send response
+                        }
+                    };
+                    Futures.addCallback( responseFuture, responseCallback, callBackExecutor );
                 }
             }
         }catch (Exception e ){

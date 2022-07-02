@@ -22,6 +22,18 @@ public interface Message extends Serializable {
     }
 
     /**
+     * Returns the message's transaction id
+     * @return id
+     */
+    int getTransactionId();
+
+    /**
+     * Sets the message's transaction id
+     * @param transactionId id
+     */
+    void setTransactionId( int transactionId );
+
+    /**
      * Returns the message's body
      * @return message body as an object
      */
