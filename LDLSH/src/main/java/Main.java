@@ -4,6 +4,9 @@ import SystemLayer.Components.SystemServer.SystemServer;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.Future;
 
@@ -34,6 +37,7 @@ public class Main {
                     "InsertInstruction:\n" +
                     "I <string> -> Inserts the <string> object into the database\n" +
                     "Q <string> -> Queries the <string> and returns its Nearest Neighbor\n" +
+                    "IF <string> -> Inserts all values from the file <string> to the database line by line\n" +
                     "E -> exit\n");
             boolean exit = false;
             while (!exit) {
@@ -47,7 +51,7 @@ public class Main {
                 }
 
                 //Create data object
-                DataObject dataObject = dataContainer.getDataObjectFactory().getNewDataObject();
+                DataObject dataObject = system.newDataObject();
 
                 dataObject.setValues(ops[1]);
 
@@ -75,8 +79,21 @@ public class Main {
                     }
 
                     //Insert File{
-                    case "EF" -> {
+                    case "IF" -> {
+                        try {
+                            String fileName = ops[1];
+                            BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName));
+                            String line;
 
+                            while ((line = fileBufferReader.readLine()) != null){
+                                DataObject<Object> temp = system.newDataObject();
+                                temp.setValues(line);
+                                system.insert(temp);
+                            }
+                        }catch (IOException e){
+                            System.err.println("File not found");
+                            e.printStackTrace();
+                        }
                     }
 
                     //Exit
