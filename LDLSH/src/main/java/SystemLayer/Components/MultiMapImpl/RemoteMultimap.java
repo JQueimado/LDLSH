@@ -95,18 +95,15 @@ public class RemoteMultimap extends MultiMapImpl{
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(lshHash);
         Message insertMessage = new MessageImpl(Message.types.QUERY_MESSAGE_SINGLE_BLOCK, messageBody);
-        Message response =communicationLayer.send(insertMessage, host, port).get();
+        Message response = communicationLayer.send(insertMessage, host, port).get();
 
         if( response.getType() != Message.types.QUERY_RESPONSE ){
             throw new Exception( "ERROR: Invalid response format" );
         }
-        boolean result = (Boolean) response.getBody().get(0);
-        if( !result )
-            throw new Exception( "ERROR: Remote Operation failed" );
 
-        MultiMapValue[] values = new MultiMapValue[messageBody.size()];
         Object[] rawValues = response.getBody().toArray();
-        System.arraycopy(values, 0, rawValues, 0, rawValues.length);
+        MultiMapValue[] values = new MultiMapValue[rawValues.length];
+        System.arraycopy(rawValues, 0, values, 0, rawValues.length);
         return values;
     }
 

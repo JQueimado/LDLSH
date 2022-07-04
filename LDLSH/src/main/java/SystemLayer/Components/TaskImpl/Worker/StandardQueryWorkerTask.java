@@ -53,14 +53,14 @@ public class StandardQueryWorkerTask implements WorkerTask {
 
         for ( int i=0; i<multiMaps.length; i++ ){
             MultiMap multiMap = multiMaps[i];
-            MultiMapValue[] multimap_results = multiMap.query( query_hash.getBlockAt(i) );
+            MultiMapValue[] multimap_results = multiMap.query( query_hash.getBlockAt( multiMap.getHashBlockPosition() ) );
             Collections.addAll(results, multimap_results);
         }
 
         if( results.size() == 0 )
             return null;
 
-        //Completion
+        //Completion Grouping
         Map<UniqueIdentifier, ErasureCodes> objectMapping = new HashMap<>();
         Map<UniqueIdentifier, LSHHash> hashMapping = new HashMap<>();
         //-group erasure codes
@@ -72,6 +72,8 @@ public class StandardQueryWorkerTask implements WorkerTask {
                 temp_erasure_codes.addBlockAt( multiMapValue.erasureCode() );
                 objectMapping.put( multiMapValue.uniqueIdentifier(), temp_erasure_codes );
                 hashMapping.put( multiMapValue.uniqueIdentifier(), multiMapValue.lshHash() );
+            }else {
+                erasureCodes.addBlockAt( multiMapValue.erasureCode() );
             }
         }
 
