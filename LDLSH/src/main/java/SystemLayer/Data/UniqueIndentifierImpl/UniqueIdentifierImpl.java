@@ -36,12 +36,16 @@ public abstract class UniqueIdentifierImpl implements UniqueIdentifier {
         return this.compareTo((UniqueIdentifier) obj) == 0;
     }
 
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(data);
+    }
+
     //Serialization
     @Serial
     private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
         stream.writeObject(data);
     }
-
     @Serial
     private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
         data = (byte[]) stream.readObject();
