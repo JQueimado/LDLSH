@@ -1,8 +1,13 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Arrays;
 
 public abstract class ErasureCodesImpl implements ErasureCodes{
@@ -49,15 +54,12 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     }
 
     @Override
-    public int compareTo( ErasureCodes o) {
+    public int compareTo( @NotNull ErasureCodes o) {
         for ( int i = 0; i<erasureBlocks.length; i++ ){
             ErasureBlock A_block = erasureBlocks[i];
             ErasureBlock B_block = o.getBlockAt(i);
 
-            if( A_block == null && B_block != null )
-                return -1;
-
-            if( B_block == null && A_block != null )
+            if( A_block == null || B_block == null )
                 return -1;
 
             if( !A_block.equals(B_block))
@@ -67,9 +69,41 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     }
 
     @Override
-    public boolean equals(Object obj) {
-        ErasureCodesImpl temp = (ErasureCodesImpl) obj;
-        return this.compareTo(temp) == 0;
+    public boolean equals( @NotNull Object obj) {
+        try {
+            ErasureCodesImpl temp = (ErasureCodesImpl) obj;
+            return this.compareTo(temp) == 0;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    //Auxiliary classes
+    /**
+     * Adds or removes zero padding from a given byte array
+     * @param data input data
+     * @param size if grater than the data size, add padding. if smaller than data size, removes padding
+     * @return new processed byte array
+     */
+    public static byte[] padding( byte[] data, int size ){
+        byte[] result = new byte[size];
+        System.arraycopy(data, 0, result, 0, Math.min(data.length, size));
+        return result;
+    }
+
+    //Serialization
+    @Serial
+    private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
+        stream.writeObject(erasureBlocks);
+        stream.writeInt(number_of_blocks);
+        stream.writeObject(total_blocks);
+    }
+
+    @Serial
+    private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        erasureBlocks = (ErasureBlock[]) stream.readObject();
+        number_of_blocks = stream.readInt();
+        total_blocks = stream.readInt();
     }
 
     //Subclasses
@@ -78,7 +112,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
      * @param block_data erasure code's data
      * @param position erasure code's position
      */
-    public record ErasureBlock( byte[] block_data, int position ) implements Comparable<ErasureBlock> {
+    public record ErasureBlock( byte[] block_data, int position ) implements Comparable<ErasureBlock>, Serializable {
         @Override
         public int compareTo(ErasureBlock o) {
             if ( position != o.position )

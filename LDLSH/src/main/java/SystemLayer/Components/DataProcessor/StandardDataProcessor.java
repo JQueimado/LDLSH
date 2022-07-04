@@ -9,18 +9,13 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.CorruptDataException;
+import SystemLayer.SystemExceptions.IncompleteBlockException;
 
 public class StandardDataProcessor extends DataProcessorImpl{
 
-    private final String LSH_config;
-    private final String Erasure_config;
-    private final String UID_config;
-
     public StandardDataProcessor(DataContainer appContext) {
         super(appContext);
-        this.LSH_config = appContext.getConfigurator().getConfig(LSHHashFactory.config_name );
-        this.Erasure_config = appContext.getConfigurator().getConfig(ErasureCodesFactory.config_name);
-        this.UID_config = appContext.getConfigurator().getConfig(UniqueIdentifierFactory.config_name);
+        appContext.setErasureCodesDataSize( appContext.getObjectByteSize() );
     }
 
     @Override
@@ -28,23 +23,23 @@ public class StandardDataProcessor extends DataProcessorImpl{
         int numberOfBlocks = appContext.getNumberOfBands();
 
         //LSH hash
-        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(LSH_config); //Gets based on config file
-        object_hash.setObject(object.toByteArray(),numberOfBlocks);
+        LSHHash object_hash = preprocessLSH(object);
 
         //Erasure codes
-        ErasureCodes object_erasureCodes = appContext.getErasureCodesFactory().getNewErasureCodes(Erasure_config);
+        ErasureCodes object_erasureCodes = appContext.getErasureCodesFactory().getNewErasureCodes();
         object_erasureCodes.encodeDataObject( object.toByteArray(), numberOfBlocks );
 
         //UID
-        UniqueIdentifier object_uniqueIdentifier = appContext.getUniqueIdentifierFactory()
-                .getNewUniqueIdentifier(UID_config);
+        UniqueIdentifier object_uniqueIdentifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier();
         object_uniqueIdentifier.setObject( object.toByteArray() );
 
         return new ProcessedData(object, object_hash, object_uniqueIdentifier, object_erasureCodes);
     }
 
     @Override
-    public DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier ) throws Exception {
+    public DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier )
+            throws CorruptDataException, IncompleteBlockException {
+
         DataObject dataObject = appContext.getDataObjectFactory().getNewDataObject();
         dataObject.setByteArray( erasureCodes.decodeDataObject() );
 
@@ -55,5 +50,13 @@ public class StandardDataProcessor extends DataProcessorImpl{
                     uniqueIdentifier);
 
         return dataObject;
+    }
+
+    @Override
+    public LSHHash preprocessLSH(DataObject object) {
+        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(); //Gets based on config file
+        object_hash.setObject(object.toByteArray(),appContext.getNumberOfBands());
+
+        return object_hash;
     }
 }

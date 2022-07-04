@@ -4,11 +4,13 @@ import NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
+import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
 import java.util.*;
 
@@ -38,35 +40,40 @@ public class StandardQueryWorkerTask implements WorkerTask {
 
     @Override
     public DataObject call() throws Exception {
-        //Preprocess
-        DataObject queryObject = (DataObject) queryRequest.getBody();
 
-        LSHHash query_hash = appContext.getLshHashFactory().getNewLSHHash();
-        query_hash.setObject(queryObject.toByteArray(), bands);
+        if( queryRequest.getType() != Message.types.QUERY_REQUEST )
+            throw new InvalidMessageTypeException( Message.types.QUERY_REQUEST, queryRequest.getType() );
+
+        //Preprocess
+        DataObject queryObject = (DataObject) queryRequest.getBody().get(0);
+        LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
         MultiMap[] multiMaps = appContext.getMultiMaps();
-        List<MultiMap.MultiMapValue> results = new ArrayList<>();
+        List<MultiMapValue> results = new ArrayList<>();
 
-        for ( MultiMap multiMap : multiMaps ){
-            MultiMap.MultiMapValue[] multimap_results = multiMap.query( query_hash );
+        for ( int i=0; i<multiMaps.length; i++ ){
+            MultiMap multiMap = multiMaps[i];
+            MultiMapValue[] multimap_results = multiMap.query( query_hash.getBlockAt( multiMap.getHashBlockPosition() ) );
             Collections.addAll(results, multimap_results);
         }
 
         if( results.size() == 0 )
             return null;
 
-        //Completion
+        //Completion Grouping
         Map<UniqueIdentifier, ErasureCodes> objectMapping = new HashMap<>();
         Map<UniqueIdentifier, LSHHash> hashMapping = new HashMap<>();
         //-group erasure codes
-        for(MultiMap.MultiMapValue multiMapValue: results){
+        for(MultiMapValue multiMapValue: results){
             ErasureCodes erasureCodes = objectMapping.get( multiMapValue.uniqueIdentifier() );
             if( erasureCodes == null ){
                 ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory()
                         .getNewErasureCodes(erasure_config);
-                temp_erasure_codes.addBlockAt( multiMapValue.ErasureCode() );
+                temp_erasure_codes.addBlockAt( multiMapValue.erasureCode() );
                 objectMapping.put( multiMapValue.uniqueIdentifier(), temp_erasure_codes );
                 hashMapping.put( multiMapValue.uniqueIdentifier(), multiMapValue.lshHash() );
+            }else {
+                erasureCodes.addBlockAt( multiMapValue.erasureCode() );
             }
         }
 
@@ -74,12 +81,11 @@ public class StandardQueryWorkerTask implements WorkerTask {
         List<DataObject> potentialCandidates = new ArrayList<>();
         for( UniqueIdentifier uid : objectMapping.keySet() ){
             ErasureCodes codes = objectMapping.get(uid);
-            DataObject temporaryObject = appContext.getDataObjectFactory().getNewDataObject(dataObject_config);
 
-            //Attempt ar decoding
+            //Attempt at decoding
+            DataObject temporaryObject = null;
             try{
-                byte[] tempData = codes.decodeDataObject();
-                temporaryObject.setByteArray(tempData);
+                temporaryObject = appContext.getDataProcessor().postProcess(codes, uid);
                 potentialCandidates.add( temporaryObject );
 
             } catch (IncompleteBlockException ibe){

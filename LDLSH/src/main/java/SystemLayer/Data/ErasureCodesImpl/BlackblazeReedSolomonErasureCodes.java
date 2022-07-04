@@ -3,22 +3,33 @@ package SystemLayer.Data.ErasureCodesImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodesLib.*;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
+import SystemLayer.SystemExceptions.UnknownConfigException;
 
 public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
     //Cada erasure code block contem um bloco de chave e um blocco de dados
+
+    private static final String fault_config_name = "ERASURE_FAULTS";
 
     //Encoders
     private static int n; //Total blocks
     private static int k; //Data blocks
     private static int t; //Parity blocks
 
-    private static ReedSolomon encoder;
+    private static ReedSolomon encoder = null;
 
-    public static void setupEncoder( int n, int k ){
-        BlackblazeReedSolomonErasureCodes.n = n;
-        BlackblazeReedSolomonErasureCodes.k = k;
-        BlackblazeReedSolomonErasureCodes.t = n-k;
+    public static void setupEncoder( DataContainer appContext ) throws UnknownConfigException {
+        n = appContext.getNumberOfBands();
+
+        String t_value = "";
+        try {
+            t_value = appContext.getConfigurator().getConfig( fault_config_name );
+            t = Integer.parseInt(t_value);
+        }catch (Exception e){
+            throw new UnknownConfigException( fault_config_name, t_value );
+        }
+
+        BlackblazeReedSolomonErasureCodes.k = n-t;
         encoder = ReedSolomon.create(k,t);
     }
 
@@ -27,17 +38,25 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
         byte[][] shards = new byte[n][shard_size];
 
         //Copy data to matrix
-        for ( int i=0; i<k; i++ )
-           System.arraycopy(data, i*shard_size, shards[i], 0, shard_size);
+        int c = 0;
+        for ( int i=0; i<shard_size; i++ ) {
+            for (int j = 0; j < k; j++) {
+                shards[j][i] = data[c];
+                c++;
+            }
+        }
 
         return shards;
     }
 
     public static byte[] shardsToByteArray( byte[][] shards, int data_size ){
         byte[] data = new byte[data_size];
-        for(int y = 0; y< k; y++){
-            int block_size = shards[y].length;
-            System.arraycopy(shards[y], 0, data, y*block_size, block_size);
+        int c = 0;
+        for (int i=0; i<shards[0].length; i++) {
+            for (int j = 0; j < k; j++) {
+                data[c] = shards[j][i];
+                c++;
+            }
         }
         return data;
     }
@@ -46,8 +65,12 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
     boolean[] isPresent;
     int block_size;
 
-    public BlackblazeReedSolomonErasureCodes( DataContainer appContext){
+    public BlackblazeReedSolomonErasureCodes( DataContainer appContext ) throws UnknownConfigException {
         super( appContext );
+
+        if( encoder == null )
+            setupEncoder(appContext);
+
         block_size = -1;
 
         isPresent = new boolean[n];
@@ -58,6 +81,10 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
     @Override
     public void encodeDataObject(byte[] object, int n_blocks) {
+        //Padding
+        int size = object.length + ( object.length % n_blocks );
+        object = padding(object, size);
+
         byte[][] shards = byteArrayToShards(object);
         encoder.encodeParity(shards, 0, shards[0].length);
 
@@ -94,9 +121,10 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
         }
 
         encoder.decodeMissing(matrix,isPresent,0,block_size);
-
         int data_size = k*block_size;
-        return shardsToByteArray(matrix, data_size);
+        byte[] data = shardsToByteArray(matrix, data_size);
+        data = padding( data, appContext.getErasureCodesDataSize() );
+        return data;
     }
 
     @Override

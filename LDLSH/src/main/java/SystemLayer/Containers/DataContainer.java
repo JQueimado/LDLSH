@@ -1,44 +1,53 @@
 package SystemLayer.Containers;
 
+import Factories.CommunicationLayerFactory;
 import Factories.ComponentFactories.DataProcessorFactory;
 import Factories.ComponentFactories.DistanceMeasurerFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
-import Factories.Factory;
-import Factories.MessageFactory;
+import NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.Configurator.Configurator;
+import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class DataContainer {
 
     //Static
-    private static final String nBands_config = "N_BANDS";
+    public static final String nBands_config = "N_BANDS";
+    public static final String dataSize_config = "VECTOR_SIZE";
+    public static final String nThreads_config = "PROCESS_THREADS";
+    public static final String nCallbackThreads_config = "CALLBACK_THREADS";
 
     //Factories
     private DataObjectFactory dataObjectFactory = null;
     private LSHHashFactory lshHashFactory = null;
     private ErasureCodesFactory erasureCodesFactory = null;
     private UniqueIdentifierFactory uniqueIdentifierFactory = null;
-    private MessageFactory messageFactory = null;
 
     //Components
-    private Configurator configurator = null;
+    private final Configurator configurator;
     private MultiMap[] multiMaps;
-    private ExecutorService executorService;
+    private ListeningExecutorService executorService;
     private DistanceMeasurer distanceMeasurer = null;
     private DataProcessor dataProcessor = null;
+    private CommunicationLayer communicationLayer = null;
+    private ExecutorService callbackExecutor = null;
 
     //Variables
     private int numberOfBands = -1;
+    private int objectByteSize = -1;
+    private int erasureCodesDataSize = -1;
 
     //Constructor
     public DataContainer( String f_name ){
@@ -76,12 +85,6 @@ public class DataContainer {
         return uniqueIdentifierFactory;
     }
 
-    public MessageFactory getMessageFactory(){
-        if(messageFactory == null)
-            messageFactory = new MessageFactory();
-        return messageFactory;
-    }
-
     //Components
     // -MultiMaps
     public void setMultiMaps( MultiMap[] multiMaps ){
@@ -93,11 +96,33 @@ public class DataContainer {
     }
 
     //-Executor Service
-    public void setExecutorService( ExecutorService executorService ){
-        this.executorService = executorService;
-    }
-    public ExecutorService getExecutorService( ){
+    public ListeningExecutorService getExecutorService( ){
+        if (executorService == null){
+            String nThreadString = "";
+            try {
+                nThreadString = configurator.getConfig( nThreads_config );
+                int n_threads = Integer.parseInt( nThreadString );
+                executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(n_threads));
+            }catch (Exception e){
+                UnknownConfigException.handler( new UnknownConfigException( nThreads_config, nThreadString ) );
+            }
+        }
         return this.executorService;
+    }
+
+    //CallBack Executor
+    public ExecutorService getCallbackExecutor(){
+        if (callbackExecutor == null){
+            String nThreadString = "";
+            try {
+                nThreadString = configurator.getConfig( nCallbackThreads_config );
+                int n_threads = Integer.parseInt( nThreadString );
+                callbackExecutor = Executors.newFixedThreadPool(n_threads);
+            }catch (Exception e){
+                UnknownConfigException.handler( new UnknownConfigException( nCallbackThreads_config, nThreadString ) );
+            }
+        }
+        return this.callbackExecutor;
     }
 
     //Distance Measurer
@@ -124,6 +149,14 @@ public class DataContainer {
         return dataProcessor;
     }
 
+    //Communication Layer
+    public CommunicationLayer getCommunicationLayer(){
+        if(communicationLayer == null){
+            communicationLayer = (new CommunicationLayerFactory(this)).getNewCommunicationLayer();
+        }
+        return communicationLayer;
+    }
+
     //Variables
     //Number of multi maps
     public int getNumberOfBands() {
@@ -131,5 +164,30 @@ public class DataContainer {
             numberOfBands = Integer.parseInt(configurator.getConfig(nBands_config));
         }
         return numberOfBands;
+    }
+
+    //Number of bytes each object contains
+    public int getObjectByteSize(){
+        if( objectByteSize == -1 ) {
+            String value = "";
+            try {
+                value = configurator.getConfig(dataSize_config);
+                DataObject temp = getDataObjectFactory().getNewDataObject();
+                objectByteSize = temp.objectByteSize( Integer.parseInt(value) );
+            } catch (Exception e) {
+                UnknownConfigException.handler(new UnknownConfigException(dataSize_config, value));
+            }
+        }
+        return objectByteSize;
+    }
+
+    //Erasure codes data size
+    public void setErasureCodesDataSize(int size){
+        if( erasureCodesDataSize == -1 )
+            erasureCodesDataSize = size;
+    }
+
+    public int getErasureCodesDataSize(){
+        return erasureCodesDataSize;
     }
 }

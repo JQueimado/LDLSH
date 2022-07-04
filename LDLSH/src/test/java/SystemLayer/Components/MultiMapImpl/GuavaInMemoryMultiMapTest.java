@@ -1,6 +1,6 @@
 package SystemLayer.Components.MultiMapImpl;
 
-import SystemLayer.Components.MultiMapImpl.MultiMap.MultiMapValue;
+import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
@@ -62,13 +62,13 @@ class GuavaInMemoryMultiMapTest {
     }
 
     @Test
-    void testGetBlock(){
-        MultiMap multiMap = new GuavaInMemoryMultiMap(0, 1);
+    void testGetBlock() throws Exception {
+        MultiMap multiMap = new GuavaInMemoryMultiMap(0, 1, simulatedState);
         int position = 0;
         multiMap.insert(
                 hashes.get(position),
                 uniqueIdentifiers.get(position),
-                erasureCodes.get(position)
+                erasureCodes.get(position).getBlockAt(0)
         );
 
         LSHHash new_hash = new JavaMinHash(objects.get(position), 1, simulatedState);
@@ -78,16 +78,16 @@ class GuavaInMemoryMultiMapTest {
     }
 
     @Test
-    void insertQueryTest() {
-        MultiMap multiMap = new GuavaInMemoryMultiMap(0,1);
+    void insertQueryTest() throws Exception {
+        MultiMap multiMap = new GuavaInMemoryMultiMap(0,1, simulatedState);
         int position = 0;
         multiMap.insert(
                 hashes.get(position),
                 uniqueIdentifiers.get(position),
-                erasureCodes.get(position)
+                erasureCodes.get(position).getBlockAt(0)
         );
 
-        MultiMapValue[] values = multiMap.query(hashes.get(position));
+        MultiMapValue[] values = multiMap.query(hashes.get(position).getBlockAt(0));
         assertEquals(1, values.length);
 
         MultiMapValue value = values[0];

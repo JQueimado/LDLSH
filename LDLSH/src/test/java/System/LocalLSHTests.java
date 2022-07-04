@@ -1,4 +1,4 @@
-package LSHTests;
+package System;
 
 import Factories.ComponentFactories.MultimapFactory;
 import Factories.DataFactories.DataObjectFactory;
@@ -7,6 +7,7 @@ import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +30,7 @@ public class LocalLSHTests {
     MultiMap[] multiMaps;
 
     @BeforeEach
-    public void before() throws IOException {
+    public void before() throws Exception {
         appContext = new DataContainer("");
         configurator = appContext.getConfigurator();
 
@@ -68,7 +68,7 @@ public class LocalLSHTests {
         int b = Integer.parseInt( configurator.getConfig("N_BANDS") );
 
         multiMaps = new MultiMap[b];
-        MultimapFactory multimapFactory = new MultimapFactory();
+        MultimapFactory multimapFactory = new MultimapFactory(appContext);
         try {
             for ( int i = 0; i<b; i++) {
                 multiMaps[i] = multimapFactory.getNewMultiMap(
@@ -90,7 +90,7 @@ public class LocalLSHTests {
         insert( object, multiMaps );
 
         //Run Query
-        List<MultiMap.MultiMapValue> results = query( object, multiMaps );
+        List<MultiMapValue> results = query( object, multiMaps );
 
         //Preprocess assertion
         UniqueIdentifier uid = appContext.getUniqueIdentifierFactory()
@@ -99,7 +99,7 @@ public class LocalLSHTests {
 
         //Assertions (All multi-maps should return the same object)
         Assertions.assertEquals(multiMaps.length, results.size());
-        for(MultiMap.MultiMapValue value : results){
+        for(MultiMapValue value : results){
             Assertions.assertEquals( 0,uid.compareTo( value.uniqueIdentifier()));
         }
     }
@@ -125,12 +125,13 @@ public class LocalLSHTests {
         erasureCodes.encodeDataObject(object.toByteArray(), multiMaps.length);
 
         //Insert
-        for (MultiMap map : multiMaps) {
-            map.insert(hash, uid, erasureCodes);
+        for ( int i=0; i<multiMaps.length; i++ ) {
+            MultiMap map = multiMaps[i];
+            map.insert(hash, uid, erasureCodes.getBlockAt(i));
         }
     }
 
-    private List<MultiMap.MultiMapValue> query(DataObject queryObject, MultiMap[] multiMaps )throws Exception{
+    private List<MultiMapValue> query(DataObject queryObject, MultiMap[] multiMaps )throws Exception{
         LSHHash hash = appContext.getLshHashFactory().getNewLSHHash();
         hash.setObject(queryObject.toByteArray(), multiMaps.length);
 
@@ -138,11 +139,12 @@ public class LocalLSHTests {
                 .getNewUniqueIdentifier("SHA256");
         uid.setObject(queryObject.toByteArray());
 
-        List<MultiMap.MultiMapValue> results = new ArrayList<>();
+        List<MultiMapValue> results = new ArrayList<>();
 
         //Query
-        for (MultiMap multiMap : multiMaps) {
-            MultiMap.MultiMapValue[] query_results = multiMap.query(hash);
+        for (int i=0; i<multiMaps.length; i++) {
+            MultiMap multiMap = multiMaps[i];
+            MultiMapValue[] query_results = multiMap.query(hash.getBlockAt(i));
             Collections.addAll(results, query_results);
         }
 

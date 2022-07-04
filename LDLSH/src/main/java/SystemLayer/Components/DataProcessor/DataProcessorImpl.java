@@ -3,6 +3,7 @@ package SystemLayer.Components.DataProcessor;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
+import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 public abstract class DataProcessorImpl implements DataProcessor {
@@ -18,6 +19,9 @@ public abstract class DataProcessorImpl implements DataProcessor {
 
     @Override
     public abstract DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier ) throws Exception;
+
+    @Override
+    public abstract LSHHash preprocessLSH(DataObject object);
 
     //Auxiliary methods
     protected boolean validate( byte [] data, UniqueIdentifier validation_uid ){

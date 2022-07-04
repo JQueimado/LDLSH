@@ -68,6 +68,9 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
         }catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalArgumentException e){
             throw new UnknownConfigException( CIPHER_ALGORITHM, algorithm );
         }
+        int data_size = appContext.getObjectByteSize();
+        int cypher_size = ( data_size/iv_size ) * ( iv_size + 1 );
+        appContext.setErasureCodesDataSize( cypher_size + key_size );
     }
 
     @Override
@@ -75,8 +78,7 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
         int n_bands = appContext.getNumberOfBands();
 
         //LSH
-        LSHHash lshHash = appContext.getLshHashFactory().getNewLSHHash(); //Creates LSH value using the raw object
-        lshHash.setObject( object.toByteArray(), n_bands );
+        LSHHash lshHash = preprocessLSH(object);
 
         //Secrete Share build
         SecretKey key = createAESKey(); //Creates a random key object
@@ -125,6 +127,14 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
         object.setByteArray(data);
 
         return object;
+    }
+
+    @Override
+    public LSHHash preprocessLSH(DataObject object) {
+        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash(); //Gets based on config file
+        object_hash.setObject(object.toByteArray(),appContext.getNumberOfBands());
+
+        return object_hash;
     }
 
     //Auxiliary methods

@@ -1,12 +1,15 @@
 package SystemLayer.Data.LSHHashImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 public abstract class LSHHashImpl implements LSHHash{
 
-    protected DataContainer appContext;
+    public static DataContainer appContext;
     public byte[] data;
     public LSHHashBlock[] blocks;
 
@@ -15,7 +18,7 @@ public abstract class LSHHashImpl implements LSHHash{
      * @param appContext application context
      */
     public LSHHashImpl(DataContainer appContext){
-        this.appContext = appContext;
+        LSHHashImpl.appContext = appContext;
     }
 
     //Abstract methods
@@ -95,12 +98,23 @@ public abstract class LSHHashImpl implements LSHHash{
         return blockArray;
     }
 
+    //Serialization
+    private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
+        stream.writeObject(data);
+        stream.writeObject(blocks);
+    }
+
+    private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        data = (byte[]) stream.readObject();
+        blocks = (LSHHashBlock[]) stream.readObject();
+    }
+
     // Subclasses
     /**
      * Representation of a signature block
      * @param lshBlock signature block's data
      */
-    public record LSHHashBlock(byte[] lshBlock ) implements Comparable<LSHHashBlock>{
+    public record LSHHashBlock(byte[] lshBlock ) implements Comparable<LSHHashBlock>, Serializable {
         @Override
         public int compareTo(LSHHashBlock o) {
             return Arrays.compare(lshBlock, o.lshBlock);

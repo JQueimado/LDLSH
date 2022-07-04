@@ -1,7 +1,7 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Components.SystemServer.CentralizedSystem;
+import SystemLayer.Components.SystemServer.SystemImpl;
 import SystemLayer.Components.SystemServer.SystemServer;
 import SystemLayer.Containers.DataContainer;
 
@@ -14,7 +14,7 @@ public class SystemServerFactory implements Factory {
 
         switch (config){
             case CENTRAL -> {
-                return new CentralizedSystem(dataContainer);
+                return new SystemImpl(dataContainer);
             }
 
             default -> {

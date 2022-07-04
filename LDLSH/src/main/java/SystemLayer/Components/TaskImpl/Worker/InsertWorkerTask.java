@@ -1,12 +1,19 @@
 package SystemLayer.Components.TaskImpl.Worker;
 
 import NetworkLayer.Message;
+import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.InvalidMessageTypeException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 public class InsertWorkerTask implements WorkerTask {
 
@@ -34,24 +41,34 @@ public class InsertWorkerTask implements WorkerTask {
 
     @Override
     public DataObject call() throws Exception {
-        DataObject object = (DataObject) insertRequest.getBody();
+        if( insertRequest.getType() != Message.types.INSERT_REQUEST )
+            throw new InvalidMessageTypeException(
+                    Message.types.INSERT_REQUEST,
+                    insertRequest.getType());
+
+        DataObject object = (DataObject) insertRequest.getBody().get(0);
 
         //PREPROCESS
-        LSHHash object_hash = appContext.getLshHashFactory().getNewLSHHash();
-        object_hash.setObject(object.toByteArray(), bands);
-
-        ErasureCodes object_erasure_codes = appContext.getErasureCodesFactory()
-                .getNewErasureCodes( erasure_config );
-        object_erasure_codes.encodeDataObject(object.toByteArray(),bands);
-
-        UniqueIdentifier object_unique_identifier = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier(uid_config);
-        object_unique_identifier.setObject(object.toByteArray());
+        DataProcessor.ProcessedData processedData = appContext.getDataProcessor().preProcessData(object);
 
         //Package and Insert
         try {
             MultiMap[] multiMaps = appContext.getMultiMaps();
-            for ( MultiMap multiMap : multiMaps ){
-                multiMap.insert(object_hash, object_unique_identifier, object_erasure_codes);
+            //Shuffle indexes
+            List<Integer> indexes = new ArrayList<>();
+            for ( int i=0; i<multiMaps.length; i++ ){
+                indexes.add( i );
+            }
+            Collections.shuffle(indexes);
+
+            //Insert
+            for ( int i = 0; i<multiMaps.length; i++ ){
+                MultiMap multiMap = multiMaps[i];
+                multiMap.insert(
+                        processedData.object_lsh(),
+                        processedData.object_uid(),
+                        processedData.object_erasureCodes().getBlockAt(indexes.get(i))
+                );
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,11 +1,11 @@
 package SystemLayer.Components.MultiMapImpl;
 
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
+import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHashImpl.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.*;
+
+import static SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.*;
 
 public interface MultiMap {
 
@@ -16,17 +16,17 @@ public interface MultiMap {
     void insert(
             LSHHash lshHash,
             UniqueIdentifier uniqueIdentifier,
-            ErasureCodes erasureCodes
-    );
+            ErasureBlock erasureBlock
+    ) throws Exception;
 
     //Searches and Returns an ErasureBlock
-    ErasureCodesImpl.ErasureBlock complete(
+    ErasureBlock complete(
             LSHHash lshHash,
             UniqueIdentifier uniqueIdentifier
-    );
+    ) throws Exception;
 
     //All results for a given lshHash
-    MultiMapValue[] query( LSHHash lshHash );
+    MultiMapValue[] query(LSHHashBlock lshHash ) throws Exception ;
 
     //Extras
     void setHashBlockPosition(int position);
@@ -35,9 +35,4 @@ public interface MultiMap {
     void setTotalBlocks( int totalBlocks );
     int getTotalBlocks();
 
-    public record MultiMapValue(
-            LSHHash lshHash,
-            UniqueIdentifier uniqueIdentifier,
-            ErasureBlock ErasureCode
-    ){/**/}
 }

@@ -3,8 +3,10 @@ package SystemLayer.Data.LSHHashImpl;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.SystemExceptions.UnknownConfigException;
 import info.debatty.java.lsh.MinHash;
 
+import javax.naming.ConfigurationException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
@@ -13,28 +15,10 @@ import java.util.Set;
 
 public class JavaMinHash extends LSHHashImpl{
 
-    /** Static methods, variables and constants **/
-
     //constants
     public static final String ERROR = "ERROR";
     public static final String LSH_SEED = "LSH_SEED";
 
-    private static MinHash minHash = null;
-
-    protected static boolean isSetup(){
-        return minHash != null;
-    }
-
-    /**
-     * Returns the MinHash encoder
-     * @return returns the encoder if its already setup, null if not
-     */
-    public static MinHash getMinHash(){
-        return minHash;
-    }
-
-    // Objects context
-    // Object Constructor
     public JavaMinHash(DataContainer dataContainer){
         super(dataContainer);
     }
@@ -46,10 +30,7 @@ public class JavaMinHash extends LSHHashImpl{
 
     @Override
     public void setObject( byte[] object, int n_blocks ){
-        if ( !isSetup() )
-            setupMinHash(object.length, appContext);
-
-       this.data = getSignature( object );
+       this.data = getSignature( toIntSet( object ) );
        this.blocks = createBlocks(this.data, n_blocks);
     }
 
@@ -87,53 +68,35 @@ public class JavaMinHash extends LSHHashImpl{
      * @param data Input Array.
      * @return Array representation of a signature.
      */
-    protected byte[] getSignature( byte[] data ){
+    protected byte[] getSignature( Set<Integer> data ){
         try {
-            //GetSignature
-            Set<Integer> intData = toIntSet(data);
-            int[] signature = JavaMinHash.getMinHash().signature(intData);
-            return toByteArray(signature);
-        } catch (Exception e) {
-            System.out.println("ERROR: "+ e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Prepares the MinHash encoder
-     * @param appContext context containing the configurations
-     */
-    protected void setupMinHash( int vector_dimensions, DataContainer appContext ){ //l-n+1
-        try {
-
-            if (appContext == null) {
-                throw new Exception("No DataContainer was provided");
-            }
-
             Configurator configurator = appContext.getConfigurator();
 
             //Get Accuracy
             String accuracy_string = configurator.getConfig(JavaMinHash.ERROR);
             double accuracy_error;
             if (accuracy_string.isBlank())
-                throw new Exception("JavaMinHash requires ERROR configuration");
-            else
-                accuracy_error = Double.parseDouble(accuracy_string);
+                throw new UnknownConfigException(ERROR, accuracy_string);
+            accuracy_error = Double.parseDouble(accuracy_string);
 
             //Get Seed
             String seed_string = configurator.getConfig(LSH_SEED);
             long seed;
             if (seed_string.isBlank())
-                throw new Exception("JavaMinHash requires " + LSH_SEED + " configuration");
+                throw new UnknownConfigException(LSH_SEED, seed_string);
             seed = Long.parseLong(seed_string);
 
-            //Setup
-            minHash = new MinHash(accuracy_error, vector_dimensions, seed);
-        } catch (Exception e){
-            System.out.println( e.getMessage() );
-            e.printStackTrace();
-            minHash = null;
+            //Setup Encoder
+            MinHash minHash = new MinHash(accuracy_error, data.size(), seed);
+
+            //Create Signature
+            int[] signature = minHash.signature(data);
+
+            return toByteArray(signature);
+
+        } catch (UnknownConfigException e){
+            UnknownConfigException.handler(e);
+            return null;
         }
     }
 }

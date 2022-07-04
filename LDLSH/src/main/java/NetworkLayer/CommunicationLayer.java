@@ -1,10 +1,11 @@
 package NetworkLayer;
 
+import io.netty.util.concurrent.Promise;
+
 public interface CommunicationLayer {
-    public void broadcast( Message message );
-    public void send( Message message );
+    public Promise<Message> send(Message message, String hostname, int port ) throws Exception ;
 
     public interface Receiver {
-        public void run();
+        public void run() throws Exception;
     }
 }
