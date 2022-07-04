@@ -15,6 +15,6 @@ public class NettyMessageEncoder extends MessageToByteEncoder<Message> {
         ObjectOutputStream oos = new ObjectOutputStream( bos );
         oos.writeObject( message );
         byteBuf.writeBytes(bos.toByteArray());
-        System.out.println( byteBuf.readableBytes() );
+        System.out.println( "Sent "+message.getType()+" message of size: " + byteBuf.readableBytes() );
     }
 }

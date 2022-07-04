@@ -54,7 +54,6 @@ public class NettyCommunicationLayer implements CommunicationLayer {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         socketChannel.pipeline().addLast(
                                 new NettyMessageEncoder(),
-                                new NettyMessageDecoder(),
                                 new NettyClientHandler(transactionMap)
                         );
                     }
@@ -143,7 +142,6 @@ public class NettyCommunicationLayer implements CommunicationLayer {
                             @Override
                             protected void initChannel(SocketChannel socketChannel) throws Exception {
                                 socketChannel.pipeline().addLast(
-                                        new NettyMessageDecoder(),
                                         new NettyMessageEncoder(),
                                         new NettyServerHandler( appContext ));
                             }

@@ -22,6 +22,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.FutureListener;
 import io.netty.util.concurrent.GenericFutureListener;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.concurrent.Executors;
 public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private DataContainer appContext;
     private ExecutorService callBackExecutor;
+    private ByteBuf temp;
 
     public NettyServerHandler( DataContainer appContext ){
         setAppContext( appContext );
@@ -38,25 +41,45 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     public void setAppContext( DataContainer appContext ){
         this.appContext = appContext;
-        this.callBackExecutor = Executors.newFixedThreadPool(5);
+        this.callBackExecutor = appContext.getCallbackExecutor();
     }
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
         System.out.println("Handler added from " + ctx.channel().remoteAddress() + " to: " + ctx.channel().localAddress());
-
+        temp = ctx.alloc().directBuffer();
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
         System.out.println("Handler removed from "  + ctx.channel().remoteAddress());
+        temp.release();
+        temp = null;
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        Message message = (Message) msg;
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        temp.writeBytes( (ByteBuf) msg);
+    }
 
-        System.out.println( "Received message from " + ctx.channel().remoteAddress() + "->" + message.getType() );
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        //Decode
+        byte[] body = new byte[temp.writerIndex()];
+        temp.readBytes(body);
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(body);
+        ObjectInputStream ois = new ObjectInputStream( bis );
+
+        //Process
+        Message message = (Message) ois.readObject();
+        System.out.println( "Received "+message.getType()
+                +" message from "+ctx.channel().remoteAddress()
+                +" of size: "+temp.writerIndex()
+        );
+        temp.release();
+        temp = ctx.alloc().directBuffer();
+
         //Process
         try {
             switch (message.getType()) {
