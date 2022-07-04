@@ -61,7 +61,8 @@ public class Main {
 
                     //Query
                     case "Q" -> {
-                        DataObject result = system.query(dataObject);
+                        Future<DataObject> resultFuture = system.query(dataObject);
+                        DataObject result = resultFuture.get();
 
                         if (result == null) {
                             System.out.println("System returned null value");
@@ -71,6 +72,11 @@ public class Main {
                         DataObject<String> string = (DataObject<String>) result;
 
                         System.out.printf("Result:%s\n", string.getValues());
+                    }
+
+                    //Insert File{
+                    case "EF" -> {
+
                     }
 
                     //Exit
