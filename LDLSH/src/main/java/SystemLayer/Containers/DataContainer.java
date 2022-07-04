@@ -26,8 +26,8 @@ public class DataContainer {
     //Static
     public static final String nBands_config = "N_BANDS";
     public static final String dataSize_config = "VECTOR_SIZE";
-    public static final String nThreads_config = "N_THREADS";
-    public static final String nCallbackThreads_config = "N_CALLBACK_THREADS";
+    public static final String nThreads_config = "PROCESS_THREADS";
+    public static final String nCallbackThreads_config = "CALLBACK_THREADS";
 
     //Factories
     private DataObjectFactory dataObjectFactory = null;
@@ -119,7 +119,7 @@ public class DataContainer {
                 int n_threads = Integer.parseInt( nThreadString );
                 callbackExecutor = Executors.newFixedThreadPool(n_threads);
             }catch (Exception e){
-                UnknownConfigException.handler( new UnknownConfigException( nThreads_config, nThreadString ) );
+                UnknownConfigException.handler( new UnknownConfigException( nCallbackThreads_config, nThreadString ) );
             }
         }
         return this.callbackExecutor;
