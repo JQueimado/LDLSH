@@ -98,8 +98,8 @@ public class StandardQueryWorkerTask implements WorkerTask {
                     codes.addBlockAt(block);
                 }
 
-                byte[] tempData = codes.decodeDataObject();
-                temporaryObject.setByteArray(tempData);
+                //Decode again #Shuld not throw an Incomplete Block Exception
+                temporaryObject = appContext.getDataProcessor().postProcess(codes, uid);
                 potentialCandidates.add( temporaryObject );
 
             }

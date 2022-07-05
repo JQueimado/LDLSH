@@ -21,6 +21,6 @@ public class JaccardDistance implements DistanceMeasurer{
 
     @Override
     public double getDistance(DataObject object_a, DataObject object_b) {
-        return MinHash.jaccardIndex( toIntSet(object_a.toByteArray()), toIntSet(object_b.toByteArray()) );
+        return 1 - MinHash.jaccardIndex( toIntSet(object_a.toByteArray()), toIntSet(object_b.toByteArray()) );
     }
 }

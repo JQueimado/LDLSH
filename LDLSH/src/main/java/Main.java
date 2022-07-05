@@ -85,10 +85,14 @@ public class Main {
                             BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName));
                             String line;
 
-                            while ((line = fileBufferReader.readLine()) != null){
+                            //DEBUG
+                            int i = 5;
+
+                            while ((line = fileBufferReader.readLine()) != null || i <= 0 ){
                                 DataObject<Object> temp = system.newDataObject();
                                 temp.setValues(line);
                                 system.insert(temp);
+                                i--;
                             }
                         }catch (IOException e){
                             System.err.println("File not found");
