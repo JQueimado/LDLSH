@@ -2,6 +2,7 @@ package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
+import io.netty.buffer.ByteBuf;
 
 public class SimplePartitionErasureCodes extends ErasureCodesImpl {
 
@@ -10,19 +11,15 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
     }
 
     @Override
-    public void encodeDataObject(byte[] object, int n_blocks) {
+    public void encodeDataObject(byte[] object, int n_blocks) throws Exception {
         total_blocks = n_blocks;
         number_of_blocks = n_blocks;
         erasureBlocks = new ErasureBlock[n_blocks];
 
-        //padding
-        int data_size = object.length;
-        if ( object.length % n_blocks != 0 ) {
-            data_size = ((object.length / n_blocks) * n_blocks) + n_blocks;
-            object = padding(object, data_size);
-        }
+        //Add 1 byte for padding value
+        object = addPadding( object );
 
-        int block_length = data_size / n_blocks;
+        int block_length = object.length / n_blocks;
         //Create Blocks
         for( int i = 0; i<n_blocks; i++ ){
             byte[] block = new byte[block_length];
@@ -59,7 +56,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         }
 
         //padding
-        data = padding(data, appContext.getErasureCodesDataSize());
+        data = removePadding( data );
         return data;
     }
 

@@ -46,8 +46,6 @@ public class DataContainer {
 
     //Variables
     private int numberOfBands = -1;
-    private int objectByteSize = -1;
-    private int erasureCodesDataSize = -1;
 
     //Constructor
     public DataContainer( String f_name ){
@@ -164,30 +162,5 @@ public class DataContainer {
             numberOfBands = Integer.parseInt(configurator.getConfig(nBands_config));
         }
         return numberOfBands;
-    }
-
-    //Number of bytes each object contains
-    public int getObjectByteSize(){
-        if( objectByteSize == -1 ) {
-            String value = "";
-            try {
-                value = configurator.getConfig(dataSize_config);
-                DataObject temp = getDataObjectFactory().getNewDataObject();
-                objectByteSize = temp.objectByteSize( Integer.parseInt(value) );
-            } catch (Exception e) {
-                UnknownConfigException.handler(new UnknownConfigException(dataSize_config, value));
-            }
-        }
-        return objectByteSize;
-    }
-
-    //Erasure codes data size
-    public void setErasureCodesDataSize(int size){
-        if( erasureCodesDataSize == -1 )
-            erasureCodesDataSize = size;
-    }
-
-    public int getErasureCodesDataSize(){
-        return erasureCodesDataSize;
     }
 }

@@ -30,7 +30,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
 
     //Abstract methods
     @Override
-    public abstract void encodeDataObject(byte[] object, int n_blocks);
+    public abstract void encodeDataObject(byte[] object, int n_blocks) throws Exception ;
 
     @Override
     public abstract byte[] decodeDataObject() throws IncompleteBlockException;
@@ -82,12 +82,41 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     /**
      * Adds or removes zero padding from a given byte array
      * @param data input data
-     * @param size if grater than the data size, add padding. if smaller than data size, removes padding
      * @return new processed byte array
      */
-    public static byte[] padding( byte[] data, int size ){
-        byte[] result = new byte[size];
-        System.arraycopy(data, 0, result, 0, Math.min(data.length, size));
+    public byte[] addPadding( byte[] data ) throws Exception {
+
+        //Add space for padding var
+        byte[] paddingObject = new byte[data.length+1];
+        System.arraycopy(data, 0, paddingObject, 1, data.length);
+        data = paddingObject;
+
+        //Calculate padding size
+        int paddingSize = 0;
+        if( data.length % total_blocks != 0 ){
+            int sizeFittedByBlocks = (data.length / total_blocks) * total_blocks;
+            int sizePlusExtraBlock = sizeFittedByBlocks + total_blocks;
+            paddingSize = sizePlusExtraBlock - data.length;
+        }
+
+        //Set padding size
+        if( paddingSize > 255 )
+            throw new Exception("Invalid Padding size: " + paddingSize);
+        data[0] = (byte) paddingSize;
+
+        //Copy to new Array
+        byte[] result = new byte[data.length + paddingSize];
+        System.arraycopy(data, 0, result, 0, data.length);
+        return result;
+    }
+
+    public byte[] removePadding( byte[] data ){
+
+        //Get padding size
+        int paddingSize = data[0] & 0xFF;
+        byte[] result = new byte[ data.length - paddingSize - 1 ];
+
+        System.arraycopy(data, 1, result, 0, result.length);
         return result;
     }
 

@@ -10,7 +10,7 @@ public interface ErasureCodes extends Serializable, Comparable<ErasureCodes> {
      * @param data object subject to encoding
      * @param n_blocks total number of data objects
      */
-    void encodeDataObject( byte[] data, int n_blocks );
+    void encodeDataObject( byte[] data, int n_blocks ) throws Exception ;
 
     /**
      * Decodes the stored erasure codes into a given data object.
@@ -18,8 +18,7 @@ public interface ErasureCodes extends Serializable, Comparable<ErasureCodes> {
      * @throws IncompleteBlockException thrown when the number of store erasure codes is not
      * sufficient to generate the data object.
      */
-    byte[] decodeDataObject()
-            throws IncompleteBlockException;
+    byte[] decodeDataObject() throws IncompleteBlockException;
 
     /**
      * Adds an Erasure block to its predefined position

@@ -68,9 +68,10 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
         }catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalArgumentException e){
             throw new UnknownConfigException( CIPHER_ALGORITHM, algorithm );
         }
-        int data_size = appContext.getObjectByteSize();
-        int cypher_size = ( data_size/iv_size ) * ( iv_size + 1 );
-        appContext.setErasureCodesDataSize( cypher_size + key_size );
+
+        //int data_size = appContext.getObjectByteSize(); //TODO:Remove function adapt cipher to each object
+        //int cypher_size = ( data_size/iv_size ) * ( iv_size + 1 );
+        //appContext.setErasureCodesDataSize( cypher_size + key_size );
     }
 
     @Override

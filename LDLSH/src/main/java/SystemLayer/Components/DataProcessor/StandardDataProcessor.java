@@ -15,11 +15,10 @@ public class StandardDataProcessor extends DataProcessorImpl{
 
     public StandardDataProcessor(DataContainer appContext) {
         super(appContext);
-        appContext.setErasureCodesDataSize( appContext.getObjectByteSize() );
     }
 
     @Override
-    public ProcessedData preProcessData(DataObject object){
+    public ProcessedData preProcessData(DataObject object) throws Exception {
         int numberOfBlocks = appContext.getNumberOfBands();
 
         //LSH hash

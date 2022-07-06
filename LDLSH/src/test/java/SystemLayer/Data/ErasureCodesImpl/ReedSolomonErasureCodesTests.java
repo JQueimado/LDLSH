@@ -41,7 +41,6 @@ public class ReedSolomonErasureCodesTests {
         string_data = (StringDataObject) appContext.getDataObjectFactory().getNewDataObject();
         string_data.setValues(value);
         appContext.getConfigurator().setConfig("VECTOR_SIZE", "%d".formatted(value.length()));
-        appContext.setErasureCodesDataSize( appContext.getObjectByteSize() );
 
         appContext.getConfigurator().setConfig(
                 "VECTOR_SIZE",
