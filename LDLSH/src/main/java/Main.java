@@ -50,14 +50,11 @@ public class Main {
                     continue;
                 }
 
-                //Create data object
-                DataObject dataObject = system.newDataObject();
-
-                dataObject.setValues(ops[1]);
-
                 switch (ops[0]) {
                     //Insert
                     case "I" -> {
+                        DataObject dataObject = system.newDataObject();
+                        dataObject.setValues(ops[1]);
                         Future future = system.insert(dataObject);
                         future.get();
                         System.out.println("done");
@@ -65,6 +62,8 @@ public class Main {
 
                     //Query
                     case "Q" -> {
+                        DataObject dataObject = system.newDataObject();
+                        dataObject.setValues(ops[1]);
                         Future<DataObject> resultFuture = system.query(dataObject);
                         DataObject result = resultFuture.get();
 
@@ -78,21 +77,18 @@ public class Main {
                         System.out.printf("Result:%s\n", string.getValues());
                     }
 
-                    //Insert File{
+                    //Insert File
                     case "IF" -> {
                         try {
                             String fileName = ops[1];
                             BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName));
                             String line;
 
-                            //DEBUG
-                            int i = 5;
-
-                            while ((line = fileBufferReader.readLine()) != null || i <= 0 ){
+                            while ((line = fileBufferReader.readLine()) != null ){
+                                System.out.println("Inserting object: "+ line);
                                 DataObject<Object> temp = system.newDataObject();
                                 temp.setValues(line);
                                 system.insert(temp);
-                                i--;
                             }
                         }catch (IOException e){
                             System.err.println("File not found");

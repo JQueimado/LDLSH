@@ -24,13 +24,13 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        System.out.println("Handler added for" + ctx.channel().localAddress());
+        System.out.println("Handler added for" + ctx.channel().remoteAddress());
         temp = ctx.alloc().directBuffer();
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        System.out.println("Handler removed for "  + ctx.channel().localAddress());
+        System.out.println("Handler removed for "  + ctx.channel().remoteAddress());
         temp.release();
         temp = null;
     }

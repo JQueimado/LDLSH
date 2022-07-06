@@ -80,9 +80,9 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     }
 
     @Override
-    public Promise<Message> send(Message message, String hostname, int port) throws Exception {
+    public synchronized Promise<Message> send(Message message, String hostname, int port) throws Exception {
         if( ! hasClient )
-            throw new Exception("Node has no initialized client");
+            throw new Exception("Node has not initialized a client");
 
         String connectionName = hostname + ":" + port;
         ChannelFuture channelFuture;

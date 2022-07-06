@@ -16,9 +16,9 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 
 public class DataContainer {
@@ -100,7 +100,14 @@ public class DataContainer {
             try {
                 nThreadString = configurator.getConfig( nThreads_config );
                 int n_threads = Integer.parseInt( nThreadString );
-                executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(n_threads));
+                ExecutorService baseExecutorService = new ThreadPoolExecutor(
+                        n_threads,
+                        n_threads,
+                        0L,
+                        TimeUnit.MILLISECONDS,
+                        new LimitedBlockingQueue<>(n_threads * 2)
+                        );
+                executorService = MoreExecutors.listeningDecorator( baseExecutorService );
             }catch (Exception e){
                 UnknownConfigException.handler( new UnknownConfigException( nThreads_config, nThreadString ) );
             }
@@ -162,5 +169,22 @@ public class DataContainer {
             numberOfBands = Integer.parseInt(configurator.getConfig(nBands_config));
         }
         return numberOfBands;
+    }
+
+    private class LimitedBlockingQueue<E> extends LinkedBlockingQueue<E>{
+        public LimitedBlockingQueue (int size){
+            super(size);
+        }
+
+        @Override
+        public boolean offer(@NotNull E e) {
+            try {
+                super.put(e);
+                return true;
+            }catch (InterruptedException ie){
+                Thread.currentThread().interrupt();
+            }
+            return false;
+        }
     }
 }

@@ -71,6 +71,7 @@ public class RemoteMultimap extends MultiMapImpl{
                 e.printStackTrace();
             }
         });
+        responsePromise.get();
     }
 
     @Override
@@ -78,8 +79,8 @@ public class RemoteMultimap extends MultiMapImpl{
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(lshHash);
         messageBody.add(uniqueIdentifier);
-        Message insertMessage = new MessageImpl(Message.types.COMPLETION_MESSAGE, messageBody);
-        Message response = communicationLayer.send(insertMessage, host, port).get();
+        Message completionMessage = new MessageImpl(Message.types.COMPLETION_MESSAGE, messageBody);
+        Message response = communicationLayer.send(completionMessage, host, port).get();
 
         if( response.getType() != Message.types.COMPLETION_RESPONSE ){
             throw new Exception( "ERROR: Invalid response format" );
@@ -94,8 +95,8 @@ public class RemoteMultimap extends MultiMapImpl{
     public MultiMapValue[] query(LSHHashImpl.LSHHashBlock lshHash) throws Exception {
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(lshHash);
-        Message insertMessage = new MessageImpl(Message.types.QUERY_MESSAGE_SINGLE_BLOCK, messageBody);
-        Message response = communicationLayer.send(insertMessage, host, port).get();
+        Message queryMessage = new MessageImpl(Message.types.QUERY_MESSAGE_SINGLE_BLOCK, messageBody);
+        Message response = communicationLayer.send(queryMessage, host, port).get();
 
         if( response.getType() != Message.types.QUERY_RESPONSE ){
             throw new Exception( "ERROR: Invalid response format" );
