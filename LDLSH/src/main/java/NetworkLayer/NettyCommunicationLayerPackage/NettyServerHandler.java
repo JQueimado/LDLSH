@@ -34,9 +34,11 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private DataContainer appContext;
     private ExecutorService callBackExecutor;
     private ByteBuf temp;
+    private final Object bufferWriteLock;
 
     public NettyServerHandler( DataContainer appContext ){
         setAppContext( appContext );
+        bufferWriteLock = new Object();
     }
 
     public void setAppContext( DataContainer appContext ){
@@ -92,7 +94,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                         @Override
                         public void onSuccess(Message response) {
                             response.setTransactionId(message.getTransactionId());
-                            ctx.writeAndFlush(response);
+                            synchronized (bufferWriteLock) {
+                                ctx.channel().writeAndFlush(response);
+                            }
                         }
 
                         @Override
@@ -103,7 +107,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                             responseBody.add(throwable.getMessage() );
                             Message response = new MessageImpl( Message.types.COMPLETION_RESPONSE, responseBody );//Create response
                             response.setTransactionId(message.getTransactionId() ); //Assign transaction id
-                            ctx.writeAndFlush(response); //Send response
+                            synchronized (bufferWriteLock) {
+                                ctx.channel().writeAndFlush(response); //Send
+                            }
                         }
                     };
                     Futures.addCallback( responseFuture, responseCallback, callBackExecutor );
@@ -119,7 +125,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                         @Override
                         public void onSuccess(Message response) {
                             response.setTransactionId(message.getTransactionId());
-                            ctx.writeAndFlush(response);
+                            synchronized (bufferWriteLock) {
+                                ctx.channel().writeAndFlush(response);
+                            }
                         }
 
                         @Override
@@ -130,7 +138,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                             responseBody.add(throwable.getMessage() );
                             Message response = new MessageImpl( Message.types.INSERT_MESSAGE_RESPONSE, responseBody );//Create response
                             response.setTransactionId(message.getTransactionId() ); //Assign transaction id
-                            ctx.writeAndFlush(response); //Send response
+                            synchronized (bufferWriteLock) {
+                                ctx.channel().writeAndFlush(response); //Send response
+                            }
                         }
                     };
                     Futures.addCallback( responseFuture, responseCallback, callBackExecutor );
@@ -145,7 +155,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                         @Override
                         public void onSuccess(Message response) {
                             response.setTransactionId(message.getTransactionId());
-                            ctx.writeAndFlush(response);
+                            synchronized (bufferWriteLock) {
+                                ctx.write(response);
+                                ctx.flush();
+                            }
                         }
 
                         @Override
@@ -156,7 +169,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                             responseBody.add(throwable.getMessage() );
                             Message response = new MessageImpl( Message.types.QUERY_RESPONSE, responseBody );//Create response
                             response.setTransactionId(message.getTransactionId() ); //Assign transaction id
-                            ctx.writeAndFlush(response); //Send response
+                            synchronized (bufferWriteLock) {
+                                ctx.write(response);
+                                ctx.flush();
+                            }
                         }
                     };
                     Futures.addCallback( responseFuture, responseCallback, callBackExecutor );

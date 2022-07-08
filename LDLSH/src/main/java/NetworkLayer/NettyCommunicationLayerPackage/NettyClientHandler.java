@@ -8,7 +8,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.ObjectInputStream;
+import java.io.StreamCorruptedException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 
@@ -38,15 +40,17 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     //Server Responses
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        System.out.println("Received " + ((ByteBuf) msg).readableBytes() + "bytes");
         temp.writeBytes((ByteBuf) msg);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
+        System.out.println("Read Complete");
 
         //Decode
-        byte[] body = new byte[temp.writerIndex()];
+        byte[] body = new byte[temp.readableBytes()];
         temp.readBytes(body);
 
         ByteArrayInputStream bis = new ByteArrayInputStream(body);
@@ -54,7 +58,10 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
         //Process Message
         Message response = (Message) ois.readObject();
-        System.out.println( "Received "+response.getType()+" message of size: "+temp.writerIndex());
+        System.out.println( "Received "+response.getType()
+                +" message from "+ctx.channel().remoteAddress()
+                +" of size: "+temp.writerIndex()
+        );
         temp.release();
         temp = ctx.alloc().directBuffer();
 
