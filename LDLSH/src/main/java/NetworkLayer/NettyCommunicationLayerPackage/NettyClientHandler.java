@@ -40,24 +40,31 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     //Server Responses
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("Received " + ((ByteBuf) msg).readableBytes() + "bytes");
+        //System.out.println("Received " + ((ByteBuf) msg).readableBytes() + "bytes");
         temp.writeBytes((ByteBuf) msg);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
-        System.out.println("Read Complete");
+        //System.out.println("Read Complete");
 
         //Decode
         byte[] body = new byte[temp.readableBytes()];
         temp.readBytes(body);
 
-        ByteArrayInputStream bis = new ByteArrayInputStream(body);
-        ObjectInputStream ois = new ObjectInputStream( bis );
+        Message response = null;
+        try {
+            ByteArrayInputStream bis = new ByteArrayInputStream(body);
+            ObjectInputStream ois = new ObjectInputStream(bis);
 
-        //Process Message
-        Message response = (Message) ois.readObject();
+            //Process Message
+             response = (Message) ois.readObject();
+        }catch (EOFException e){
+            //System.out.println("Decode attempt failed: Stream wasn't complete");
+            temp.writeBytes(body);
+            return;
+        }
         System.out.println( "Received "+response.getType()
                 +" message from "+ctx.channel().remoteAddress()
                 +" of size: "+temp.writerIndex()

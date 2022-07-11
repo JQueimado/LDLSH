@@ -95,7 +95,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                         public void onSuccess(Message response) {
                             response.setTransactionId(message.getTransactionId());
                             synchronized (bufferWriteLock) {
-                                ctx.channel().writeAndFlush(response);
+                                ctx.write(response);
+                                ctx.flush();
                             }
                         }
 
@@ -108,7 +109,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                             Message response = new MessageImpl( Message.types.COMPLETION_RESPONSE, responseBody );//Create response
                             response.setTransactionId(message.getTransactionId() ); //Assign transaction id
                             synchronized (bufferWriteLock) {
-                                ctx.channel().writeAndFlush(response); //Send
+                                ctx.write(response); //Send
+                                ctx.flush();
                             }
                         }
                     };
@@ -126,7 +128,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                         public void onSuccess(Message response) {
                             response.setTransactionId(message.getTransactionId());
                             synchronized (bufferWriteLock) {
-                                ctx.channel().writeAndFlush(response);
+                                ctx.write(response); //Send
+                                ctx.flush();
                             }
                         }
 
@@ -139,7 +142,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                             Message response = new MessageImpl( Message.types.INSERT_MESSAGE_RESPONSE, responseBody );//Create response
                             response.setTransactionId(message.getTransactionId() ); //Assign transaction id
                             synchronized (bufferWriteLock) {
-                                ctx.channel().writeAndFlush(response); //Send response
+                                ctx.write(response); //Send
+                                ctx.flush();
                             }
                         }
                     };

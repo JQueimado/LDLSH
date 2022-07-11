@@ -45,10 +45,6 @@ public class Main {
                 String op = scanner.nextLine();
 
                 String[] ops = op.split(" ");
-                if (ops.length > 2) {
-                    System.out.println("Invalid Input");
-                    continue;
-                }
 
                 switch (ops[0]) {
                     //Insert
@@ -81,6 +77,8 @@ public class Main {
                     case "IF" -> {
                         try {
                             String fileName = ops[1];
+                            //if( ops.length == 3 )
+
                             BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName));
                             String line;
 
