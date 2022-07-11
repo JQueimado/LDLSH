@@ -4,12 +4,16 @@ import SystemLayer.Components.DataProcessor.DataProcessor.ProcessedData;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
+import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.CorruptDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SecreteShareDataProcessorTest {
 
@@ -33,6 +37,16 @@ class SecreteShareDataProcessorTest {
         simulatedState.getConfigurator().setConfig("IV_SEED",           "1234");
         simulatedState.getConfigurator().setConfig("CIPHER_ALGORITHM",  "AES" );
         simulatedState.getConfigurator().setConfig("CIPHER_CONFIG",     "AES/CBC/PKCS5PADDING" );
+    }
+
+    private DataObject createRandomDataObject(int size){
+        simulatedState.getConfigurator().setConfig(DataContainer.dataSize_config, "%d".formatted(size));
+        DataObject dataObject = simulatedState.getDataObjectFactory().getNewDataObject();
+        Random random = new Random();
+        byte[] data = new byte[size];
+        random.nextBytes(data);
+        dataObject.setByteArray(data);
+        return dataObject;
     }
 
     /**
@@ -63,5 +77,44 @@ class SecreteShareDataProcessorTest {
 
         //Assertions
         assertEquals(testObject, resultObject);
+    }
+
+    @Test
+    public void test_validation_failed() throws Exception {
+        //PreProcess
+        DataObject<String> testObject = (StringDataObject) createRandomDataObject(500);
+        ProcessedData processedData = simulatedState.getDataProcessor().preProcessData(testObject);
+        ErasureCodes erasureCodes = processedData.object_erasureCodes();
+        UniqueIdentifier uniqueIdentifier = processedData.object_uid();
+
+        assertDoesNotThrow( ()->{
+            simulatedState.getDataProcessor().postProcess(erasureCodes, uniqueIdentifier);
+        } );
+
+        //Alter code
+        Random random = new Random();
+        int corrupt_block_position = random.nextInt( simulatedState.getNumberOfBands() );
+        byte[] corrupt_block_data = new byte[ erasureCodes.getBlockAt(0).block_data().length ];
+        random.nextBytes(corrupt_block_data);
+        erasureCodes.addBlockAt( new ErasureCodesImpl.ErasureBlock( corrupt_block_data, corrupt_block_position ) );
+
+        assertThrows( CorruptDataException.class, ()->{
+            simulatedState.getDataProcessor().postProcess(erasureCodes, uniqueIdentifier);
+        } );
+
+    }
+
+    @Test
+    public void test_validation_not_failed() throws Exception {
+        //PreProcess
+        DataObject<String> testObject = (StringDataObject) createRandomDataObject(500);
+        ProcessedData processedData = simulatedState.getDataProcessor().preProcessData(testObject);
+        ErasureCodes erasureCodes = processedData.object_erasureCodes();
+        UniqueIdentifier uniqueIdentifier = processedData.object_uid();
+
+        assertDoesNotThrow( ()->{
+            simulatedState.getDataProcessor().postProcess(erasureCodes, uniqueIdentifier);
+        } );
+
     }
 }
