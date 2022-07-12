@@ -30,7 +30,8 @@ class SecreteShareDataProcessorTest {
         simulatedState.getConfigurator().setConfig("ERROR",                 ".1");
         simulatedState.getConfigurator().setConfig("LSH_SEED",              "1234");
         //Erasure codes
-        simulatedState.getConfigurator().setConfig("ERASURE_CODES",         "SIMPLE_PARTITION");
+        simulatedState.getConfigurator().setConfig("ERASURE_CODES",         "REED_SOLOMON");
+        simulatedState.getConfigurator().setConfig( "ERASURE_FAULTS",       "2" );
         simulatedState.getConfigurator().setConfig("UNIQUE_IDENTIFIER",     "SHA256");
 
         simulatedState.getConfigurator().setConfig("DATA_PROCESSOR",    "SECRETE_SHARE");
