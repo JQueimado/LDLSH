@@ -57,7 +57,8 @@ public class RemoteMultimap extends MultiMapImpl{
                     }
 
                     if (response.getBody().size() == 1) {
-                        System.out.println("Insert Complete");
+                        if (appContext.getDebug())
+                            System.out.println("Insert Complete");
                     } else {
                         System.err.println( "Remote error:\n" +
                                 (String) response.getBody().get(0) + "\n" +

@@ -28,6 +28,7 @@ public class DataContainer {
     public static final String dataSize_config = "VECTOR_SIZE";
     public static final String nThreads_config = "PROCESS_THREADS";
     public static final String nCallbackThreads_config = "CALLBACK_THREADS";
+    private static final String debug_config = "DEBUG";
 
     //Factories
     private DataObjectFactory dataObjectFactory = null;
@@ -45,11 +46,17 @@ public class DataContainer {
     private ExecutorService callbackExecutor = null;
 
     //Variables
+    private boolean debug;
     private int numberOfBands = -1;
 
     //Constructor
     public DataContainer( String f_name ){
         configurator = new Configurator(f_name);
+        try {
+            debug = Boolean.parseBoolean(configurator.getConfig(debug_config));
+        }catch (Exception e){
+            debug = false;
+        }
     }
 
     //getters
@@ -163,6 +170,11 @@ public class DataContainer {
     }
 
     //Variables
+    //Debug variable
+    public boolean getDebug(){
+        return debug;
+    }
+
     //Number of multi maps
     public int getNumberOfBands() {
         if( numberOfBands < 0 ) {
