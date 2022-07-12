@@ -82,7 +82,7 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
     @Override
     public void encodeDataObject(byte[] object, int n_blocks) throws Exception {
         //Padding
-        object = addPadding(object);
+        object = addPadding(object, k);
 
         byte[][] shards = byteArrayToShards(object);
         encoder.encodeParity(shards, 0, shards[0].length);
@@ -97,11 +97,11 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
             c++;
         }
         number_of_blocks = n_blocks;
+        block_size = erasureBlocks[0].block_data().length;
     }
 
     @Override
-    public byte[] decodeDataObject()
-            throws IncompleteBlockException {
+    public byte[] decodeDataObject() throws IncompleteBlockException {
 
         if( number_of_blocks < n-t ){
             throw new IncompleteBlockException();

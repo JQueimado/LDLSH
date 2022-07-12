@@ -17,7 +17,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         erasureBlocks = new ErasureBlock[n_blocks];
 
         //Add 1 byte for padding value
-        object = addPadding( object );
+        object = addPadding( object, total_blocks );
 
         int block_length = object.length / n_blocks;
         //Create Blocks

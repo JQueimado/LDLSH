@@ -84,7 +84,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
      * @param data input data
      * @return new processed byte array
      */
-    public byte[] addPadding( byte[] data ) throws Exception {
+    public byte[] addPadding( byte[] data, int n_blocks ) throws Exception {
 
         //Add space for padding var
         byte[] paddingObject = new byte[data.length+1];
@@ -93,9 +93,9 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
 
         //Calculate padding size
         int paddingSize = 0;
-        if( data.length % total_blocks != 0 ){
-            int sizeFittedByBlocks = (data.length / total_blocks) * total_blocks;
-            int sizePlusExtraBlock = sizeFittedByBlocks + total_blocks;
+        if( data.length % n_blocks != 0 ){
+            int sizeFittedByBlocks = (data.length / n_blocks) * n_blocks;
+            int sizePlusExtraBlock = sizeFittedByBlocks + n_blocks;
             paddingSize = sizePlusExtraBlock - data.length;
         }
 
