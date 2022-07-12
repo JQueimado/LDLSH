@@ -2,6 +2,7 @@ package SystemLayer.Components.SystemServer;
 
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.Future;
 
@@ -12,7 +13,7 @@ public interface SystemServer {
      * @return same object if the task was succesfull
      * @throws Exception if an error occurs
      */
-    Future<DataObject> insert(DataObject object ) throws Exception;
+    ListenableFuture<DataObject> insert(DataObject object ) throws Exception;
 
     /**
      * Submits a Query task to the system
@@ -20,7 +21,7 @@ public interface SystemServer {
      * @return query result
      * @throws Exception if an error occurs
      */
-    Future<DataObject> query(DataObject queryObject ) throws Exception ;
+    ListenableFuture<DataObject> query(DataObject queryObject ) throws Exception ;
 
     /**
      * Returns a new empty data object according to the System's specification

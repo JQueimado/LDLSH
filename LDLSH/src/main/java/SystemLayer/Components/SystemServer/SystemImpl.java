@@ -11,6 +11,7 @@ import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -112,7 +113,7 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public Future<DataObject> insert(DataObject object) throws Exception {
+    public ListenableFuture<DataObject> insert(DataObject object) throws Exception {
         List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
@@ -121,14 +122,13 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public Future<DataObject> query(DataObject queryObject) throws Exception {
+    public ListenableFuture<DataObject> query(DataObject queryObject) throws Exception {
         List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
 
         WorkerTask queryWorkerTask = new StandardQueryWorkerTask(queryMessage, context );
-        Future<DataObject> response = context.getExecutorService().submit(queryWorkerTask);
-        return response;
+        return context.getExecutorService().submit(queryWorkerTask);
     }
 
     @Override
