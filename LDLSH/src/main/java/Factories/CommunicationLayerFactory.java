@@ -8,7 +8,7 @@ import SystemLayer.SystemExceptions.UnknownConfigException;
 public class CommunicationLayerFactory extends FactoryImpl {
 
     private static final String communication_config = "COMMUNICATION_LAYER";
-    private enum types {None, Netty}
+    private enum types {NONE, NETTY}
 
     public CommunicationLayerFactory(DataContainer appContext) {
         super(appContext);
@@ -29,7 +29,7 @@ public class CommunicationLayerFactory extends FactoryImpl {
             types type = types.valueOf(string_type);
             switch (type) {
 
-                case Netty -> {
+                case NETTY -> {
                     return new NettyCommunicationLayer(appContext);
                 }
 

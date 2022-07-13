@@ -154,7 +154,7 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
      * @param key cipher key
      * @return  cyphered data vector
      */
-    private byte[] cipher( byte[] data, SecretKey key) throws
+    private synchronized byte[] cipher( byte[] data, SecretKey key) throws
         InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
@@ -168,7 +168,7 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
      * @param key cipher key
      * @return raw data vector
      */
-    private byte[] decipher( byte[] data, SecretKey key ) throws
+    private synchronized byte[] decipher( byte[] data, SecretKey key ) throws
             InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
