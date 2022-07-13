@@ -9,6 +9,7 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.CorruptDataException;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
@@ -86,7 +87,6 @@ public class StandardQueryWorkerTask implements WorkerTask {
             DataObject temporaryObject = null;
             try{
                 temporaryObject = appContext.getDataProcessor().postProcess(codes, uid);
-                potentialCandidates.add( temporaryObject );
 
             } catch (IncompleteBlockException ibe){
                 //If decode fails by an incomplete block error, runs completion TODO: OPTIMIZE COMPLETION
@@ -94,16 +94,22 @@ public class StandardQueryWorkerTask implements WorkerTask {
 
                 //Complete
                 for( MultiMap multiMap: multiMaps ){ //Go to all multiMaps and retrieve the intended erasure block
-                    ErasureCodesImpl.ErasureBlock block = multiMap.complete(objectHash, uid);
-                    codes.addBlockAt(block);
+                    try {
+                        ErasureCodesImpl.ErasureBlock block = multiMap.complete(objectHash, uid);
+                        codes.addBlockAt(block);
+                    }catch (Exception e){
+                        //continue;
+                    }
                 }
 
-                //Decode again #Shuld not throw an Incomplete Block Exception
-                temporaryObject = appContext.getDataProcessor().postProcess(codes, uid);
-                potentialCandidates.add( temporaryObject );
-
+                //Decode again
+                try {
+                    temporaryObject = appContext.getDataProcessor().postProcess(codes, uid);
+                }catch (CorruptDataException | IncompleteBlockException e){
+                    continue; //If an object is corrupt or incomplete after completion the candidate is ignored
+                }
             }
-
+            potentialCandidates.add( temporaryObject ); //Add candidate
         }
 
         //-Post Process

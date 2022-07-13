@@ -38,8 +38,8 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void handlerRemoved(ChannelHandlerContext ctx) {
         if( appContext.getDebug() )
             System.out.println("Handler removed for "  + ctx.channel().remoteAddress());
-        temp.release();
-        temp = null;
+        if( temp.release() )
+            temp = null;
     }
 
     //Server Responses
@@ -79,8 +79,8 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
                     +" of size: "+temp.writerIndex()
             );
 
-        temp.release();
-        temp = ctx.alloc().directBuffer();
+        if( temp.release() )
+            temp = ctx.alloc().directBuffer();
 
         int transactionId = response.getTransactionId();
         Promise<Message> responsePromise = transactionMap.get(transactionId);

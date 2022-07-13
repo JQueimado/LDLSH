@@ -57,8 +57,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     public void handlerRemoved(ChannelHandlerContext ctx) {
         if( appContext.getDebug() )
             System.out.println("Handler removed from "  + ctx.channel().remoteAddress());
-        temp.release();
-        temp = null;
+        if( temp.release() );
+            temp = null;
     }
 
     @Override
@@ -82,8 +82,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     +" message from "+ctx.channel().remoteAddress()
                     +" of size: "+temp.writerIndex()
             );
-        temp.release();
-        temp = ctx.alloc().directBuffer();
+
+        if (temp.release())
+            temp = ctx.alloc().directBuffer();
 
         //Process
         try {
