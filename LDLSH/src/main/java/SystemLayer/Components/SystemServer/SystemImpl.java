@@ -126,8 +126,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
-
-        WorkerTask queryWorkerTask = new StandardQueryWorkerTask(queryMessage, context );
+        WorkerTask queryWorkerTask = context.getQueryTaskFactory().getNewQueryTask(queryMessage);
         return context.getExecutorService().submit(queryWorkerTask);
     }
 

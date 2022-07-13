@@ -3,6 +3,7 @@ package SystemLayer.Containers;
 import Factories.CommunicationLayerFactory;
 import Factories.ComponentFactories.DataProcessorFactory;
 import Factories.ComponentFactories.DistanceMeasurerFactory;
+import Factories.ComponentFactories.QueryTaskFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
@@ -11,6 +12,7 @@ import NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
+import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
@@ -35,6 +37,7 @@ public class DataContainer {
     private LSHHashFactory lshHashFactory = null;
     private ErasureCodesFactory erasureCodesFactory = null;
     private UniqueIdentifierFactory uniqueIdentifierFactory = null;
+    private QueryTaskFactory queryTaskFactory = null;
 
     //Components
     private final Configurator configurator;
@@ -88,6 +91,12 @@ public class DataContainer {
         if(uniqueIdentifierFactory == null)
             uniqueIdentifierFactory = new UniqueIdentifierFactory(this);
         return uniqueIdentifierFactory;
+    }
+
+    public QueryTaskFactory getQueryTaskFactory( ){
+        if( queryTaskFactory == null )
+            queryTaskFactory = new QueryTaskFactory(this);
+        return queryTaskFactory;
     }
 
     //Components

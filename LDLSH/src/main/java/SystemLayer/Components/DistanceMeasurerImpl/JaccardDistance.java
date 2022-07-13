@@ -20,7 +20,7 @@ public class JaccardDistance implements DistanceMeasurer{
     }
 
     @Override
-    public double getDistance(DataObject object_a, DataObject object_b) {
-        return 1 - MinHash.jaccardIndex( toIntSet(object_a.toByteArray()), toIntSet(object_b.toByteArray()) );
+    public double getDistance(byte[] object_a, byte[] object_b) {
+        return 1 - MinHash.jaccardIndex( toIntSet(object_a), toIntSet(object_b) );
     }
 }
