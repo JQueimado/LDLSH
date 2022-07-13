@@ -89,6 +89,8 @@ public class Main {
                             String line;
 
                             while ((line = fileBufferReader.readLine()) != null ){
+                                if(line.isEmpty() || line.isBlank())
+                                    continue;
                                 System.out.println("Inserting object: "+ line);
                                 DataObject<Object> temp = system.newDataObject();
                                 temp.setValues(line);
