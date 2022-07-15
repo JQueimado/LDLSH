@@ -1,9 +1,9 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodesLib.*;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import SystemLayer.SystemExceptions.UnknownConfigException;
+import com.backblaze.erasure.ReedSolomon;
 
 public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
