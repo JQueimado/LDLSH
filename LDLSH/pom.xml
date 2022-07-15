@@ -45,6 +45,14 @@
             <version>23.0.0</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>blackblaze</groupId>
+            <artifactId>package</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/Dependancies/JavaReedSolomon.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <properties>
