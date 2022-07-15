@@ -122,7 +122,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                 }
 
                 case INSERT_MESSAGE -> {
-                    if( message.getBody().size() != 3 )
+                    if( message.getBody().size() != 2 )
                         throw new Exception("Invalid body Size for message type: INSERT_MESSAGE");
 
                     MultimapTask task = new InsertMultimapTask(message, appContext);

@@ -4,8 +4,7 @@ import Factories.ComponentFactories.MultimapFactory;
 import NetworkLayer.Message;
 import NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.TaskImpl.Worker.InsertWorkerTask;
-import SystemLayer.Components.TaskImpl.Worker.StandardQueryWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.ModelInsertWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
@@ -13,10 +12,8 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 
 public class SystemImpl implements SystemServer {
 
@@ -117,7 +114,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
-        WorkerTask insertWorkerTask = new InsertWorkerTask(insertMessage, context );
+        WorkerTask insertWorkerTask = new ModelInsertWorkerTask(insertMessage, context );
         return context.getExecutorService().submit(insertWorkerTask);
     }
 

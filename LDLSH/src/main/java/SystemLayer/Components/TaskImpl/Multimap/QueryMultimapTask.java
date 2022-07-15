@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class QueryMultimapTask implements MultimapTask {
-    private DataContainer appContext;
-    private Message queryMessage;
+    private final DataContainer appContext;
+    private final Message queryMessage;
 
     public QueryMultimapTask( Message queryMessage, DataContainer appContext ){
         this.queryMessage = queryMessage;

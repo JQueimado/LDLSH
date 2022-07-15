@@ -1,11 +1,13 @@
 package SystemLayer.Components.MultiMapImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.SystemExceptions.InvalidMapValueTypeException;
 import com.google.common.collect.*;
 
 import java.util.Arrays;
@@ -41,23 +43,24 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
     }
 
     @Override
-    public void insert(LSHHash lshHash, UniqueIdentifier uniqueIdentifier, ErasureBlock erasureBlock) {
-        //Build value
-        MultiMapValue mapValue = new MultiMapValue(
-                lshHash,
-                uniqueIdentifier,
-                erasureBlock
-        );
-
+    public void insert(LSHHash lshHash, MultiMapValue value) {
         //Insert Values
-        multiMap.put( lshHash.getBlockAt(hash_position), mapValue );
+        multiMap.put( lshHash.getBlockAt(hash_position), value );
     }
 
     @Override
-    public ErasureBlock complete( LSHHash lshHash , UniqueIdentifier uniqueIdentifier) {
-        Collection<MultiMapValue> multiMapValues = multiMap.get( lshHash.getBlockAt(hash_position) );
+    public ErasureBlock complete( LSHHash lshHash , UniqueIdentifier uniqueIdentifier) throws InvalidMapValueTypeException {
+        Collection<MultiMapValue> multiMapValues = multiMap.get(lshHash.getBlockAt(hash_position));
 
-        for( MultiMapValue multiMapValue: multiMapValues ){
+        for( MultiMapValue rawMultiMapValue: multiMapValues ){
+            ModelMultimapValue multiMapValue;
+
+            try{
+                multiMapValue = (ModelMultimapValue) rawMultiMapValue;
+            }catch (Exception e){
+                throw new InvalidMapValueTypeException( "Multimap returned a non completable map value" );
+            }
+
             if( uniqueIdentifier.compareTo( multiMapValue.uniqueIdentifier() ) == 0 ){
                 return multiMapValue.erasureCode();
             }

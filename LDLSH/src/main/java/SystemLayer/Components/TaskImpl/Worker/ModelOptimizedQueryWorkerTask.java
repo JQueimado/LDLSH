@@ -4,6 +4,7 @@ import NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
@@ -11,11 +12,12 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.CorruptDataException;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
+import SystemLayer.SystemExceptions.InvalidMapValueTypeException;
 import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
 import java.util.*;
 
-public class StandardQueryWorkerTask implements WorkerTask {
+public class ModelOptimizedQueryWorkerTask implements WorkerTask {
 
     private final Message queryRequest;
 
@@ -26,7 +28,7 @@ public class StandardQueryWorkerTask implements WorkerTask {
     private final String erasure_config;
     private final int bands;
 
-    public StandardQueryWorkerTask(Message queryRequest, DataContainer appContext ) throws Exception {
+    public ModelOptimizedQueryWorkerTask(Message queryRequest, DataContainer appContext ) throws Exception {
         if( queryRequest.getType() != Message.types.QUERY_REQUEST )
             throw new Exception("Invalid Message type for QueryTask");
 
@@ -52,6 +54,7 @@ public class StandardQueryWorkerTask implements WorkerTask {
         MultiMap[] multiMaps = appContext.getMultiMaps();
         List<MultiMapValue> results = new ArrayList<>();
 
+        //Query
         for ( int i=0; i<multiMaps.length; i++ ){
             MultiMap multiMap = multiMaps[i];
             MultiMapValue[] multimap_results = multiMap.query( query_hash.getBlockAt( multiMap.getHashBlockPosition() ) );
@@ -61,11 +64,19 @@ public class StandardQueryWorkerTask implements WorkerTask {
         if( results.size() == 0 )
             return null;
 
-        //Completion Grouping
+        //Grouping
         Map<UniqueIdentifier, ErasureCodes> objectMapping = new HashMap<>();
         Map<UniqueIdentifier, LSHHash> hashMapping = new HashMap<>();
         //-group erasure codes
-        for(MultiMapValue multiMapValue: results){
+        for(MultiMapValue rawMultiMapValue: results){
+
+            ModelMultimapValue multiMapValue;
+            try{
+                multiMapValue = (ModelMultimapValue) rawMultiMapValue;
+            }catch (Exception e){
+                throw new InvalidMapValueTypeException("Worker received invalid map value");
+            }
+
             ErasureCodes erasureCodes = objectMapping.get( multiMapValue.uniqueIdentifier() );
             if( erasureCodes == null ){
                 ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory()
@@ -78,57 +89,51 @@ public class StandardQueryWorkerTask implements WorkerTask {
             }
         }
 
-        //-Completion
-        List<DataObject> potentialCandidates = new ArrayList<>();
-        for( UniqueIdentifier uid : objectMapping.keySet() ){
-            ErasureCodes codes = objectMapping.get(uid);
+        //Evaluate
+        UniqueIdentifier bestCandidateUID = null;
+        double distance = -1;
 
-            //Attempt at decoding
-            DataObject temporaryObject = null;
-            try{
-                temporaryObject = appContext.getDataProcessor().postProcess(codes, uid);
+        for( UniqueIdentifier currentUid: objectMapping.keySet() ){
+            LSHHash currentHash = hashMapping.get(currentUid);
+            double currentDistance = appContext.getDistanceMeasurer().getDistance(
+                    currentHash.getSignature(),
+                    query_hash.getSignature()
+            );
 
-            } catch (IncompleteBlockException ibe){
-                //If decode fails by an incomplete block error, runs completion TODO: OPTIMIZE COMPLETION
-                LSHHash objectHash = hashMapping.get( uid );
+            if( distance == -1 || currentDistance < distance ){
+                distance = currentDistance;
+                bestCandidateUID = currentUid;
+            }
+        }
 
-                //Complete
-                for( MultiMap multiMap: multiMaps ){ //Go to all multiMaps and retrieve the intended erasure block
-                    try {
-                        ErasureCodesImpl.ErasureBlock block = multiMap.complete(objectHash, uid);
-                        codes.addBlockAt(block);
-                    }catch (Exception e){
-                        //continue;
-                    }
-                }
+        //Completion and postprocessor
+        ErasureCodes bestCandidateErasureCodes = objectMapping.get(bestCandidateUID);
+        LSHHash bestCandidateLSH = hashMapping.get(bestCandidateUID);
+        DataObject bestCandidate = null;
 
-                //Decode again
+        try{
+            bestCandidate = appContext.getDataProcessor().postProcess(bestCandidateErasureCodes, bestCandidateUID);
+        }catch (IncompleteBlockException ibe){
+            //If decode fails by an incomplete block error, runs completion
+
+            //Complete
+            for( MultiMap multiMap: multiMaps ){ //Go to all multiMaps and retrieve the intended erasure block
                 try {
-                    temporaryObject = appContext.getDataProcessor().postProcess(codes, uid);
-                }catch (CorruptDataException | IncompleteBlockException e){
-                    continue; //If an object is corrupt or incomplete after completion the candidate is ignored
+                    ErasureCodesImpl.ErasureBlock block = multiMap.complete(bestCandidateLSH, bestCandidateUID);
+                    bestCandidateErasureCodes.addBlockAt(block);
+                }catch (Exception e){
+                    //continue;
                 }
             }
-            potentialCandidates.add( temporaryObject ); //Add candidate
-        }
 
-        //-Post Process
-        DataObject nearestNeighbour = potentialCandidates.get(0);
-        double distance = appContext.getDistanceMeasurer().getDistance(
-                nearestNeighbour.toByteArray(),
-                queryObject.toByteArray() );
-
-        for ( int i = 1; i<potentialCandidates.size(); i++ ){
-            double c_distance = appContext.getDistanceMeasurer().getDistance(
-                    potentialCandidates.get(i).toByteArray(),
-                    queryObject.toByteArray() );
-
-            if( c_distance < distance ){
-                nearestNeighbour = potentialCandidates.get(i);
-                distance = c_distance;
+            //Decode again
+            try {
+                bestCandidate = appContext.getDataProcessor().postProcess(bestCandidateErasureCodes, bestCandidateUID);
+            }catch (CorruptDataException | IncompleteBlockException e){
+                bestCandidate = null;
             }
         }
 
-        return nearestNeighbour;
+        return bestCandidate;
     }
 }

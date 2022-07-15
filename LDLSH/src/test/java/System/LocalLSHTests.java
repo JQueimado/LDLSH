@@ -7,6 +7,7 @@ import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
@@ -99,7 +100,8 @@ public class LocalLSHTests {
 
         //Assertions (All multi-maps should return the same object)
         Assertions.assertEquals(multiMaps.length, results.size());
-        for(MultiMapValue value : results){
+        for(MultiMapValue rawValue : results){
+            ModelMultimapValue value = (ModelMultimapValue) rawValue;
             Assertions.assertEquals( 0,uid.compareTo( value.uniqueIdentifier()));
         }
     }
@@ -127,7 +129,8 @@ public class LocalLSHTests {
         //Insert
         for ( int i=0; i<multiMaps.length; i++ ) {
             MultiMap map = multiMaps[i];
-            map.insert(hash, uid, erasureCodes.getBlockAt(i));
+            ModelMultimapValue modelMultimapValue = new ModelMultimapValue(hash,uid,erasureCodes.getBlockAt(i));
+            map.insert(hash, modelMultimapValue);
         }
     }
 
