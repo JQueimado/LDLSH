@@ -1,6 +1,7 @@
 package SystemLayer.Components.SystemServer;
 
 import Factories.ComponentFactories.MultimapFactory;
+import Factories.ComponentFactories.TaskFactory;
 import NetworkLayer.Message;
 import NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
@@ -24,9 +25,11 @@ public class SystemImpl implements SystemServer {
     private static final String multiMapPosition_config = "MULTIMAP_POSITION";
 
     private final DataContainer context;
+    private final TaskFactory taskFactory;
 
     public SystemImpl(DataContainer context ) throws Exception {
         this.context = context;
+        this.taskFactory = new TaskFactory(context);
 
         Configurator configurator = context.getConfigurator();
 
@@ -114,7 +117,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
-        WorkerTask insertWorkerTask = new ModelInsertWorkerTask(insertMessage, context );
+        WorkerTask insertWorkerTask = taskFactory.getNewWorkerInserterTask(insertMessage);
         return context.getExecutorService().submit(insertWorkerTask);
     }
 
@@ -123,7 +126,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
-        WorkerTask queryWorkerTask = context.getQueryTaskFactory().getNewQueryTask(queryMessage);
+        WorkerTask queryWorkerTask = taskFactory.getNewWorkerQueryTask(queryMessage);
         return context.getExecutorService().submit(queryWorkerTask);
     }
 
