@@ -94,7 +94,7 @@ class SecreteShareDataProcessorTest {
 
         //Alter code
         Random random = new Random();
-        int corrupt_block_position = random.nextInt( simulatedState.getNumberOfBands() );
+        int corrupt_block_position = random.nextInt( simulatedState.getNumberOfBands() - 2 );
         byte[] corrupt_block_data = new byte[ erasureCodes.getBlockAt(0).block_data().length ];
         random.nextBytes(corrupt_block_data);
         erasureCodes.addBlockAt( new ErasureCodesImpl.ErasureBlock( corrupt_block_data, corrupt_block_position ) );

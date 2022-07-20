@@ -15,8 +15,7 @@ public interface MultiMap {
     //Inserts data into the MultiMap
     void insert(
             LSHHash lshHash,
-            UniqueIdentifier uniqueIdentifier,
-            ErasureBlock erasureBlock
+            MultiMapValue value
     ) throws Exception;
 
     //Searches and Returns an ErasureBlock

@@ -5,17 +5,14 @@ import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
-import SystemLayer.Data.LSHHashImpl.LSHHash;
-import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
-public class InsertWorkerTask implements WorkerTask {
+public class ModelInsertWorkerTask implements WorkerTask {
 
     private final Message insertRequest;
 
@@ -26,7 +23,7 @@ public class InsertWorkerTask implements WorkerTask {
     private final String uid_config;
     private final int bands;
 
-    public InsertWorkerTask(Message insertRequest, DataContainer appContext ) throws Exception {
+    public ModelInsertWorkerTask(Message insertRequest, DataContainer appContext ) throws Exception {
 
         if( insertRequest.getType() != Message.types.INSERT_REQUEST )
             throw new Exception("Invalid Message type for InsertTask");
@@ -64,10 +61,16 @@ public class InsertWorkerTask implements WorkerTask {
             //Insert
             for ( int i = 0; i<multiMaps.length; i++ ){
                 MultiMap multiMap = multiMaps[i];
-                multiMap.insert(
+
+                ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
                         processedData.object_lsh(),
                         processedData.object_uid(),
                         processedData.object_erasureCodes().getBlockAt(indexes.get(i))
+                );
+
+                multiMap.insert(
+                        processedData.object_lsh(),
+                        modelMultimapValue
                 );
             }
         } catch (Exception e) {

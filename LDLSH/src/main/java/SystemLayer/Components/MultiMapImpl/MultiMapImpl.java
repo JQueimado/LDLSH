@@ -29,8 +29,7 @@ public abstract class MultiMapImpl implements MultiMap{
     @Override
     public abstract void insert(
             LSHHash lshHash,
-            UniqueIdentifier uniqueIdentifier,
-            ErasureBlock erasureBlock
+            MultiMapValue value
     ) throws Exception ;
 
     @Override

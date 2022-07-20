@@ -39,11 +39,10 @@ public class RemoteMultimap extends MultiMapImpl{
     }
 
     @Override
-    public void insert(LSHHash lshHash, UniqueIdentifier uniqueIdentifier, ErasureBlock erasureBlock) throws Exception {
+    public void insert(LSHHash lshHash, MultiMapValue value) throws Exception {
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(lshHash);
-        messageBody.add(uniqueIdentifier);
-        messageBody.add(erasureBlock);
+        messageBody.add(value);
         Message insertMessage = new MessageImpl(Message.types.INSERT_MESSAGE, messageBody);
         Promise<Message> responsePromise = communicationLayer.send(insertMessage, host, port);
 

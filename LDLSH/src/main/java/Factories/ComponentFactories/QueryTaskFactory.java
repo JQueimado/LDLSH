@@ -1,10 +1,9 @@
 package Factories.ComponentFactories;
 
-import Factories.Factory;
 import Factories.FactoryImpl;
 import NetworkLayer.Message;
-import SystemLayer.Components.TaskImpl.Worker.OptimizedQueryWorkerTask;
-import SystemLayer.Components.TaskImpl.Worker.StandardQueryWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.ModelOptimizedQueryWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.ModelStandardQueryWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
@@ -41,11 +40,11 @@ public class QueryTaskFactory extends FactoryImpl {
             switch (config) {
 
                 case STANDARD -> {
-                    return new StandardQueryWorkerTask(message, appContext);
+                    return new ModelStandardQueryWorkerTask(message, appContext);
                 }
 
                 case OPTIMIZED -> {
-                    return new OptimizedQueryWorkerTask(message, appContext);
+                    return new ModelOptimizedQueryWorkerTask(message, appContext);
                 }
             }
         }catch (IllegalArgumentException iae){

@@ -1,11 +1,11 @@
 package SystemLayer.Components.SystemServer;
 
 import Factories.ComponentFactories.MultimapFactory;
+import Factories.ComponentFactories.TaskFactory;
 import NetworkLayer.Message;
 import NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.TaskImpl.Worker.InsertWorkerTask;
-import SystemLayer.Components.TaskImpl.Worker.StandardQueryWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.ModelInsertWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
@@ -13,10 +13,8 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 
 public class SystemImpl implements SystemServer {
 
@@ -27,9 +25,11 @@ public class SystemImpl implements SystemServer {
     private static final String multiMapPosition_config = "MULTIMAP_POSITION";
 
     private final DataContainer context;
+    private final TaskFactory taskFactory;
 
     public SystemImpl(DataContainer context ) throws Exception {
         this.context = context;
+        this.taskFactory = new TaskFactory(context);
 
         Configurator configurator = context.getConfigurator();
 
@@ -117,7 +117,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
-        WorkerTask insertWorkerTask = new InsertWorkerTask(insertMessage, context );
+        WorkerTask insertWorkerTask = taskFactory.getNewWorkerInserterTask(insertMessage);
         return context.getExecutorService().submit(insertWorkerTask);
     }
 
@@ -126,7 +126,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
-        WorkerTask queryWorkerTask = context.getQueryTaskFactory().getNewQueryTask(queryMessage);
+        WorkerTask queryWorkerTask = taskFactory.getNewWorkerQueryTask(queryMessage);
         return context.getExecutorService().submit(queryWorkerTask);
     }
 

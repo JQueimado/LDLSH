@@ -1,11 +1,11 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodesLib.*;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import SystemLayer.SystemExceptions.UnknownConfigException;
+import com.backblaze.erasure.ReedSolomon;
 
-public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
+public class BackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
     //Cada erasure code block contem um bloco de chave e um blocco de dados
 
@@ -29,7 +29,7 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
             throw new UnknownConfigException( fault_config_name, t_value );
         }
 
-        BlackblazeReedSolomonErasureCodes.k = n-t;
+        BackblazeReedSolomonErasureCodes.k = n-t;
         encoder = ReedSolomon.create(k,t);
     }
 
@@ -65,7 +65,7 @@ public class BlackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
     boolean[] isPresent;
     int block_size;
 
-    public BlackblazeReedSolomonErasureCodes( DataContainer appContext ) throws UnknownConfigException {
+    public BackblazeReedSolomonErasureCodes(DataContainer appContext ) throws UnknownConfigException {
         super( appContext );
 
         if( encoder == null )

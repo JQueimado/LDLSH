@@ -1,5 +1,6 @@
 package SystemLayer.Components.MultiMapImpl;
 
+import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
@@ -65,10 +66,16 @@ class GuavaInMemoryMultiMapTest {
     void testGetBlock() throws Exception {
         MultiMap multiMap = new GuavaInMemoryMultiMap(0, 1, simulatedState);
         int position = 0;
-        multiMap.insert(
+
+        ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
                 hashes.get(position),
                 uniqueIdentifiers.get(position),
                 erasureCodes.get(position).getBlockAt(0)
+                );
+
+        multiMap.insert(
+                hashes.get(position),
+                modelMultimapValue
         );
 
         LSHHash new_hash = new JavaMinHash(objects.get(position), 1, simulatedState);
@@ -81,16 +88,22 @@ class GuavaInMemoryMultiMapTest {
     void insertQueryTest() throws Exception {
         MultiMap multiMap = new GuavaInMemoryMultiMap(0,1, simulatedState);
         int position = 0;
-        multiMap.insert(
+
+        ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
                 hashes.get(position),
                 uniqueIdentifiers.get(position),
                 erasureCodes.get(position).getBlockAt(0)
         );
 
+        multiMap.insert(
+                hashes.get(position),
+                modelMultimapValue
+        );
+
         MultiMapValue[] values = multiMap.query(hashes.get(position).getBlockAt(0));
         assertEquals(1, values.length);
 
-        MultiMapValue value = values[0];
+        ModelMultimapValue value = (ModelMultimapValue) values[0];
         assertEquals(uniqueIdentifiers.get(position), value.uniqueIdentifier());
         assertEquals(hashes.get(position), value.lshHash());
         //TODO: Erasure codes check
