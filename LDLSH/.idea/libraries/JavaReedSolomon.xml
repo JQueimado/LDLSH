@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="JavaReedSolomon">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/Dependancies/JavaReedSolomon.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

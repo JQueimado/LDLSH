@@ -54,7 +54,7 @@
             <artifactId>JavaReedSolomon</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/Dependancies/JavaReedSolomon.jar</systemPath>
+            <systemPath>${project.basedir}/libs/JavaReedSolomon.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -85,65 +85,27 @@
             </plugin>
 
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
                 <executions>
                     <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
+                        <phase>package</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/LDLSH</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>Dependancies</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Main-Class>Main</Main-Class>
+                                        <Build-Number>1.0</Build-Number>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/LDLSH/lib</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>false</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>Main</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Class-Path>.</Class-Path>
-                        </manifestEntries>
-                    </archive>
-
-                    <finalName>LDLSH/LDLSH-with-dependencies</finalName>
-                </configuration>
             </plugin>
 
         </plugins>

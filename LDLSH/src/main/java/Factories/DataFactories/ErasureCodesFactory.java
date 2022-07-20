@@ -1,14 +1,11 @@
 package Factories.DataFactories;
 
-import Factories.Factory;
 import Factories.FactoryImpl;
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.ErasureCodesImpl.BlackblazeReedSolomonErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.BackblazeReedSolomonErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.SimplePartitionErasureCodes;
 import SystemLayer.SystemExceptions.UnknownConfigException;
-
-import java.net.PortUnreachableException;
 
 public class ErasureCodesFactory extends FactoryImpl {
 
@@ -33,7 +30,7 @@ public class ErasureCodesFactory extends FactoryImpl {
             switch (config) {
 
                 case REED_SOLOMON -> {
-                    return new BlackblazeReedSolomonErasureCodes(appContext);
+                    return new BackblazeReedSolomonErasureCodes(appContext);
                 }
 
                 case SIMPLE_PARTITION -> {
