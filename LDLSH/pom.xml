@@ -48,13 +48,12 @@
             <version>23.0.0</version>
             <scope>compile</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>JavaReedSolomon</groupId>
             <artifactId>JavaReedSolomon</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/JavaReedSolomon.jar</systemPath>
+            <type>jar</type>
         </dependency>
     </dependencies>
 
