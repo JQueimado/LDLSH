@@ -13,7 +13,7 @@ wget https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bi
 tar xzvf apache-maven-3.8.6-bin.tar.gz
 sudo mkdir /usr/lib/maven/
 sudo mkdir /usr/lib/maven/apache-maven-3.8.6
-sudo cp apache-maven-3.8.6-bin /usr/lib/maven/apache-maven-3.8.6
+sudo cp -r apache-maven-3.8.6 /usr/lib/maven/.
 sudo chmod a+x /usr/lib/maven/apache-maven-3.8.6/bin/mvn
 sudo update-alternatives --install /usr/bin/mvn mvn /usr/lib/maven/apache-maven-3.8.6/bin/mvn 1
 sudo update-alternatives --set mvn /usr/lib/maven/apache-maven-3.8.6/bin/mvn
