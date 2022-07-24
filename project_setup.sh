@@ -18,6 +18,9 @@ sudo chmod a+x /usr/lib/maven/apache-maven-3.8.6/bin/mvn
 sudo update-alternatives --install /usr/bin/mvn mvn /usr/lib/maven/apache-maven-3.8.6/bin/mvn 1
 sudo update-alternatives --set mvn /usr/lib/maven/apache-maven-3.8.6/bin/mvn
 
+#executables
+sudo chmod +x package.sh
+
 #cleanup
 rm -rf jdk-17.0.4_linux-x64_bin.*
 rm -rf apache-maven-3.8.6
