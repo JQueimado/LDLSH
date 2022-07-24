@@ -6,14 +6,19 @@ sudo update-alternatives  --install /usr/bin/java java /usr/lib/jvm/jdk-17/bin/j
 sudo update-alternatives  --install /usr/bin/javac javac /usr/lib/jvm/jdk-17/bin/javac 1
 sudo update-alternatives --set java /usr/lib/jvm/jdk-17/bin/java
 sudo update-alternatives --set javac /usr/lib/jvm/jdk-17/bin/javac
+export JAVA_HOME=/usr/lib/jvm/jdk-17
 
 #maven
-sudo apt-get update
-sudo apt-get install -y maven
+wget https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+tar xzvf apache-maven-3.8.6-bin.tar.gz
+sudo mkdir /usr/lib/maven/
+sudo mkdir /usr/lib/maven/apache-maven-3.8.6
+sudo cp apache-maven-3.8.6-bin /usr/lib/maven/apache-maven-3.8.6
+sudo chmod a+x /usr/lib/maven/apache-maven-3.8.6/bin/mvn
+sudo update-alternatives --install /usr/bin/mvn mvn /usr/lib/maven/apache-maven-3.8.6/bin/mvn 1
+sudo update-alternatives --set mvn /usr/lib/maven/apache-maven-3.8.6/bin/mvn
 
 #cleanup
 rm -rf jdk-17.0.4_linux-x64_bin.*
-
-#project
-sudo apt-get install git
-git clone https://github.com/JQueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing.git
+rm -rf apache-maven-3.8.6
+rm apache-maven-3.8.6-bin.tar.gz
