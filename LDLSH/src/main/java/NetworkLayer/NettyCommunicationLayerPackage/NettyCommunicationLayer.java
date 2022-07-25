@@ -149,7 +149,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
                         .childOption( ChannelOption.SO_KEEPALIVE, true );
 
                 ChannelFuture f = b.bind(server_port).sync();
-                System.out.println( "Server opened at port " + server_port );
+                //System.out.println( "Server opened at port " + server_port );
                 f.channel().closeFuture().sync();
             }catch (Exception e){
                 throw new NettyServerException(e.getMessage());

@@ -29,15 +29,15 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        if( appContext.getDebug() )
-            System.out.println("Handler added for" + ctx.channel().remoteAddress());
+        //if( appContext.getDebug() )
+        //    System.out.println("Handler added for" + ctx.channel().remoteAddress());
         temp = ctx.alloc().directBuffer();
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        if( appContext.getDebug() )
-            System.out.println("Handler removed for "  + ctx.channel().remoteAddress());
+        //if( appContext.getDebug() )
+        //    System.out.println("Handler removed for "  + ctx.channel().remoteAddress());
         if( temp.release() )
             temp = null;
     }
@@ -45,16 +45,16 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     //Server Responses
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if( appContext.getDebug() )
-            System.out.println("Received " + ((ByteBuf) msg).readableBytes() + "bytes");
+        //if( appContext.getDebug() )
+        //    System.out.println("Received " + ((ByteBuf) msg).readableBytes() + "bytes");
         temp.writeBytes((ByteBuf) msg);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
-        if( appContext.getDebug() )
-            System.out.println("Read Complete");
+        //if( appContext.getDebug() )
+        //    System.out.println("Read Complete");
 
         //Decode
         byte[] body = new byte[temp.readableBytes()];
@@ -73,11 +73,11 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        if( appContext.getDebug() )
-            System.out.println( "Received "+response.getType()
-                    +" message from "+ctx.channel().remoteAddress()
-                    +" of size: "+temp.writerIndex()
-            );
+        //if( appContext.getDebug() )
+        //    System.out.println( "Received "+response.getType()
+        //            +" message from "+ctx.channel().remoteAddress()
+        //            +" of size: "+temp.writerIndex()
+        //    );
 
         if( temp.release() )
             temp = ctx.alloc().directBuffer();

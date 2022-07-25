@@ -49,17 +49,17 @@ public class DataContainer {
     private ExecutorService callbackExecutor = null;
 
     //Variables
-    private boolean debug;
+    //private boolean debug;
     private int numberOfBands = -1;
 
     //Constructor
     public DataContainer( String f_name ){
         configurator = new Configurator(f_name);
-        try {
-            debug = Boolean.parseBoolean(configurator.getConfig(debug_config));
-        }catch (Exception e){
-            debug = false;
-        }
+    //    try {
+    //        debug = Boolean.parseBoolean(configurator.getConfig(debug_config));
+    //    }catch (Exception e){
+    //        debug = false;
+    //    }
     }
 
     //getters
@@ -180,9 +180,9 @@ public class DataContainer {
 
     //Variables
     //Debug variable
-    public boolean getDebug(){
-        return debug;
-    }
+    //public boolean getDebug(){
+    //    return debug;
+    //}
 
     //Number of multi maps
     public int getNumberOfBands() {

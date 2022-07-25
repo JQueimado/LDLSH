@@ -10,12 +10,6 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.UnknownConfigException;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListenableFutureTask;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 
 import java.io.Serializable;
@@ -56,8 +50,8 @@ public class RemoteMultimap extends MultiMapImpl{
                     }
 
                     if (response.getBody().size() == 1) {
-                        if (appContext.getDebug())
-                            System.out.println("Insert Complete");
+                        //if (appContext.getDebug())
+                        //    System.out.println("Insert Complete");
                     } else {
                         System.err.println( "Remote error:\n" +
                                 (String) response.getBody().get(0) + "\n" +
