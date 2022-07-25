@@ -47,7 +47,7 @@ public class Main {
             //Insert File
             case "-i" -> {
                 for (DataObject dataElement : data){
-
+                    //System.out.println("adding:"+ dataElement.getValues());
                     //Execute instruction
                     ListenableFuture<DataObject> result = system.insert(dataElement);
                     Futures.addCallback(result, new FutureCallback<DataObject>() {
@@ -62,8 +62,8 @@ public class Main {
                             throwable.printStackTrace();
                         }
                     }, dataContainer.getCallbackExecutor());
-
                 }
+                //System.out.println("done");
             }
 
             case "-q" -> {
@@ -85,7 +85,6 @@ public class Main {
                     }, dataContainer.getCallbackExecutor());
                 }
             }
-
         }
     }
 }
