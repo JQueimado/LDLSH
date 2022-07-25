@@ -9,6 +9,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -35,17 +36,20 @@ public class Main {
         List<DataObject<String>> data = new ArrayList<>();
         BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName));
         String line;
+        int operations = 0;
         while((line = fileBufferReader.readLine()) != null)
             if (!line.isEmpty() || !line.isBlank()) {
                 DataObject dataObject = system.newDataObject();
                 dataObject.setValues(line);
                 data.add( dataObject );
+                operations ++;
             }
 
         //Execute
         switch (op) {
             //Insert File
             case "-i" -> {
+                Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
                 for (DataObject dataElement : data){
                     //System.out.println("adding:"+ dataElement.getValues());
                     //Execute instruction
@@ -63,10 +67,17 @@ public class Main {
                         }
                     }, dataContainer.getCallbackExecutor());
                 }
-                //System.out.println("done");
+                dataContainer.getExecutorService().shutdown(); //waits all tasks termination
+                Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp.getTime();
+                System.out.println("done:\n" +
+                        "total execution time: "+ totalExecutionTime+" ms\n" +
+                        "throughput: "+ totalExecutionTime/operations +" ms/op");
+                System.exit(0);
             }
 
             case "-q" -> {
+                Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
                 for (DataObject dataElement : data){
 
                     //Execute Instruction
@@ -84,6 +95,13 @@ public class Main {
                         }
                     }, dataContainer.getCallbackExecutor());
                 }
+                dataContainer.getExecutorService().shutdown(); //waits all tasks termination
+                Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp.getTime();
+                System.out.println("done:\n" +
+                        "total execution time: "+ totalExecutionTime+" ms\n" +
+                        "throughput: "+ totalExecutionTime/operations +" ms/op");
+                System.exit(0);
             }
         }
     }
