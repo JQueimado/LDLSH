@@ -78,6 +78,7 @@ public class Main {
 
             case "-q" -> {
                 Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
+                //final int[] i = {0};
                 for (DataObject dataElement : data){
 
                     //Execute Instruction
@@ -86,7 +87,9 @@ public class Main {
                     Futures.addCallback(result, new FutureCallback<DataObject>() {
                         @Override
                         public void onSuccess(DataObject object) {
-                            //Completed Successfully can be null
+                            //synchronized (i) {
+                            //    i[0]++;
+                            //}
                         }
 
                         @Override
@@ -96,6 +99,7 @@ public class Main {
                     }, dataContainer.getCallbackExecutor());
                 }
                 dataContainer.getExecutorService().shutdown(); //waits all tasks termination
+                //assert i[0] == operations;
                 Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
                 long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp.getTime();
                 System.out.println("done:\n" +
