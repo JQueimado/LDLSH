@@ -37,7 +37,7 @@ public class CommunicationLayerFactory extends FactoryImpl {
                     return null;
                 }
             }
-        }catch (Exception e){
+        }catch (IllegalArgumentException e){
             throw new UnknownConfigException(communication_config, string_type);
         }
     }
