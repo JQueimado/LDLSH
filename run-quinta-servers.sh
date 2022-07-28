@@ -8,6 +8,7 @@
 # -su		: set up
 # -k 		: kill
 # --check	: prints used ports
+# --change-branch : changes brange in remotes
 
 #env
 REPOSITORY="https://github.com/JQueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing.git"
@@ -62,7 +63,6 @@ setup_machine(){
 
 check_ports(){
 	HOST=$1
-	echo "--- ${HOST} ---"
 	ssh $HOST "sudo lsof -i -P -n | grep LISTEN"
 }
 
@@ -133,6 +133,7 @@ main(){
 	then
 		for CURRENT_HOST in $HOSTS
 		do
+			echo "--- ${CURRENT_HOST} ---"
 			run_once $CURRENT_HOST $OP $ARG1
 		done
 	else
