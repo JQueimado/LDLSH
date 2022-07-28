@@ -32,6 +32,13 @@ run_client_jar(){
 	ssh $HOST "cd ${DIR}; java -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties"
 }
 
+run_test_client_jar(){
+	HOST=$1
+	OP=$2
+	FILE=$3
+	ssh $HOST "cd ${DIR}; java -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties ${OP} ${FILE}"
+}
+
 git_pull(){
 	HOST=$1
 	ssh $HOST "cd ${DIR}; git pull;"
@@ -70,6 +77,7 @@ run_once(){
 	HOST=$1
 	OP=$2
 	ARG1=$3
+	ARG2=$4
 	# run jar 
 	if [ $OP = "-js" ]
 	then
@@ -78,7 +86,7 @@ run_once(){
 
 	if [ $OP = "-jc" ]
 	then
-		run_client_jar $HOST
+		run_test_client_jar $HOST $ARG1 $ARG2
 	fi
 
 	# pull
@@ -129,6 +137,7 @@ main(){
 	HOST=$1
 	OP=$2
 	ARG1=$3
+	ARG2=$4
 	if [ $HOST = "all" ]
 	then
 		for CURRENT_HOST in $HOSTS
@@ -137,22 +146,13 @@ main(){
 			run_once $CURRENT_HOST $OP $ARG1
 		done
 	else
-		run_once $HOST $OP $ARG1
+		run_once $HOST $OP $ARG1 $ARG2
 	fi
 }
 
 if ! [ $# -lt 2 ];
 then
-	HOST=$1
-	OP=$2
-	
-	if [ $# -eq 3 ]
-	then
-		main $HOST $OP $3
-	else
-		main $HOST $OP ""
-	fi
-
+	main $1 $2 $3 $4
 else
 	exit 1
 fi
