@@ -123,7 +123,7 @@ public class RemoteMultimap extends MultiMapImpl{
             this.host = hostPortSplit[0];
             this.port = Integer.parseInt( hostPortSplit[1] );
 
-        }catch (Exception e){
+        }catch (IllegalArgumentException e){
             UnknownConfigException.handler( new UnknownConfigException( endpoint_config, mapEndpoints ) );
         }
 
