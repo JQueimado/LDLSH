@@ -16,6 +16,11 @@ build(){
     cp LDLSH/target/*.jar .
 }
 
+kill_process(){
+    kill -9 `cat pid.nohup`
+    rm pid.nohup nohup.out
+}
+
 project_setup(){
     #java 17
     wget https://download.oracle.com/java/17/archive/jdk-17.0.4_linux-x64_bin.deb --no-check-certificate
@@ -60,6 +65,11 @@ main(){
     if [ $OP = "-su" ]
     then
         project_setup
+    fi
+
+    if [ $OP = "-k" ]
+    then
+        kill_process
     fi
 }
 

@@ -22,7 +22,7 @@ run_server_jar(){
 
 kill_process(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; kill -9 `cat pid.nohup`"
+	ssh $HOST "cd ${DIR}; ./run-server.sh -k"
 }
 
 run_client_jar(){
