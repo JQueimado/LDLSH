@@ -6,6 +6,7 @@
 # -p 		: git pull
 # -hr 		: hard reset
 # -su		: set up
+# -k 		: kill
 
 #env
 REPOSITORY="https://github.com/JQueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing.git"
@@ -17,6 +18,11 @@ HOSTS="t5.quinta t6.quinta t7.quinta t8.quinta"
 run_server_jar(){
 	HOST=$1
  	ssh $HOST "cd ${DIR}; ./run-server.sh"
+}
+
+kill_process(){
+	HOST=$1
+	ssh $HOST "cd ${DIR}; kill -9 `cat pid.nohup`"
 }
 
 run_client_jar(){
@@ -82,6 +88,12 @@ run_once(){
 	if [ $OP = "-su" ]
 	then
 		setup_machine $HOST
+	fi
+
+	# kill
+	if [ $OP = "-k" ]
+	then
+		kill_process $HOST
 	fi
 }
 
