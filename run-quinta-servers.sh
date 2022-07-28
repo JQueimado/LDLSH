@@ -7,6 +7,7 @@
 # -hr 		: hard reset
 # -su		: set up
 # -k 		: kill
+# --check	: prints used ports
 
 #env
 REPOSITORY="https://github.com/JQueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing.git"
@@ -52,6 +53,12 @@ setup_machine(){
 	ssh $HOST "export JAVA_HOME=/usr/lib/jvm/jdk-17"
 }
 
+check_ports(){
+	HOST=$1
+	echo "--- ${HOST} ---"
+	ssh $HOST "sudo lsof -i -P -n | grep LISTEN"
+}
+
 run_once(){
 	HOST=$1
 	OP=$2
@@ -94,6 +101,12 @@ run_once(){
 	if [ $OP = "-k" ]
 	then
 		kill_process $HOST
+	fi
+
+	# check
+	if [ $OP = "--check" ]
+	then
+		check_ports $HOST
 	fi
 }
 
