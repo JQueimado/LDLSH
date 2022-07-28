@@ -17,7 +17,7 @@ HOSTS="t5.quinta t6.quinta t7.quinta t8.quinta"
 
 run_server_jar(){
 	HOST=$1
- 	ssh $HOST "cd ${DIR}; ./run-server.sh"
+ 	ssh $HOST "cd ${DIR}; ./run-server.sh -js"
 }
 
 kill_process(){
@@ -37,7 +37,7 @@ git_pull(){
 
 build(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; ./package.sh"
+	ssh $HOST "cd ${DIR}; ./run-server.sh -b"
 }
 
 hard_reset(){
@@ -48,7 +48,7 @@ hard_reset(){
 
 setup_machine(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; ./project_setup.sh"
+	ssh $HOST "cd ${DIR}; ./run-server.sh -su"
 	ssh $HOST "export JAVA_HOME=/usr/lib/jvm/jdk-17"
 }
 
