@@ -62,7 +62,6 @@ setup_machine(){
 
 check_ports(){
 	HOST=$1
-	echo "--- ${HOST} ---"
 	ssh $HOST "sudo lsof -i -P -n | grep LISTEN"
 }
 
@@ -133,6 +132,7 @@ main(){
 	then
 		for CURRENT_HOST in $HOSTS
 		do
+			echo "--- ${CURRENT_HOST} ---"
 			run_once $CURRENT_HOST $OP $ARG1
 		done
 	else
