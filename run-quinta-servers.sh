@@ -16,7 +16,7 @@ HOSTS="t5.quinta t6.quinta t7.quinta t8.quinta"
 
 run_server_jar(){
 	HOST=$1
- 	ssh $HOST "cd ${DIR}; ./run-local.sh"
+ 	ssh $HOST "cd ${DIR}; ./run-server.sh"
 }
 
 run_client_jar(){
