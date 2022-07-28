@@ -6,6 +6,8 @@
 # -p 		: git pull
 # -hr 		: hard reset
 # -su		: set up
+# -k 		: kill
+# --check	: prints used ports
 
 #env
 REPOSITORY="https://github.com/JQueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing.git"
@@ -16,7 +18,12 @@ HOSTS="t5.quinta t6.quinta t7.quinta t8.quinta"
 
 run_server_jar(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; java -jar LDLSH-3.2.jar ${DIRCONFIG}/MultimapNode-${HOST}.properties"
+ 	ssh $HOST "cd ${DIR}; ./run-server.sh -js"
+}
+
+kill_process(){
+	HOST=$1
+	ssh $HOST "cd ${DIR}; ./run-server.sh -k"
 }
 
 run_client_jar(){
@@ -31,7 +38,7 @@ git_pull(){
 
 build(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; ./package.sh"
+	ssh $HOST "cd ${DIR}; ./run-server.sh -b"
 }
 
 hard_reset(){
@@ -42,8 +49,14 @@ hard_reset(){
 
 setup_machine(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; ./project_setup.sh"
+	ssh $HOST "cd ${DIR}; ./run-server.sh -su"
 	ssh $HOST "export JAVA_HOME=/usr/lib/jvm/jdk-17"
+}
+
+check_ports(){
+	HOST=$1
+	echo "--- ${HOST} ---"
+	ssh $HOST "sudo lsof -i -P -n | grep LISTEN"
 }
 
 run_once(){
@@ -82,6 +95,18 @@ run_once(){
 	if [ $OP = "-su" ]
 	then
 		setup_machine $HOST
+	fi
+
+	# kill
+	if [ $OP = "-k" ]
+	then
+		kill_process $HOST
+	fi
+
+	# check
+	if [ $OP = "--check" ]
+	then
+		check_ports $HOST
 	fi
 }
 
