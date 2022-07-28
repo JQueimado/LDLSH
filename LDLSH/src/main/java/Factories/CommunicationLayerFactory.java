@@ -21,10 +21,14 @@ public class CommunicationLayerFactory extends FactoryImpl {
         }catch (UnknownConfigException e){
             UnknownConfigException.handler(e);
             return null;
+        }catch (Exception e){
+            e.printStackTrace();
+            System.exit(1);
+            return null;
         }
     }
 
-    public CommunicationLayer getNewCommunicationLayer( String string_type ) throws UnknownConfigException {
+    public CommunicationLayer getNewCommunicationLayer( String string_type ) throws Exception {
         try {
             types type = types.valueOf(string_type);
             switch (type) {

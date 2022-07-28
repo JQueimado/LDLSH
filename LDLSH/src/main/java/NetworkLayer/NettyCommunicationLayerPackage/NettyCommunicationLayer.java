@@ -36,7 +36,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
 
     HashMap<String, ChannelFuture> connections;
 
-    public NettyCommunicationLayer( DataContainer appContext ) throws UnknownConfigException {
+    public NettyCommunicationLayer( DataContainer appContext ) throws Exception {
         //Client
         String hasClient_string = "";
         try {
@@ -74,7 +74,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
                 nettyReceiver = new NettyReceiver(appContext);
                 nettyReceiver.run();
             }
-        }catch ( Exception e){
+        }catch ( IllegalArgumentException e){
             throw new UnknownConfigException( hasServer_config,  hasServer_string);
         }
     }
