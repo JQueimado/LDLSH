@@ -6,7 +6,6 @@ sudo update-alternatives  --install /usr/bin/java java /usr/lib/jvm/jdk-17/bin/j
 sudo update-alternatives  --install /usr/bin/javac javac /usr/lib/jvm/jdk-17/bin/javac 1
 sudo update-alternatives --set java /usr/lib/jvm/jdk-17/bin/java
 sudo update-alternatives --set javac /usr/lib/jvm/jdk-17/bin/javac
-export JAVA_HOME=/usr/lib/jvm/jdk-17
 
 #maven
 wget https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz --no-check-certificate
