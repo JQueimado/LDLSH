@@ -36,6 +36,13 @@ git_pull(){
 	ssh $HOST "cd ${DIR}; git pull;"
 }
 
+change_branch(){
+	HOST=$1
+	BRANCH=$2
+	ssh $HOST "cd ${DIR}; git checkout ${BRANCH}"
+	git_pull $HOST
+}
+
 build(){
 	HOST=$1
 	ssh $HOST "cd ${DIR}; ./run-server.sh -b"
@@ -62,6 +69,7 @@ check_ports(){
 run_once(){
 	HOST=$1
 	OP=$2
+	ARG1=$3
 	# run jar 
 	if [ $OP = "-js" ]
 	then
@@ -108,20 +116,27 @@ run_once(){
 	then
 		check_ports $HOST
 	fi
+
+	if [ $OP = "--change-branch" ]
+	then
+		change_branch $HOST $ARG1
+	fi
+
 }
 
 ### MAIN ###
 main(){
 	HOST=$1
 	OP=$2
+	ARG1=$3
 	if [ $HOST = "all" ]
 	then
 		for CURRENT_HOST in $HOSTS
 		do
-			run_once $CURRENT_HOST $OP
+			run_once $CURRENT_HOST $OP $ARG1
 		done
 	else
-		run_once $HOST $OP
+		run_once $HOST $OP $ARG1
 	fi
 }
 
@@ -129,12 +144,17 @@ if ! [ $# -lt 2 ];
 then
 	HOST=$1
 	OP=$2
+	
+	if [ $# -eq 3 ]
+	then
+		main $HOST $OP $3
+	else
+		main $HOST $OP ""
+	fi
+
 else
 	exit 1
 fi
-
-main $HOST $OP
-
 
 #SSHCMD="cd ${DIR}; ${CMD}"
 #TIMESTAMP=`date +%s`
