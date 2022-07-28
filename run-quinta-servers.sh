@@ -8,6 +8,7 @@
 # -su		: set up
 # -k 		: kill
 # --check	: prints used ports
+# --change-branch : changes brange in remotes
 
 #env
 REPOSITORY="https://github.com/JQueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing.git"
