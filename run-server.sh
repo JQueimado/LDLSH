@@ -1,5 +1,5 @@
 BASE_DIR="LDLSH"
-DIRCONFIG="LDLSH/Throughput"
+DIRCONFIG="Throughtput-test"
 HOST=`hostname`
 
 run_server(){
