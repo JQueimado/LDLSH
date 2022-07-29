@@ -63,7 +63,7 @@ setup_machine(){
 
 check_ports(){
 	HOST=$1
-	ssh $HOST "sudo lsof -i -P -n | grep LISTEN"
+	ssh $HOST "sudo lsof -i -P -n | grep java"
 }
 
 run_once(){
