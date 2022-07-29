@@ -1,5 +1,5 @@
 BASE_DIR="LDLSH"
-DIRCONFIG="LDLSH/QS_1000_Demo_quinta"
+DIRCONFIG="LDLSH/Throughput"
 HOST=`hostname`
 
 run_server(){
