@@ -29,14 +29,14 @@ kill_process(){
 
 run_client_jar(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; java -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties"
+	ssh $HOST "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties"
 }
 
 run_test_client_jar(){
 	HOST=$1
 	OP=$2
 	FILE=$3
-	ssh $HOST "cd ${DIR}; java -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties ${OP} ${FILE}"
+	ssh $HOST "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties ${OP} ${FILE}"
 }
 
 git_pull(){
@@ -70,7 +70,7 @@ setup_machine(){
 
 check_ports(){
 	HOST=$1
-	ssh $HOST "sudo lsof -i -P -n | grep LISTEN"
+	ssh $HOST "sudo lsof -i -P -n | grep java"
 }
 
 run_once(){
