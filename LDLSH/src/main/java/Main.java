@@ -53,7 +53,7 @@ public class Main {
                     Futures.addCallback(result, new FutureCallback<DataObject>() {
                         @Override
                         public void onSuccess(DataObject object) {
-                            //Complete
+                            //Nothing
                         }
 
                         @Override
@@ -73,9 +73,13 @@ public class Main {
                     ListenableFuture<DataObject> result = system.query(dataElement);
 
                     Futures.addCallback(result, new FutureCallback<DataObject>() {
+                        final DataObject e = dataElement;
                         @Override
                         public void onSuccess(DataObject object) {
-                            //Completed Successfully can be null
+                            if( object != null )
+                                System.out.println(e.getValues() + " -> " + object.getValues());
+                            else
+                                System.out.println(e.getValues() + " -> null" );
                         }
 
                         @Override
