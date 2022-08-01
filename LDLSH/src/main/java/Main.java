@@ -64,6 +64,9 @@ public class Main {
                     }, dataContainer.getCallbackExecutor());
                 }
                 //System.out.println("done");
+                dataContainer.getExecutorService().shutdown(); //waits all tasks termination
+                //assert i[0] == operations;
+                System.exit(0);
             }
 
             case "-q" -> {
@@ -87,6 +90,9 @@ public class Main {
                             //Completed with error
                         }
                     }, dataContainer.getCallbackExecutor());
+                    dataContainer.getExecutorService().shutdown(); //waits all tasks termination
+                    //assert i[0] == operations;
+                    System.exit(0);
                 }
             }
         }
