@@ -49,15 +49,21 @@ public class Main {
         switch (op) {
             //Insert File
             case "-i" -> {
-                Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
-                for (DataObject dataElement : data){
+                for ( int i = 0; i < data.size(); i++){
+                    DataObject dataElement = data.get(i);
                     //System.out.println("adding:"+ dataElement.getValues());
                     //Execute instruction
+                    Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
                     ListenableFuture<DataObject> result = system.insert(dataElement);
-                    Futures.addCallback(result, new FutureCallback<DataObject>() {
+                    Futures.addCallback(result, new FutureCallback<>() {
+                        final DataObject elem = dataElement;
+                        final Timestamp initialTimeStamp1 = initialTimeStamp;
                         @Override
                         public void onSuccess(DataObject object) {
                             //Complete
+                            Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                            long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
+                            System.out.println("insert for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
                         }
 
                         @Override
@@ -68,11 +74,6 @@ public class Main {
                     }, dataContainer.getCallbackExecutor());
                 }
                 dataContainer.getExecutorService().shutdown(); //waits all tasks termination
-                Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
-                long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp.getTime();
-                System.out.println("done:\n" +
-                        "total execution time: "+ totalExecutionTime+" ms\n" +
-                        "throughput: "+ totalExecutionTime/operations +" ms/op");
                 System.exit(0);
             }
 
