@@ -79,8 +79,9 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
                     +" of size: "+temp.writerIndex()
             );
 
-        if( temp.release() )
-            temp = ctx.alloc().directBuffer();
+        //if( temp.release() )
+        //    temp = ctx.alloc().directBuffer();
+        temp.clear();
 
         int transactionId = response.getTransactionId();
         Promise<Message> responsePromise = transactionMap.get(transactionId);
