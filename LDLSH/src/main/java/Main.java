@@ -161,6 +161,7 @@ public class Main {
                     //Exit
                     case "E" -> {
                         exit = true;
+                        system.stop();
                     }
 
                     //Unknown Op

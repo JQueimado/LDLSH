@@ -23,6 +23,7 @@ import io.netty.util.concurrent.FutureListener;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,8 +73,13 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         byte[] body = new byte[temp.writerIndex()];
         temp.readBytes(body);
 
-        ByteArrayInputStream bis = new ByteArrayInputStream(body);
-        ObjectInputStream ois = new ObjectInputStream( bis );
+        ObjectInputStream ois = null;
+        try {
+            ByteArrayInputStream bis = new ByteArrayInputStream(body);
+            ois = new ObjectInputStream(bis);
+        }catch (EOFException eof){
+            return;
+        }
 
         //Process
         Message message = (Message) ois.readObject();
