@@ -14,7 +14,7 @@
 REPOSITORY="https://github.com/JQueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing.git"
 BASE_DIR="/root/jqueimado"
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
-DIRCONFIG="LDLSH/QS_1000_Demo_quinta"
+DIRCONFIG="Throughtput-test"
 HOSTS="t5.quinta t6.quinta t7.quinta t8.quinta"
 
 run_server_jar(){
@@ -29,7 +29,14 @@ kill_process(){
 
 run_client_jar(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; java -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties"
+	ssh $HOST "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties"
+}
+
+run_test_client_jar(){
+	HOST=$1
+	OP=$2
+	FILE=$3
+	ssh $HOST "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties ${OP} ${FILE}"
 }
 
 git_pull(){
@@ -63,13 +70,14 @@ setup_machine(){
 
 check_ports(){
 	HOST=$1
-	ssh $HOST "sudo lsof -i -P -n | grep LISTEN"
+	ssh $HOST "sudo lsof -i -P -n | grep java"
 }
 
 run_once(){
 	HOST=$1
 	OP=$2
 	ARG1=$3
+	ARG2=$4
 	# run jar 
 	if [ $OP = "-js" ]
 	then
@@ -78,7 +86,7 @@ run_once(){
 
 	if [ $OP = "-jc" ]
 	then
-		run_client_jar $HOST
+		run_test_client_jar $HOST $ARG1 $ARG2
 	fi
 
 	# pull
@@ -129,6 +137,7 @@ main(){
 	HOST=$1
 	OP=$2
 	ARG1=$3
+	ARG2=$4
 	if [ $HOST = "all" ]
 	then
 		for CURRENT_HOST in $HOSTS
@@ -137,22 +146,13 @@ main(){
 			run_once $CURRENT_HOST $OP $ARG1
 		done
 	else
-		run_once $HOST $OP $ARG1
+		run_once $HOST $OP $ARG1 $ARG2
 	fi
 }
 
 if ! [ $# -lt 2 ];
 then
-	HOST=$1
-	OP=$2
-	
-	if [ $# -eq 3 ]
-	then
-		main $HOST $OP $3
-	else
-		main $HOST $OP ""
-	fi
-
+	main $1 $2 $3 $4
 else
 	exit 1
 fi

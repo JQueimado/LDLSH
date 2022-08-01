@@ -1,9 +1,9 @@
 BASE_DIR="LDLSH"
-DIRCONFIG="LDLSH/QS_1000_Demo_quinta"
+DIRCONFIG="Throughtput-test"
 HOST=`hostname`
 
 run_server(){
-    nohup java -jar LDLSH-3.2.jar $DIRCONFIG/MultimapNode-$HOST.quinta.properties >& nohup.out &
+    nohup java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $DIRCONFIG/MultimapNode-$HOST.quinta.properties >& nohup.out &
     echo $! > pid.nohup
     cat pid.nohup
 }
