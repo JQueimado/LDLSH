@@ -78,19 +78,21 @@ public class Main {
             }
 
             case "-q" -> {
-                Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
                 //final int[] i = {0};
                 for (DataObject dataElement : data){
 
                     //Execute Instruction
+                    Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
                     ListenableFuture<DataObject> result = system.query(dataElement);
-
                     Futures.addCallback(result, new FutureCallback<DataObject>() {
+                        final DataObject elem = dataElement;
+                        final Timestamp initialTimeStamp1 = initialTimeStamp;
                         @Override
                         public void onSuccess(DataObject object) {
-                            //synchronized (i) {
-                            //    i[0]++;
-                            //}
+                            //Complete
+                            Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                            long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
+                            System.out.println("query for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
                         }
 
                         @Override
@@ -101,11 +103,6 @@ public class Main {
                 }
                 dataContainer.getExecutorService().shutdown(); //waits all tasks termination
                 //assert i[0] == operations;
-                Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
-                long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp.getTime();
-                System.out.println("done:\n" +
-                        "total execution time: "+ totalExecutionTime+" ms\n" +
-                        "throughput: "+ totalExecutionTime/operations +" ms/op");
                 System.exit(0);
             }
         }
