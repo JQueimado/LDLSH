@@ -49,6 +49,12 @@ change_branch(){
 	BRANCH=$2
 	ssh $HOST "cd ${DIR}; git checkout ${BRANCH}"
 	git_pull $HOST
+	build $HOST
+}
+
+status(){
+	HOST=$1
+	ssh $HOST "cd ${DIR}; git status"
 }
 
 build(){
@@ -128,6 +134,11 @@ run_once(){
 	if [ $OP = "--change-branch" ]
 	then
 		change_branch $HOST $ARG1
+	fi
+
+	if [ $OP = "--status" ]
+	then
+		status $HOST
 	fi
 
 }
