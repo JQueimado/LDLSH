@@ -2,6 +2,7 @@ package SystemLayer.Components.SystemServer;
 
 import Factories.ComponentFactories.MultimapFactory;
 import Factories.ComponentFactories.TaskFactory;
+import NetworkLayer.CommunicationLayer;
 import NetworkLayer.Message;
 import NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
@@ -133,5 +134,15 @@ public class SystemImpl implements SystemServer {
     @Override
     public DataObject newDataObject() throws Exception {
         return context.getDataObjectFactory().getNewDataObject();
+    }
+
+    @Override
+    public void stop() {
+        CommunicationLayer cl = context.getCommunicationLayer();
+        if(cl != null){
+            cl.shutdown();
+        }
+        context.getExecutorService().shutdown();
+        context.getCallbackExecutor().shutdown();
     }
 }

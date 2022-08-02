@@ -29,4 +29,6 @@ public interface SystemServer {
      * @throws Exception If an error occurs
      */
     DataObject newDataObject() throws Exception;
+
+    void stop();
 }
