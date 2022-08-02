@@ -45,9 +45,17 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
         String iv_seed = "";
         try{
             iv_seed = appContext.getConfigurator().getConfig( IV ); //Get seed from config
+            if( iv_seed.length() != iv_size )
+                throw new IllegalArgumentException();
+
+            /*
             SecureRandom secureRandom = new SecureRandom( iv_seed.getBytes(StandardCharsets.UTF_8) ); //Create an PRNG
-            iv = new byte[iv_size]; //init array
+            //iv = new byte[iv_size]; //init array
             secureRandom.nextBytes(iv); //set array with de PRNG values
+            */
+
+            iv = iv_seed.getBytes(StandardCharsets.UTF_8);
+
         }catch (IllegalArgumentException e){
             throw new UnknownConfigException( IV, iv_seed );
         }
