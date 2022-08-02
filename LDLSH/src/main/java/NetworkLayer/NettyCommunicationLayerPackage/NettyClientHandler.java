@@ -67,7 +67,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
             //Process Message
              response = (Message) ois.readObject();
-        }catch (EOFException e){
+        }catch (EOFException | StreamCorruptedException e ){
             //System.out.println("Decode attempt failed: Stream wasn't complete");
             temp.writeBytes(body);
             return;
