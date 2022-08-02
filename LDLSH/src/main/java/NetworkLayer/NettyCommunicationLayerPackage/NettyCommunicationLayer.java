@@ -27,6 +27,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     private static final String hasServer_config = "HAS_SERVER";
 
     private final boolean hasClient;
+    private final boolean hasServer;
 
     private Bootstrap clientBootstrap;
     private NettyReceiver nettyReceiver;
@@ -69,7 +70,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         String hasServer_string = "";
         try{
             hasServer_string = appContext.getConfigurator().getConfig(hasServer_config);
-            boolean hasServer = Boolean.parseBoolean(hasServer_string);
+            hasServer = Boolean.parseBoolean(hasServer_string);
             if( hasServer ) {
                 nettyReceiver = new NettyReceiver(appContext);
                 nettyReceiver.run();
@@ -107,6 +108,21 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         return promise; //Returns the response promise
     }
 
+    @Override
+    public void shutdown() {
+        if(hasClient)
+            for (ChannelFuture channelFuture : connections.values()){
+                try {
+                    channelFuture.sync();
+                } catch (InterruptedException e) {
+                    //pass
+                }
+                channelFuture.channel().close();
+            }
+        if(hasServer)
+            nettyReceiver.shutdown();
+    }
+
     //Receiver | Server side
     public class NettyReceiver implements CommunicationLayer.Receiver{
 
@@ -114,6 +130,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
 
         private final DataContainer appContext;
         private int server_port;
+        private ChannelFuture channelFuture;
 
         public NettyReceiver(DataContainer context) throws UnknownConfigException {
             this.appContext = context;
@@ -148,15 +165,25 @@ public class NettyCommunicationLayer implements CommunicationLayer {
                         }).option(ChannelOption.SO_BACKLOG, 128 )
                         .childOption( ChannelOption.SO_KEEPALIVE, true );
 
-                ChannelFuture f = b.bind(server_port).sync();
+                channelFuture = b.bind(server_port).sync();
                 //System.out.println( "Server opened at port " + server_port );
-                f.channel().closeFuture().sync();
+                channelFuture.channel().closeFuture().sync();
             }catch (Exception e){
                 throw new NettyServerException(e.getMessage());
             } finally {
                 workerGroup.shutdownGracefully();
                 masterGroup.shutdownGracefully();
             }
+        }
+
+        public void shutdown(){
+            try {
+                channelFuture.sync();
+            } catch (InterruptedException e) {
+                //pass
+            }
+            channelFuture.channel().close();
+            channelFuture.channel().parent().close();
         }
     }
 

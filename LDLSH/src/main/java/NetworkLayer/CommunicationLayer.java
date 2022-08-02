@@ -8,4 +8,6 @@ public interface CommunicationLayer {
     public interface Receiver {
         public void run() throws Exception;
     }
+
+    public void shutdown();
 }
