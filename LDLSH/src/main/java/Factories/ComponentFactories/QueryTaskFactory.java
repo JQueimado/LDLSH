@@ -2,8 +2,8 @@ package Factories.ComponentFactories;
 
 import Factories.FactoryImpl;
 import NetworkLayer.Message;
-import SystemLayer.Components.TaskImpl.Worker.ModelOptimizedQueryWorkerTask;
-import SystemLayer.Components.TaskImpl.Worker.ModelStandardQueryWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.Model.ModelOptimizedQueryWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.Model.ModelStandardQueryWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;

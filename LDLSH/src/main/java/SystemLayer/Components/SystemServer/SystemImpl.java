@@ -6,7 +6,6 @@ import NetworkLayer.CommunicationLayer;
 import NetworkLayer.Message;
 import NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.TaskImpl.Worker.ModelInsertWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;

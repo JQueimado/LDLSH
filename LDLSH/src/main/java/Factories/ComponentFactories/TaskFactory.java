@@ -1,9 +1,8 @@
 package Factories.ComponentFactories;
 
-import Factories.Factory;
 import Factories.FactoryImpl;
 import NetworkLayer.Message;
-import SystemLayer.Components.TaskImpl.Worker.ModelInsertWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.Model.ModelInsertWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;

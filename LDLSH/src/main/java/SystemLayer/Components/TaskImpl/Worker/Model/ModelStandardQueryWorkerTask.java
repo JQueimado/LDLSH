@@ -1,7 +1,9 @@
-package SystemLayer.Components.TaskImpl.Worker;
+package SystemLayer.Components.TaskImpl.Worker.Model;
 
 import NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
+import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.WorkerTaskImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataUnits.ModelMultimapValue;
@@ -17,38 +19,22 @@ import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
 import java.util.*;
 
-public class ModelStandardQueryWorkerTask implements WorkerTask {
-
-    private final Message queryRequest;
-
-    private final DataContainer appContext;
-
-    private final String dataObject_config;
-    private final String hash_config;
-    private final String erasure_config;
-    private final int bands;
+public class ModelStandardQueryWorkerTask extends WorkerTaskImpl {
 
     public ModelStandardQueryWorkerTask(Message queryRequest, DataContainer appContext ) throws Exception {
+        super(queryRequest, appContext);
         if( queryRequest.getType() != Message.types.QUERY_REQUEST )
             throw new Exception("Invalid Message type for QueryTask");
-
-        this.queryRequest = queryRequest;
-        this.appContext = appContext;
-        this.dataObject_config = appContext.getConfigurator().getConfig("DATA_OBJECT");
-        this.hash_config = appContext.getConfigurator().getConfig("LSH_HASH");
-        this.erasure_config = appContext.getConfigurator().getConfig("ERASURE_CODES");
-        this.bands = Integer.parseInt( appContext.getConfigurator().getConfig("N_BANDS") );
-
     }
 
     @Override
     public DataObject call() throws Exception {
 
-        if( queryRequest.getType() != Message.types.QUERY_REQUEST )
-            throw new InvalidMessageTypeException( Message.types.QUERY_REQUEST, queryRequest.getType() );
+        if( message.getType() != Message.types.QUERY_REQUEST )
+            throw new InvalidMessageTypeException( Message.types.QUERY_REQUEST, message.getType() );
 
         //Preprocess
-        DataObject queryObject = (DataObject) queryRequest.getBody().get(0);
+        DataObject queryObject = (DataObject) message.getBody().get(0);
         LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
         MultiMap[] multiMaps = appContext.getMultiMaps();
@@ -77,8 +63,7 @@ public class ModelStandardQueryWorkerTask implements WorkerTask {
 
             ErasureCodes erasureCodes = objectMapping.get( multiMapValue.uniqueIdentifier() );
             if( erasureCodes == null ){
-                ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory()
-                        .getNewErasureCodes(erasure_config);
+                ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory().getNewErasureCodes();
                 temp_erasure_codes.addBlockAt( multiMapValue.erasureCode() );
                 objectMapping.put( multiMapValue.uniqueIdentifier(), temp_erasure_codes );
                 hashMapping.put( multiMapValue.uniqueIdentifier(), multiMapValue.lshHash() );
