@@ -12,9 +12,7 @@ import NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.Configurator.Configurator;
-import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -47,6 +45,8 @@ public class DataContainer {
     private DataProcessor dataProcessor = null;
     private CommunicationLayer communicationLayer = null;
     private ExecutorService callbackExecutor = null;
+
+    private Object[] additionalStructures = null;
 
     //Variables
     private boolean debug;
@@ -176,6 +176,14 @@ public class DataContainer {
             communicationLayer = (new CommunicationLayerFactory(this)).getNewCommunicationLayer();
         }
         return communicationLayer;
+    }
+
+    public Object[] getAdditionalStructures(){
+        return additionalStructures;
+    }
+
+    public void setAdditionalStructures(Object[] structures){
+        additionalStructures = structures;
     }
 
     //Variables
