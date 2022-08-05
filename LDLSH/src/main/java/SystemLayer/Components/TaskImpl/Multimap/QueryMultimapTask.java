@@ -5,29 +5,25 @@ import NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataUnits.MultiMapValue;
-import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
-import SystemLayer.Data.LSHHashImpl.LSHHashImpl.LSHHashBlock;
+import SystemLayer.Data.DataUnits.LSHHashBlock;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class QueryMultimapTask implements MultimapTask {
-    private final DataContainer appContext;
-    private final Message queryMessage;
+public class QueryMultimapTask extends MultimapTaskImpl {
 
     public QueryMultimapTask( Message queryMessage, DataContainer appContext ){
-        this.queryMessage = queryMessage;
-        this.appContext = appContext;
+        super(queryMessage, appContext);
     }
 
     @Override
     public Message call() throws Exception {
         //Evaluate message body
-        if( queryMessage.getBody().size() != 1 ){
+        if( message.getBody().size() != 1 ){
             throw new Exception("Invalid body Size for message type: QUERY_MESSAGE_SINGLE_BLOCK");
         }
-        LSHHashBlock block = (LSHHashBlock) queryMessage.getBody().get(0); //fetch body
+        LSHHashBlock block = (LSHHashBlock) message.getBody().get(0); //fetch body
 
         MultiMap[] multiMaps = appContext.getMultiMaps();
         List<MultiMapValue> results = new ArrayList<>();
