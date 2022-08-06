@@ -33,7 +33,7 @@ public class MultimapTaskFactory extends FactoryImpl {
     }
 
     //WorkerInsert
-    public MultimapTask getNewMultimapInserterTask(Message message) throws Exception {
+    public MultimapTask getNewMultimapInsertTask(Message message) throws Exception {
         configs config = getConfig();
 
         switch (config){

@@ -2,8 +2,6 @@ package SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage;
 
 import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.NetworkLayer.MessageImpl;
-import SystemLayer.Components.TaskImpl.Multimap.CompletionMultimapTask;
-import SystemLayer.Components.TaskImpl.Multimap.InsertMultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.MultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.QueryMultimapTask;
 import SystemLayer.Containers.DataContainer;
@@ -53,7 +51,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         temp.writeBytes( (ByteBuf) msg);
     }
 
@@ -63,7 +61,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         byte[] body = new byte[temp.writerIndex()];
         temp.readBytes(body);
 
-        ObjectInputStream ois = null;
+        ObjectInputStream ois;
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream(body);
             ois = new ObjectInputStream(bis);
@@ -79,8 +77,6 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     +" of size: "+temp.writerIndex()
             );
 
-        //if (temp.release())
-        //    temp = ctx.alloc().directBuffer();
         temp.clear();
 
         //Process
@@ -88,10 +84,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             switch (message.getType()) {
                 //Multimap Server Side
                 case COMPLETION_MESSAGE -> {
-                    MultimapTask task = new CompletionMultimapTask(message, appContext);
+                    MultimapTask task = appContext.getMultimapTaskFactory().getNewCompletionQueryTask(message);
                     ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
 
-                    FutureCallback<Message> responseCallback = new FutureCallback<Message>() {
+                    FutureCallback<Message> responseCallback = new FutureCallback<>() {
                         @Override
                         public void onSuccess(Message response) {
                             response.setTransactionId(message.getTransactionId());
@@ -122,9 +118,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     if( message.getBody().size() != 2 )
                         throw new Exception("Invalid body Size for message type: INSERT_MESSAGE");
 
-                    MultimapTask task = new InsertMultimapTask(message, appContext);
+                    MultimapTask task = appContext.getMultimapTaskFactory().getNewMultimapInsertTask(message);
                     ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
-                    FutureCallback<Message> responseCallback = new FutureCallback<Message>() {
+                    FutureCallback<Message> responseCallback = new FutureCallback<>() {
                         @Override
                         public void onSuccess(Message response) {
                             response.setTransactionId(message.getTransactionId());
@@ -154,9 +150,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                 //Queries a message through the multi maps.
                 case QUERY_MESSAGE_SINGLE_BLOCK -> {
                     //Query
-                    QueryMultimapTask task = new QueryMultimapTask(message, appContext);
+                    MultimapTask task = appContext.getMultimapTaskFactory().getNewMultimapQueryTask(message);
                     ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
-                    FutureCallback<Message> responseCallback = new FutureCallback<Message>() {
+                    FutureCallback<Message> responseCallback = new FutureCallback<>() {
                         @Override
                         public void onSuccess(Message response) {
                             response.setTransactionId(message.getTransactionId());
