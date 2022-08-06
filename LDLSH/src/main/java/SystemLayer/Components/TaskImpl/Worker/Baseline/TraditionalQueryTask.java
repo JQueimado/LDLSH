@@ -23,8 +23,8 @@ public class TraditionalQueryTask extends WorkerTaskImpl {
 
     public TraditionalQueryTask(Message insertMessage, DataContainer appContext) throws Exception{
         super(insertMessage, appContext);
-        if( message.getType() != Message.types.QUERY_MESSAGE )
-            throw new InvalidMessageTypeException(Message.types.QUERY_MESSAGE, message.getType());
+        if( message.getType() != Message.types.QUERY_REQUEST )
+            throw new InvalidMessageTypeException(Message.types.QUERY_REQUEST, message.getType());
 
     }
 
