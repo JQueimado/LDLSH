@@ -1,9 +1,8 @@
 package SystemLayer.Components.TaskImpl.Worker.Model;
 
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTaskImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;

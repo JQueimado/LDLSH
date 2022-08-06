@@ -1,7 +1,7 @@
 package Factories.ComponentFactories;
 
 import Factories.FactoryImpl;
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.TaskImpl.Worker.Baseline.TraditionalReplicatedInsertTask;
 import SystemLayer.Components.TaskImpl.Worker.Baseline.TraditionalReplicatedQueryTask;
 import SystemLayer.Components.TaskImpl.Worker.Model.ModelInsertWorkerTask;
@@ -9,14 +9,14 @@ import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 
-public class TaskFactory extends FactoryImpl {
+public class WorkerTaskFactory extends FactoryImpl {
 
     private static final String config_name = "TASK_MODEL";
-    private enum configs {LDLSH, TRADITIONAL_REPLICATED}
+    private enum configs {LDLSH, TRADITIONAL, TRADITIONAL_REPLICATED}
 
-    private QueryTaskFactory queryTaskFactory = null;
+    private WorkerQueryTaskFactory workerQueryTaskFactory = null;
 
-    public TaskFactory(DataContainer appContext){
+    public WorkerTaskFactory(DataContainer appContext){
         super(appContext);
     }
 
@@ -55,9 +55,9 @@ public class TaskFactory extends FactoryImpl {
 
         switch (config){
             case LDLSH -> {
-                if( queryTaskFactory == null )
-                    queryTaskFactory = new QueryTaskFactory(appContext);
-                return queryTaskFactory.getNewQueryTask(message);
+                if( workerQueryTaskFactory == null )
+                    workerQueryTaskFactory = new WorkerQueryTaskFactory(appContext);
+                return workerQueryTaskFactory.getNewQueryTask(message);
             }
 
             case TRADITIONAL_REPLICATED -> {

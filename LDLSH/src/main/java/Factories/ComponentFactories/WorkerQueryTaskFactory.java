@@ -1,14 +1,14 @@
 package Factories.ComponentFactories;
 
 import Factories.FactoryImpl;
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.TaskImpl.Worker.Model.ModelOptimizedQueryWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.Model.ModelStandardQueryWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 
-public class QueryTaskFactory extends FactoryImpl {
+public class WorkerQueryTaskFactory extends FactoryImpl {
     private static final String config_name = "QUERY_MODE";
 
     public enum configs {
@@ -16,7 +16,7 @@ public class QueryTaskFactory extends FactoryImpl {
         OPTIMIZED
     }
 
-    public QueryTaskFactory(DataContainer appContext) {
+    public WorkerQueryTaskFactory(DataContainer appContext) {
         super(appContext);
     }
 

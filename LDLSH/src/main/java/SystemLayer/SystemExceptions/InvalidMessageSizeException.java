@@ -1,7 +1,5 @@
 package SystemLayer.SystemExceptions;
 
-import NetworkLayer.Message;
-
 public class InvalidMessageSizeException extends Exception{
 
     public static void handler( InvalidMessageSizeException e ){

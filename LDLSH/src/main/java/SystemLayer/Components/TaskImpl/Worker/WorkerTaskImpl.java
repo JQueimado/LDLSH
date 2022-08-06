@@ -1,6 +1,6 @@
 package SystemLayer.Components.TaskImpl.Worker;
 
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 

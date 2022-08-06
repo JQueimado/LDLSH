@@ -1,7 +1,7 @@
 package SystemLayer.Components.TaskImpl.Multimap.TraditionalTasks;
 
-import NetworkLayer.Message;
-import NetworkLayer.MessageImpl;
+import SystemLayer.Components.NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.MessageImpl;
 import SystemLayer.Components.AdditionalStructures.StorageMap.StorageMap;
 import SystemLayer.Components.TaskImpl.Multimap.MultimapTaskImpl;
 import SystemLayer.Containers.DataContainer;

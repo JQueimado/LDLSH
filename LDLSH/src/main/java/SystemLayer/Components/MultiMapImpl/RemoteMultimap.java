@@ -1,8 +1,8 @@
 package SystemLayer.Components.MultiMapImpl;
 
-import NetworkLayer.CommunicationLayer;
-import NetworkLayer.Message;
-import NetworkLayer.MessageImpl;
+import SystemLayer.Components.NetworkLayer.CommunicationLayer;
+import SystemLayer.Components.NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.MessageImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;

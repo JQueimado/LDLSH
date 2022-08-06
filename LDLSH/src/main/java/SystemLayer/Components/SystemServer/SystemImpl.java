@@ -1,10 +1,10 @@
 package SystemLayer.Components.SystemServer;
 
 import Factories.ComponentFactories.MultimapFactory;
-import Factories.ComponentFactories.TaskFactory;
-import NetworkLayer.CommunicationLayer;
-import NetworkLayer.Message;
-import NetworkLayer.MessageImpl;
+import Factories.ComponentFactories.WorkerTaskFactory;
+import SystemLayer.Components.NetworkLayer.CommunicationLayer;
+import SystemLayer.Components.NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.Configurator.Configurator;
@@ -25,11 +25,11 @@ public class SystemImpl implements SystemServer {
     private static final String multiMapPosition_config = "MULTIMAP_POSITION";
 
     private final DataContainer context;
-    private final TaskFactory taskFactory;
+    private final WorkerTaskFactory workerTaskFactory;
 
     public SystemImpl(DataContainer context ) throws Exception {
         this.context = context;
-        this.taskFactory = new TaskFactory(context);
+        this.workerTaskFactory = new WorkerTaskFactory(context);
 
         Configurator configurator = context.getConfigurator();
 
@@ -117,7 +117,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
-        WorkerTask insertWorkerTask = taskFactory.getNewWorkerInserterTask(insertMessage);
+        WorkerTask insertWorkerTask = workerTaskFactory.getNewWorkerInserterTask(insertMessage);
         return context.getExecutorService().submit(insertWorkerTask);
     }
 
@@ -126,7 +126,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
-        WorkerTask queryWorkerTask = taskFactory.getNewWorkerQueryTask(queryMessage);
+        WorkerTask queryWorkerTask = workerTaskFactory.getNewWorkerQueryTask(queryMessage);
         return context.getExecutorService().submit(queryWorkerTask);
     }
 

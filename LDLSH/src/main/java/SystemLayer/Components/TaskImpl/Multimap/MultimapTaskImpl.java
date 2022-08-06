@@ -1,6 +1,6 @@
 package SystemLayer.Components.TaskImpl.Multimap;
 
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Containers.DataContainer;
 
 public abstract class MultimapTaskImpl implements MultimapTask{

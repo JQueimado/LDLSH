@@ -1,6 +1,6 @@
 package SystemLayer.Components.TaskImpl.Worker.Baseline;
 
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTaskImpl;
 import SystemLayer.Containers.DataContainer;
