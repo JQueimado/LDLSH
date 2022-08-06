@@ -3,12 +3,12 @@ package SystemLayer.Containers;
 import Factories.CommunicationLayerFactory;
 import Factories.ComponentFactories.DataProcessorFactory;
 import Factories.ComponentFactories.DistanceMeasurerFactory;
-import Factories.ComponentFactories.QueryTaskFactory;
+import Factories.ComponentFactories.WorkerQueryTaskFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
-import NetworkLayer.CommunicationLayer;
+import SystemLayer.Components.NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
@@ -35,7 +35,7 @@ public class DataContainer {
     private LSHHashFactory lshHashFactory = null;
     private ErasureCodesFactory erasureCodesFactory = null;
     private UniqueIdentifierFactory uniqueIdentifierFactory = null;
-    private QueryTaskFactory queryTaskFactory = null;
+    private WorkerQueryTaskFactory workerQueryTaskFactory = null;
 
     //Components
     private final Configurator configurator;
@@ -93,10 +93,10 @@ public class DataContainer {
         return uniqueIdentifierFactory;
     }
 
-    public QueryTaskFactory getQueryTaskFactory( ){
-        if( queryTaskFactory == null )
-            queryTaskFactory = new QueryTaskFactory(this);
-        return queryTaskFactory;
+    public WorkerQueryTaskFactory getQueryTaskFactory( ){
+        if( workerQueryTaskFactory == null )
+            workerQueryTaskFactory = new WorkerQueryTaskFactory(this);
+        return workerQueryTaskFactory;
     }
 
     //Components
