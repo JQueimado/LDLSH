@@ -2,6 +2,8 @@ package Factories.ComponentFactories;
 
 import Factories.FactoryImpl;
 import SystemLayer.Components.NetworkLayer.Message;
+import SystemLayer.Components.TaskImpl.Worker.Baseline.TraditionalInsertTask;
+import SystemLayer.Components.TaskImpl.Worker.Baseline.TraditionalQueryTask;
 import SystemLayer.Components.TaskImpl.Worker.Baseline.TraditionalReplicatedInsertTask;
 import SystemLayer.Components.TaskImpl.Worker.Baseline.TraditionalReplicatedQueryTask;
 import SystemLayer.Components.TaskImpl.Worker.Model.ModelInsertWorkerTask;
@@ -11,7 +13,7 @@ import SystemLayer.SystemExceptions.UnknownConfigException;
 
 public class WorkerTaskFactory extends FactoryImpl {
 
-    private static final String config_name = "TASK_MODEL";
+    private static final String config_name = "WORKER_TASK_MODEL";
     private enum configs {LDLSH, TRADITIONAL, TRADITIONAL_REPLICATED}
 
     private WorkerQueryTaskFactory workerQueryTaskFactory = null;
@@ -43,6 +45,10 @@ public class WorkerTaskFactory extends FactoryImpl {
                 return new TraditionalReplicatedInsertTask(message, appContext);
             }
 
+            case TRADITIONAL -> {
+                return new TraditionalInsertTask(message, appContext);
+            }
+
             default -> {
                 return null;
             }
@@ -62,6 +68,10 @@ public class WorkerTaskFactory extends FactoryImpl {
 
             case TRADITIONAL_REPLICATED -> {
                 return new TraditionalReplicatedQueryTask(message, appContext);
+            }
+
+            case TRADITIONAL -> {
+                return new TraditionalQueryTask(message, appContext);
             }
 
             default -> {

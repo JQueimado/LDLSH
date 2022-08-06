@@ -13,10 +13,8 @@ import SystemLayer.SystemExceptions.UnknownConfigException;
 
 public class MultimapTaskFactory extends FactoryImpl {
 
-    private static final String config_name = "WORKER_TASK_MODEL";
+    private static final String config_name = "MULTIMAP_TASK_MODEL";
     private enum configs {NONE, LDLSH, TRADITIONAL, TRADITIONAL_REPLICATED}
-
-    private WorkerQueryTaskFactory workerQueryTaskFactory = null;
 
     public MultimapTaskFactory(DataContainer appContext){
         super(appContext);

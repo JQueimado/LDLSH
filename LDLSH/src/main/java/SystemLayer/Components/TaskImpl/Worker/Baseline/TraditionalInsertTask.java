@@ -13,8 +13,6 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 public class TraditionalInsertTask extends WorkerTaskImpl {
 
-    private final String storageMapConfig = "STORAGE_MAP";
-
     public TraditionalInsertTask(Message insertMessage, DataContainer appContext) throws Exception{
         super(insertMessage, appContext);
         if( message.getType() != Message.types.INSERT_REQUEST )
