@@ -1,4 +1,4 @@
-package NetworkLayer;
+package SystemLayer.Components.NetworkLayer;
 
 import java.io.Serializable;
 import java.util.List;

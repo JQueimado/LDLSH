@@ -1,35 +1,25 @@
-package NetworkLayer.NettyCommunicationLayerPackage;
+package SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage;
 
-import NetworkLayer.Message;
-import NetworkLayer.MessageImpl;
-import SystemLayer.Data.DataUnits.MultiMapValue;
+import SystemLayer.Components.NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.MessageImpl;
 import SystemLayer.Components.TaskImpl.Multimap.CompletionMultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.InsertMultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.MultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.QueryMultimapTask;
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.LSHHashImpl.LSHHash;
-import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
-import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.util.concurrent.FutureListener;
-import io.netty.util.concurrent.GenericFutureListener;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     private DataContainer appContext;

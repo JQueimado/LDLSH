@@ -1,4 +1,4 @@
-package NetworkLayer;
+package SystemLayer.Components.NetworkLayer;
 
 import io.netty.util.concurrent.Promise;
 

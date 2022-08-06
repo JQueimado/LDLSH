@@ -1,6 +1,6 @@
-package NetworkLayer.NettyCommunicationLayerPackage;
+package SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage;
 
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Containers.DataContainer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

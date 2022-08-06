@@ -1,10 +1,9 @@
-package NetworkLayer.NettyCommunicationLayerPackage;
+package SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage;
 
-import NetworkLayer.CommunicationLayer;
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.CommunicationLayer;
+import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
-import com.google.common.util.concurrent.ListenableFutureTask;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -12,13 +11,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NettyCommunicationLayer implements CommunicationLayer {

@@ -1,4 +1,4 @@
-package NetworkLayer.NettyCommunicationLayerPackage;
+package SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage;
 
 public class NettyServerException extends Exception {
 

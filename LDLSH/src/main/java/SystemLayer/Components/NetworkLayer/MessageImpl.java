@@ -1,11 +1,7 @@
-package NetworkLayer;
-
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
+package SystemLayer.Components.NetworkLayer;
 
 import java.io.IOException;
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MessageImpl implements Message {

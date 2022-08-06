@@ -1,11 +1,10 @@
-package NetworkLayer.NettyCommunicationLayerPackage;
+package SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage;
 
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Containers.DataContainer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
 
 import java.io.ByteArrayInputStream;
@@ -13,7 +12,6 @@ import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.SynchronousQueue;
 
 public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
