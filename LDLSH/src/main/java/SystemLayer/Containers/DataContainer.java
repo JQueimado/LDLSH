@@ -3,6 +3,7 @@ package SystemLayer.Containers;
 import Factories.CommunicationLayerFactory;
 import Factories.ComponentFactories.DataProcessorFactory;
 import Factories.ComponentFactories.DistanceMeasurerFactory;
+import Factories.ComponentFactories.MultimapTaskFactory;
 import Factories.ComponentFactories.WorkerQueryTaskFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
@@ -12,6 +13,7 @@ import SystemLayer.Components.NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
+import SystemLayer.Components.TaskImpl.Multimap.MultimapTask;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -35,6 +37,7 @@ public class DataContainer {
     private LSHHashFactory lshHashFactory = null;
     private ErasureCodesFactory erasureCodesFactory = null;
     private UniqueIdentifierFactory uniqueIdentifierFactory = null;
+    private MultimapTaskFactory multimapTaskFactory = null;
     private WorkerQueryTaskFactory workerQueryTaskFactory = null;
 
     //Components
@@ -93,8 +96,14 @@ public class DataContainer {
         return uniqueIdentifierFactory;
     }
 
-    public WorkerQueryTaskFactory getQueryTaskFactory( ){
-        if( workerQueryTaskFactory == null )
+    public MultimapTaskFactory getMultimapTaskFactory(){
+        if(multimapTaskFactory == null)
+            multimapTaskFactory = new MultimapTaskFactory(this);
+        return multimapTaskFactory;
+    }
+
+    public WorkerQueryTaskFactory getWorkerQueryTaskFactory(){
+        if(workerQueryTaskFactory == null)
             workerQueryTaskFactory = new WorkerQueryTaskFactory(this);
         return workerQueryTaskFactory;
     }
