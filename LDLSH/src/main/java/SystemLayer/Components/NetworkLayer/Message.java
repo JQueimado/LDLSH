@@ -11,6 +11,7 @@ public interface Message extends Serializable {
         COMPLETION_RESPONSE,
         INSERT_MESSAGE,
         INSERT_MESSAGE_RESPONSE,
+        QUERY_MESSAGE,
         QUERY_MESSAGE_SINGLE_BLOCK,
         QUERY_MESSAGE_MULTI_BLOCK,
         QUERY_RESPONSE,

@@ -5,8 +5,8 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 public interface StorageMap {
 
-    public void insert(UniqueIdentifier key, DataObject value);
+    public void insert(UniqueIdentifier key, DataObject<?> value) throws Exception;
 
-    public DataObject query(UniqueIdentifier key);
+    public DataObject<?> query(UniqueIdentifier key) throws Exception;
 
 }

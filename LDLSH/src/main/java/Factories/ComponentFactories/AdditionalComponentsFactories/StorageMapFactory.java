@@ -2,6 +2,7 @@ package Factories.ComponentFactories.AdditionalComponentsFactories;
 
 import Factories.FactoryImpl;
 import SystemLayer.Components.AdditionalStructures.StorageMap.LocalStorageMap;
+import SystemLayer.Components.AdditionalStructures.StorageMap.RemoteStorageMap;
 import SystemLayer.Components.AdditionalStructures.StorageMap.StorageMap;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
@@ -33,7 +34,11 @@ public class StorageMapFactory extends FactoryImpl {
             switch (config) {
 
                 case LOCAL -> {
-                    return new LocalStorageMap();
+                    return new LocalStorageMap(appContext);
+                }
+
+                case REMOTE -> {
+                    return new RemoteStorageMap(appContext);
                 }
 
                 default -> {
