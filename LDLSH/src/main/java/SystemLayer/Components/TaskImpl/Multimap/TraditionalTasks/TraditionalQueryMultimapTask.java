@@ -21,9 +21,6 @@ public class TraditionalQueryMultimapTask extends MultimapTaskImpl {
 
     public TraditionalQueryMultimapTask(Message message, DataContainer appContext) throws Exception {
         super(message, appContext);
-        Object temp = appContext.getAdditionalStructures()[0];
-        if( !(temp instanceof StorageMap) )
-            throw new Exception("Invalid additional structure at index 0: " + temp.getClass());
         storageMap = TraditionalAux.getStorageMap(appContext);
     }
 
