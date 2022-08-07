@@ -20,6 +20,7 @@ public abstract class TraditionalTask extends WorkerTaskImpl {
             additionalStructures = new Object[1];
             StorageMapFactory storageMapFactory = new StorageMapFactory(appContext);
             additionalStructures[0] = storageMapFactory.getNewStorageMap();
+            appContext.setAdditionalStructures(additionalStructures);
         }
 
         return (StorageMap) additionalStructures[0];

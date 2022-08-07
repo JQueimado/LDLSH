@@ -50,7 +50,7 @@ public class TraditionalQueryTask extends TraditionalTask {
                         throw new Exception("Invalid MultimapValue type.");
                     ObjectMultimapValue omv = (ObjectMultimapValue) result;
                     UniqueIdentifier uid = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier();
-                    uid.setObject(omv.object());
+                    uid.setBytes(omv.object());
 
                     candidatesUid.add(uid);
                 }
