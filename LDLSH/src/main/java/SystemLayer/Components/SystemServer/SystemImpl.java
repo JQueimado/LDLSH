@@ -113,7 +113,7 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public ListenableFuture<DataObject> insert(DataObject object) throws Exception {
+    public ListenableFuture<DataObject<?>> insert(DataObject<?> object) throws Exception {
         List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
@@ -122,7 +122,7 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public ListenableFuture<DataObject> query(DataObject queryObject) throws Exception {
+    public ListenableFuture<DataObject<?>> query(DataObject<?> queryObject) throws Exception {
         List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
@@ -131,7 +131,7 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public DataObject newDataObject() throws Exception {
+    public DataObject<?> newDataObject() throws Exception {
         return context.getDataObjectFactory().getNewDataObject();
     }
 

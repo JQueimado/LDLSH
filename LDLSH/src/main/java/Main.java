@@ -5,6 +5,7 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -52,29 +53,27 @@ public class Main {
                 switch (ops[0]) {
                     //Insert
                     case "I" -> {
-                        DataObject dataObject = system.newDataObject();
+                        DataObject<String> dataObject = (DataObject<String>) system.newDataObject();
                         dataObject.setValues(ops[1]);
-                        Future future = system.insert(dataObject);
+                        Future<DataObject<?>> future = system.insert(dataObject);
                         future.get();
                         System.out.println("done");
                     }
 
                     //Query
                     case "Q" -> {
-                        DataObject dataObject = system.newDataObject();
+                        DataObject<String> dataObject = (DataObject<String>) system.newDataObject();
                         dataObject.setValues(ops[1]);
-                        Future<DataObject> resultFuture = system.query(dataObject);
+                        Future<DataObject<?>> resultFuture = system.query(dataObject);
 
-                        DataObject result = resultFuture.get();
+                        DataObject<String> result = (DataObject<String>) resultFuture.get();
 
                         if (result == null) {
                             System.out.println("System returned null value");
                             continue;
                         }
 
-                        DataObject<String> string = (DataObject<String>) result;
-
-                        System.out.printf("Result:%s\n", string.getValues());
+                        System.out.printf("Result:%s\n", result.getValues());
                     }
 
                     //Insert File
@@ -90,17 +89,17 @@ public class Main {
                                 if(line.isEmpty() || line.isBlank())
                                     continue;
                                 System.out.println("Inserting object: "+ line);
-                                DataObject<Object> temp = system.newDataObject();
+                                DataObject<String> temp = (DataObject<String>) system.newDataObject();
                                 temp.setValues(line);
-                                ListenableFuture<DataObject> result = system.insert(temp);
-                                Futures.addCallback(result, new FutureCallback<DataObject>() {
+                                ListenableFuture<DataObject<?>> result = system.insert(temp);
+                                Futures.addCallback(result, new FutureCallback<>() {
                                     @Override
-                                    public void onSuccess(DataObject object) {
+                                    public void onSuccess(DataObject<?> object) {
                                         System.out.println("Insert complete for object: "+ object.getValues());
                                     }
 
                                     @Override
-                                    public void onFailure(Throwable throwable) {
+                                    public void onFailure(@NotNull Throwable throwable) {
                                         System.err.println("Insert Failed: " + throwable.getMessage());
                                         throwable.printStackTrace();
                                     }
@@ -125,13 +124,14 @@ public class Main {
                                 if(line.isEmpty() || line.isBlank())
                                     continue;
                                 System.out.println("Querying object: "+ line);
-                                DataObject<Object> temp = system.newDataObject();
+                                DataObject<Object> temp = (DataObject<Object>) system.newDataObject();
                                 temp.setValues(line);
-                                ListenableFuture<DataObject> result = system.query(temp);
+                                ListenableFuture<DataObject<?>> result = system.query(temp);
 
-                                Futures.addCallback(result, new FutureCallback<DataObject>() {
+                                Futures.addCallback(result, new FutureCallback<>() {
                                     @Override
-                                    public void onSuccess(DataObject object) {
+                                    public void onSuccess(DataObject<?> object) {
+                                        DataObject<String> stringDataObject = (DataObject<String>) object;
                                         if( object == null )
                                             System.out.println("-------\n" +
                                                     "Query for object:\n" +
@@ -146,7 +146,7 @@ public class Main {
                                     }
 
                                     @Override
-                                    public void onFailure(Throwable throwable) {
+                                    public void onFailure(@NotNull Throwable throwable) {
                                         System.err.println("Query Failed: " + throwable.getMessage());
                                         throwable.printStackTrace();
                                     }

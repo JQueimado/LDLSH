@@ -23,10 +23,10 @@ public class TraditionalReplicatedQueryTask extends WorkerTaskImpl {
     }
 
     @Override
-    public DataObject call() throws Exception {
+    public DataObject<?> call() throws Exception {
 
         //Preprocess
-        DataObject queryObject = (DataObject) message.getBody().get(0);
+        DataObject<?> queryObject = (DataObject<?>) message.getBody().get(0);
         LSHHash queryHash = appContext.getDataProcessor().preprocessLSH( queryObject );
 
         List<MultiMapValue> multiMapValues = new ArrayList<>();
@@ -59,7 +59,7 @@ public class TraditionalReplicatedQueryTask extends WorkerTaskImpl {
             }
 
             //Post process
-            DataObject dataObject = appContext.getDataObjectFactory().getNewDataObject();
+            DataObject<?> dataObject = appContext.getDataObjectFactory().getNewDataObject();
             dataObject.setByteArray( result );
             return dataObject;
 
