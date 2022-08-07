@@ -4,6 +4,8 @@ import Factories.ComponentFactories.AdditionalComponentsFactories.StorageMapFact
 import SystemLayer.Components.AdditionalStructures.StorageMap.StorageMap;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Components.NetworkLayer.Message;
+import SystemLayer.Components.TaskImpl.Multimap.MultimapTaskImpl;
+import SystemLayer.Components.TaskImpl.TraditionalAux.TraditionalAux;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTaskImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
@@ -19,13 +21,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TraditionalQueryTask extends TraditionalTask {
+public class TraditionalQueryTask extends WorkerTaskImpl {
+
+    StorageMap storageMap;
 
     public TraditionalQueryTask(Message insertMessage, DataContainer appContext) throws Exception{
         super(insertMessage, appContext);
         if( message.getType() != Message.types.QUERY_REQUEST )
             throw new InvalidMessageTypeException(Message.types.QUERY_REQUEST, message.getType());
-
+        storageMap = TraditionalAux.getStorageMap(appContext);
     }
 
     @Override
@@ -46,9 +50,8 @@ public class TraditionalQueryTask extends TraditionalTask {
                 );
 
                 for (MultiMapValue result : results) {
-                    if (!(result instanceof ObjectMultimapValue))
+                    if (!(result instanceof ObjectMultimapValue omv))
                         throw new Exception("Invalid MultimapValue type.");
-                    ObjectMultimapValue omv = (ObjectMultimapValue) result;
                     UniqueIdentifier uid = appContext.getUniqueIdentifierFactory().getNewUniqueIdentifier();
                     uid.setBytes(omv.object());
 
@@ -61,7 +64,6 @@ public class TraditionalQueryTask extends TraditionalTask {
 
             //Retrieve candidates from storage
             List<DataObject<?>> candidates = new ArrayList<>();
-            StorageMap storageMap = getStorageMap();
             for (UniqueIdentifier candidateUid : candidatesUid){
                 DataObject<?> candidate = storageMap.query(candidateUid);
                 candidates.add(candidate);

@@ -4,6 +4,7 @@ import Factories.ComponentFactories.AdditionalComponentsFactories.StorageMapFact
 import SystemLayer.Components.AdditionalStructures.StorageMap.StorageMap;
 import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
+import SystemLayer.Components.TaskImpl.TraditionalAux.TraditionalAux;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTaskImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
@@ -11,13 +12,16 @@ import SystemLayer.Data.DataUnits.ObjectMultimapValue;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
-public class TraditionalInsertTask extends TraditionalTask {
+public class TraditionalInsertTask extends WorkerTaskImpl {
+
+    StorageMap storageMap;
 
     public TraditionalInsertTask(Message insertMessage, DataContainer appContext) throws Exception{
         super(insertMessage, appContext);
         if( message.getType() != Message.types.INSERT_REQUEST )
             throw new Exception("Invalid Message type for InsertTask");
 
+        storageMap = TraditionalAux.getStorageMap(appContext);
     }
 
     @Override
@@ -38,7 +42,7 @@ public class TraditionalInsertTask extends TraditionalTask {
             }
 
             //Storage map
-            getStorageMap().insert(uid, object);
+            storageMap.insert(uid, object);
 
         }catch (Exception e){
             e.printStackTrace();

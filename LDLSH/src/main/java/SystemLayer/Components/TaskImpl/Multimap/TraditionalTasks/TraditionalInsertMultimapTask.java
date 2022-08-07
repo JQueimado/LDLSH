@@ -4,6 +4,7 @@ import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.NetworkLayer.MessageImpl;
 import SystemLayer.Components.AdditionalStructures.StorageMap.StorageMap;
 import SystemLayer.Components.TaskImpl.Multimap.MultimapTaskImpl;
+import SystemLayer.Components.TaskImpl.TraditionalAux.TraditionalAux;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
@@ -23,7 +24,7 @@ public class TraditionalInsertMultimapTask extends MultimapTaskImpl {
         Object temp = appContext.getAdditionalStructures()[0];
         if( !(temp instanceof StorageMap) )
             throw new Exception("Invalid additional structure at index 0: " + temp.getClass());
-        storageMap = (StorageMap) appContext.getAdditionalStructures()[0];
+        storageMap = TraditionalAux.getStorageMap(appContext);
     }
 
     @Override

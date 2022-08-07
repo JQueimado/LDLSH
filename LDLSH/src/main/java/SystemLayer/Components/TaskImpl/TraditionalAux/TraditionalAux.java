@@ -1,19 +1,12 @@
-package SystemLayer.Components.TaskImpl.Worker.Baseline;
+package SystemLayer.Components.TaskImpl.TraditionalAux;
 
 import Factories.ComponentFactories.AdditionalComponentsFactories.StorageMapFactory;
 import SystemLayer.Components.AdditionalStructures.StorageMap.StorageMap;
-import SystemLayer.Components.NetworkLayer.Message;
-import SystemLayer.Components.TaskImpl.Worker.WorkerTaskImpl;
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.DataObjectsImpl.DataObject;
 
-public abstract class TraditionalTask extends WorkerTaskImpl {
+public class TraditionalAux {
 
-    public TraditionalTask(Message message, DataContainer appContext) {
-        super(message, appContext);
-    }
-
-    protected StorageMap getStorageMap(){
+    public static StorageMap getStorageMap(DataContainer appContext){
         Object[] additionalStructures = appContext.getAdditionalStructures();
 
         if( additionalStructures == null || additionalStructures[0] == null ){
@@ -26,6 +19,4 @@ public abstract class TraditionalTask extends WorkerTaskImpl {
         return (StorageMap) additionalStructures[0];
     }
 
-    @Override
-    public abstract DataObject call() throws Exception;
 }
