@@ -88,23 +88,26 @@ public class SystemImpl implements SystemServer {
                 String multimapConfig = configurator.getConfig("MULTIMAP"); //Get multimap Config
 
                 //Get Bands
-                String bands_string = "";
-                int bands = 0;
-                try {
-                    bands_string = configurator.getConfig(nBands_config);
-                    bands = Integer.parseInt(bands_string);
-                }catch (Exception e){
-                    UnknownConfigException.handler( new UnknownConfigException(nBands_config, bands_string));
-                }
+                if ( !multimapConfig.isEmpty() && ( multimapConfig.compareTo("NONE") != 0) ) {
+                    String bands_string = "";
+                    int bands = 0;
+                    try {
+                        bands_string = configurator.getConfig(nBands_config);
+                        bands = Integer.parseInt(bands_string);
+                    } catch (Exception e) {
+                        UnknownConfigException.handler(new UnknownConfigException(nBands_config, bands_string));
+                    }
 
-                MultiMap[] multiMaps = new MultiMap[bands];
-                for ( int i = 0; i<bands; i++ ){
-                    MultiMap current = multimapFactory.getNewMultiMap(multimapConfig);
-                    current.setHashBlockPosition(i);
-                    current.setTotalBlocks(bands);
-                    multiMaps[i] = current;
+
+                    MultiMap[] multiMaps = new MultiMap[bands];
+                    for (int i = 0; i < bands; i++) {
+                        MultiMap current = multimapFactory.getNewMultiMap(multimapConfig);
+                        current.setHashBlockPosition(i);
+                        current.setTotalBlocks(bands);
+                        multiMaps[i] = current;
+                    }
+                    context.setMultiMaps(multiMaps);
                 }
-                context.setMultiMaps(multiMaps);
             }
         }
 
