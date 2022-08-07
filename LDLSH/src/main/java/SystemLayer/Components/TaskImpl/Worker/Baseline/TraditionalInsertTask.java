@@ -11,25 +11,13 @@ import SystemLayer.Data.DataUnits.ObjectMultimapValue;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
-public class TraditionalInsertTask extends WorkerTaskImpl {
+public class TraditionalInsertTask extends TraditionalTask {
 
     public TraditionalInsertTask(Message insertMessage, DataContainer appContext) throws Exception{
         super(insertMessage, appContext);
         if( message.getType() != Message.types.INSERT_REQUEST )
             throw new Exception("Invalid Message type for InsertTask");
 
-    }
-
-    private StorageMap getStorageMap(){
-        Object[] additionalStructures = appContext.getAdditionalStructures();
-
-        if( additionalStructures == null || additionalStructures[0] == null ){
-            additionalStructures = new Object[1];
-            StorageMapFactory storageMapFactory = new StorageMapFactory(appContext);
-            additionalStructures[0] = storageMapFactory.getNewStorageMap();
-        }
-
-        return (StorageMap) additionalStructures[0];
     }
 
     @Override

@@ -19,25 +19,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TraditionalQueryTask extends WorkerTaskImpl {
+public class TraditionalQueryTask extends TraditionalTask {
 
     public TraditionalQueryTask(Message insertMessage, DataContainer appContext) throws Exception{
         super(insertMessage, appContext);
         if( message.getType() != Message.types.QUERY_REQUEST )
             throw new InvalidMessageTypeException(Message.types.QUERY_REQUEST, message.getType());
 
-    }
-
-    private StorageMap getStorageMap(){
-        Object[] additionalStructures = appContext.getAdditionalStructures();
-
-        if( additionalStructures == null || additionalStructures[0] == null ){
-            additionalStructures = new Object[1];
-            StorageMapFactory storageMapFactory = new StorageMapFactory(appContext);
-            additionalStructures[0] = storageMapFactory.getNewStorageMap();
-        }
-
-        return (StorageMap) additionalStructures[0];
     }
 
     @Override
