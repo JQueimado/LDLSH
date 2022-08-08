@@ -7,7 +7,7 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
-import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
+import SystemLayer.Data.DataUnits.LSHHashBlock;
 import info.debatty.java.lsh.MinHash;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
@@ -179,7 +179,7 @@ public class JavaMinHashSimilarityTests {
         int n_blocks = 6;
         LSHHash hash = simulatedState.getLshHashFactory().getNewLSHHash();
         hash.setObject(dataObjects[0].toByteArray(), n_blocks);
-        LSHHashImpl.LSHHashBlock[] blocks = hash.getBlocks();
+        LSHHashBlock[] blocks = hash.getBlocks();
         assertNotNull(blocks);
         assertEquals(blocks.length, n_blocks);
 
@@ -187,7 +187,7 @@ public class JavaMinHashSimilarityTests {
         String signature_String = new String(signature, StandardCharsets.UTF_8);
 
         StringBuilder rebuilt_signature = new StringBuilder();
-        for ( LSHHashImpl.LSHHashBlock block : blocks ){
+        for ( LSHHashBlock block : blocks ){
             rebuilt_signature.append(new String(block.lshBlock(), StandardCharsets.UTF_8));
         }
 
@@ -200,8 +200,8 @@ public class JavaMinHashSimilarityTests {
         int position = 0;
         LSHHash hash = simulatedState.getLshHashFactory().getNewLSHHash();
         hash.setObject(dataObjects[0].toByteArray(), n_blocks);
-        LSHHashImpl.LSHHashBlock[] blocks = hash.getBlocks();
-        LSHHashImpl.LSHHashBlock block = hash.getBlockAt(position);
+        LSHHashBlock[] blocks = hash.getBlocks();
+        LSHHashBlock block = hash.getBlockAt(position);
         assertArrayEquals(blocks[position].lshBlock(), block.lshBlock());
     }
 
@@ -210,9 +210,9 @@ public class JavaMinHashSimilarityTests {
         int n_blocks = 6;
         LSHHash hash = simulatedState.getLshHashFactory().getNewLSHHash();
         hash.setObject(dataObjects[0].toByteArray(), n_blocks);
-        LSHHashImpl.LSHHashBlock[] blocks = hash.getBlocks();
+        LSHHashBlock[] blocks = hash.getBlocks();
         for (int i = 0; i<n_blocks; i++) {
-            LSHHashImpl.LSHHashBlock block = hash.getBlockAt(i);
+            LSHHashBlock block = hash.getBlockAt(i);
             assertArrayEquals(blocks[i].lshBlock(), block.lshBlock());
         }
     }

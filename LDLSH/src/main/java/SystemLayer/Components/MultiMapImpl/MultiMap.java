@@ -2,7 +2,7 @@ package SystemLayer.Components.MultiMapImpl;
 
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
-import SystemLayer.Data.LSHHashImpl.LSHHashImpl.LSHHashBlock;
+import SystemLayer.Data.DataUnits.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 import static SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.*;
@@ -32,6 +32,7 @@ public interface MultiMap {
     int getHashBlockPosition();
 
     void setTotalBlocks( int totalBlocks );
+
     int getTotalBlocks();
 
 }

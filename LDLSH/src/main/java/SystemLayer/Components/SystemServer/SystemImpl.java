@@ -1,12 +1,11 @@
 package SystemLayer.Components.SystemServer;
 
 import Factories.ComponentFactories.MultimapFactory;
-import Factories.ComponentFactories.TaskFactory;
-import NetworkLayer.CommunicationLayer;
-import NetworkLayer.Message;
-import NetworkLayer.MessageImpl;
+import Factories.ComponentFactories.WorkerTaskFactory;
+import SystemLayer.Components.NetworkLayer.CommunicationLayer;
+import SystemLayer.Components.NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.TaskImpl.Worker.ModelInsertWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.Containers.DataContainer;
@@ -26,11 +25,11 @@ public class SystemImpl implements SystemServer {
     private static final String multiMapPosition_config = "MULTIMAP_POSITION";
 
     private final DataContainer context;
-    private final TaskFactory taskFactory;
+    private final WorkerTaskFactory workerTaskFactory;
 
     public SystemImpl(DataContainer context ) throws Exception {
         this.context = context;
-        this.taskFactory = new TaskFactory(context);
+        this.workerTaskFactory = new WorkerTaskFactory(context);
 
         Configurator configurator = context.getConfigurator();
 
@@ -89,23 +88,26 @@ public class SystemImpl implements SystemServer {
                 String multimapConfig = configurator.getConfig("MULTIMAP"); //Get multimap Config
 
                 //Get Bands
-                String bands_string = "";
-                int bands = 0;
-                try {
-                    bands_string = configurator.getConfig(nBands_config);
-                    bands = Integer.parseInt(bands_string);
-                }catch (Exception e){
-                    UnknownConfigException.handler( new UnknownConfigException(nBands_config, bands_string));
-                }
+                if ( !multimapConfig.isEmpty() && ( multimapConfig.compareTo("NONE") != 0) ) {
+                    String bands_string = "";
+                    int bands = 0;
+                    try {
+                        bands_string = configurator.getConfig(nBands_config);
+                        bands = Integer.parseInt(bands_string);
+                    } catch (Exception e) {
+                        UnknownConfigException.handler(new UnknownConfigException(nBands_config, bands_string));
+                    }
 
-                MultiMap[] multiMaps = new MultiMap[bands];
-                for ( int i = 0; i<bands; i++ ){
-                    MultiMap current = multimapFactory.getNewMultiMap(multimapConfig);
-                    current.setHashBlockPosition(i);
-                    current.setTotalBlocks(bands);
-                    multiMaps[i] = current;
+
+                    MultiMap[] multiMaps = new MultiMap[bands];
+                    for (int i = 0; i < bands; i++) {
+                        MultiMap current = multimapFactory.getNewMultiMap(multimapConfig);
+                        current.setHashBlockPosition(i);
+                        current.setTotalBlocks(bands);
+                        multiMaps[i] = current;
+                    }
+                    context.setMultiMaps(multiMaps);
                 }
-                context.setMultiMaps(multiMaps);
             }
         }
 
@@ -114,25 +116,25 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public ListenableFuture<DataObject> insert(DataObject object) throws Exception {
+    public ListenableFuture<DataObject<?>> insert(DataObject<?> object) throws Exception {
         List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
-        WorkerTask insertWorkerTask = taskFactory.getNewWorkerInserterTask(insertMessage);
+        WorkerTask insertWorkerTask = workerTaskFactory.getNewWorkerInserterTask(insertMessage);
         return context.getExecutorService().submit(insertWorkerTask);
     }
 
     @Override
-    public ListenableFuture<DataObject> query(DataObject queryObject) throws Exception {
+    public ListenableFuture<DataObject<?>> query(DataObject<?> queryObject) throws Exception {
         List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
-        WorkerTask queryWorkerTask = taskFactory.getNewWorkerQueryTask(queryMessage);
+        WorkerTask queryWorkerTask = workerTaskFactory.getNewWorkerQueryTask(queryMessage);
         return context.getExecutorService().submit(queryWorkerTask);
     }
 
     @Override
-    public DataObject newDataObject() throws Exception {
+    public DataObject<?> newDataObject() throws Exception {
         return context.getDataObjectFactory().getNewDataObject();
     }
 

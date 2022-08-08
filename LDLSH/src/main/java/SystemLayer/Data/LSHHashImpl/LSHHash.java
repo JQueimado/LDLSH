@@ -1,5 +1,7 @@
 package SystemLayer.Data.LSHHashImpl;
 
+import SystemLayer.Data.DataUnits.LSHHashBlock;
+
 import java.io.Serializable;
 
 public interface LSHHash extends Serializable, Comparable<LSHHash> {
@@ -21,13 +23,13 @@ public interface LSHHash extends Serializable, Comparable<LSHHash> {
      * Returns the list of signature blocks
      * @return Array of signature blocks
      */
-    LSHHashImpl.LSHHashBlock[] getBlocks();
+    LSHHashBlock[] getBlocks();
 
     /**
      * Returns a block associated with a given position
      * @param position pretended block's position
      * @return pretended block
      */
-    LSHHashImpl.LSHHashBlock getBlockAt(int position );
+    LSHHashBlock getBlockAt(int position );
 
 }

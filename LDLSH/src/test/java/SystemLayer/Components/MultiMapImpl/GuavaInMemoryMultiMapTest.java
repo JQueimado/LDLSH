@@ -10,7 +10,7 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.SimplePartitionErasureCodes;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
-import SystemLayer.Data.LSHHashImpl.LSHHashImpl.LSHHashBlock;
+import SystemLayer.Data.DataUnits.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.Sha256UniqueIdentifier;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import org.junit.jupiter.api.BeforeEach;

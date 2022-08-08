@@ -1,6 +1,6 @@
 package SystemLayer.SystemExceptions;
 
-import NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.Message;
 
 public class InvalidMessageTypeException extends Exception{
 

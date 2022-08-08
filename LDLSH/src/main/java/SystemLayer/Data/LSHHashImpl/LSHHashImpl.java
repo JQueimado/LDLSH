@@ -1,10 +1,9 @@
 package SystemLayer.Data.LSHHashImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
+import SystemLayer.Data.DataUnits.LSHHashBlock;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 
 public abstract class LSHHashImpl implements LSHHash{
@@ -109,30 +108,4 @@ public abstract class LSHHashImpl implements LSHHash{
         blocks = (LSHHashBlock[]) stream.readObject();
     }
 
-    // Subclasses
-    /**
-     * Representation of a signature block
-     * @param lshBlock signature block's data
-     */
-    public record LSHHashBlock(byte[] lshBlock ) implements Comparable<LSHHashBlock>, Serializable {
-        @Override
-        public int compareTo(LSHHashBlock o) {
-            return Arrays.compare(lshBlock, o.lshBlock);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj.getClass() != LSHHashBlock.class)
-                return false;
-            LSHHashBlock conv = (LSHHashBlock) obj;
-            return Arrays.equals( this.lshBlock, conv.lshBlock );
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(this.lshBlock);
-        }
-
-        /**/
-    }
 }
