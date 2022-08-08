@@ -5,6 +5,7 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -37,7 +38,7 @@ public class Main {
         String line;
         while((line = fileBufferReader.readLine()) != null)
             if (!line.isEmpty() || !line.isBlank()) {
-                DataObject dataObject = system.newDataObject();
+                DataObject<String> dataObject = (DataObject<String>) system.newDataObject();
                 dataObject.setValues(line);
                 data.add( dataObject );
             }
@@ -46,18 +47,18 @@ public class Main {
         switch (op) {
             //Insert File
             case "-i" -> {
-                for (DataObject dataElement : data){
+                for (DataObject<String> dataElement : data){
                     //System.out.println("adding:"+ dataElement.getValues());
                     //Execute instruction
-                    ListenableFuture<DataObject> result = system.insert(dataElement);
-                    Futures.addCallback(result, new FutureCallback<DataObject>() {
+                    ListenableFuture<DataObject<?>> result = system.insert(dataElement);
+                    Futures.addCallback(result, new FutureCallback<>() {
                         @Override
                         public void onSuccess(DataObject object) {
                             //Nothing
                         }
 
                         @Override
-                        public void onFailure(Throwable throwable) {
+                        public void onFailure(@NotNull Throwable throwable) {
                             System.err.println("Insert Failed: " + throwable.getMessage());
                             throwable.printStackTrace();
                         }
@@ -70,13 +71,13 @@ public class Main {
             }
 
             case "-q" -> {
-                for (DataObject dataElement : data){
+                for (DataObject<?> dataElement : data){
 
                     //Execute Instruction
-                    ListenableFuture<DataObject> result = system.query(dataElement);
+                    ListenableFuture<DataObject<?>> result = system.query(dataElement);
 
-                    Futures.addCallback(result, new FutureCallback<DataObject>() {
-                        final DataObject e = dataElement;
+                    Futures.addCallback(result, new FutureCallback<>() {
+                        final DataObject<?> e = dataElement;
                         @Override
                         public void onSuccess(DataObject object) {
                             if( object != null )
@@ -86,7 +87,7 @@ public class Main {
                         }
 
                         @Override
-                        public void onFailure(Throwable throwable) {
+                        public void onFailure(@NotNull Throwable throwable) {
                             //Completed with error
                         }
                     }, dataContainer.getCallbackExecutor());
