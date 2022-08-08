@@ -66,6 +66,8 @@ public class TraditionalQueryTask extends WorkerTaskImpl {
             List<DataObject<?>> candidates = new ArrayList<>();
             for (UniqueIdentifier candidateUid : candidatesUid){
                 DataObject<?> candidate = storageMap.query(candidateUid);
+                if (candidate == null)
+                    continue;
                 candidates.add(candidate);
             }
 

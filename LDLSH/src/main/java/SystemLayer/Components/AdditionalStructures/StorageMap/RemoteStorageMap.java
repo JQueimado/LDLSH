@@ -83,7 +83,7 @@ public class RemoteStorageMap extends StorageMapImpl {
             throw new InvalidMessageSizeException(1, result.getBody().size());
 
         Object object = result.getBody().get(0);
-        if ( !(object instanceof DataObject<?>) )
+        if ( !(object instanceof DataObject<?>) && object != null )
             throw new InvalidMessageBodyObjectException(DataObject.class.toString(), object.getClass().toString());
 
         return (DataObject<?>) object;

@@ -148,7 +148,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                 }
 
                 //Queries a message through the multi maps.
-                case QUERY_MESSAGE_SINGLE_BLOCK -> {
+                case QUERY_MESSAGE_SINGLE_BLOCK, QUERY_MESSAGE -> {
                     //Query
                     MultimapTask task = appContext.getMultimapTaskFactory().getNewMultimapQueryTask(message);
                     ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);

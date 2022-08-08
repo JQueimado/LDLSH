@@ -28,8 +28,8 @@ public class TraditionalQueryMultimapTask extends MultimapTaskImpl {
     public Message call() throws Exception {
 
         //assert type
-        if( message.getType() != Message.types.QUERY_MESSAGE_SINGLE_BLOCK )
-            throw new InvalidMessageTypeException(Message.types.QUERY_MESSAGE_SINGLE_BLOCK, message.getType());
+        if( message.getType() != Message.types.QUERY_MESSAGE )
+            throw new InvalidMessageTypeException(Message.types.QUERY_MESSAGE, message.getType());
 
         //assert body size
         if ( message.getBody().size() != 1 )
