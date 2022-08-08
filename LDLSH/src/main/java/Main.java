@@ -50,6 +50,7 @@ public class Main {
         switch (op) {
             //Insert File
             case "-i" -> {
+                Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
                 for (DataObject<String> dataElement : data){
                     //System.out.println("adding:"+ dataElement.getValues());
                     //Execute instruction
@@ -68,11 +69,17 @@ public class Main {
                     }, dataContainer.getCallbackExecutor());
                 }
                 dataContainer.getExecutorService().shutdown(); //waits all tasks termination
+                Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp.getTime();
+                System.out.println("done:\n" +
+                        "total execution time: "+ totalExecutionTime+" ms\n" +
+                        "throughput: "+ totalExecutionTime/operations +" ms/op");
                 System.exit(0);
             }
 
             case "-q" -> {
                 //final int[] i = {0};
+                Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
                 for (DataObject<String> dataElement : data){
 
                     //Execute Instruction
@@ -94,6 +101,11 @@ public class Main {
                 }
                 dataContainer.getExecutorService().shutdown(); //waits all tasks termination
                 //assert i[0] == operations;
+                Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp.getTime();
+                System.out.println("done:\n" +
+                        "total execution time: "+ totalExecutionTime+" ms\n" +
+                        "throughput: "+ totalExecutionTime/operations +" ms/op");
                 System.exit(0);
             }
         }
