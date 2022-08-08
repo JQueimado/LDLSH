@@ -18,12 +18,16 @@ public abstract class UniqueIdentifierImpl implements UniqueIdentifier {
     }
 
     @Override
-    public void setObject(byte[] object) {
-    }
+    public abstract void setObject(byte[] object);
 
     @Override
     public byte[] getUID() {
         return data;
+    }
+
+    @Override
+    public void setBytes(byte[] bytes) {
+        data = bytes;
     }
 
     @Override

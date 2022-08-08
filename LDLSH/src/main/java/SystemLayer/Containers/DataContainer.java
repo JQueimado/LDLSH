@@ -3,18 +3,18 @@ package SystemLayer.Containers;
 import Factories.CommunicationLayerFactory;
 import Factories.ComponentFactories.DataProcessorFactory;
 import Factories.ComponentFactories.DistanceMeasurerFactory;
-import Factories.ComponentFactories.QueryTaskFactory;
+import Factories.ComponentFactories.MultimapTaskFactory;
+import Factories.ComponentFactories.WorkerQueryTaskFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
-import NetworkLayer.CommunicationLayer;
+import SystemLayer.Components.NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
+import SystemLayer.Components.TaskImpl.Multimap.MultimapTask;
 import SystemLayer.Containers.Configurator.Configurator;
-import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -37,7 +37,8 @@ public class DataContainer {
     private LSHHashFactory lshHashFactory = null;
     private ErasureCodesFactory erasureCodesFactory = null;
     private UniqueIdentifierFactory uniqueIdentifierFactory = null;
-    private QueryTaskFactory queryTaskFactory = null;
+    private MultimapTaskFactory multimapTaskFactory = null;
+    private WorkerQueryTaskFactory workerQueryTaskFactory = null;
 
     //Components
     private final Configurator configurator;
@@ -47,6 +48,8 @@ public class DataContainer {
     private DataProcessor dataProcessor = null;
     private CommunicationLayer communicationLayer = null;
     private ExecutorService callbackExecutor = null;
+
+    private Object[] additionalStructures = null;
 
     //Variables
     //private boolean debug;
@@ -93,10 +96,16 @@ public class DataContainer {
         return uniqueIdentifierFactory;
     }
 
-    public QueryTaskFactory getQueryTaskFactory( ){
-        if( queryTaskFactory == null )
-            queryTaskFactory = new QueryTaskFactory(this);
-        return queryTaskFactory;
+    public MultimapTaskFactory getMultimapTaskFactory(){
+        if(multimapTaskFactory == null)
+            multimapTaskFactory = new MultimapTaskFactory(this);
+        return multimapTaskFactory;
+    }
+
+    public WorkerQueryTaskFactory getWorkerQueryTaskFactory(){
+        if(workerQueryTaskFactory == null)
+            workerQueryTaskFactory = new WorkerQueryTaskFactory(this);
+        return workerQueryTaskFactory;
     }
 
     //Components
@@ -176,6 +185,14 @@ public class DataContainer {
             communicationLayer = (new CommunicationLayerFactory(this)).getNewCommunicationLayer();
         }
         return communicationLayer;
+    }
+
+    public Object[] getAdditionalStructures(){
+        return additionalStructures;
+    }
+
+    public void setAdditionalStructures(Object[] structures){
+        additionalStructures = structures;
     }
 
     //Variables
