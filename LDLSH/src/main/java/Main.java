@@ -5,6 +5,7 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -39,7 +40,7 @@ public class Main {
         int operations = 0;
         while((line = fileBufferReader.readLine()) != null)
             if (!line.isEmpty() || !line.isBlank()) {
-                DataObject dataObject = system.newDataObject();
+                DataObject<String> dataObject = (DataObject<String>) system.newDataObject();
                 dataObject.setValues(line);
                 data.add( dataObject );
                 operations ++;
@@ -49,6 +50,7 @@ public class Main {
         switch (op) {
             //Insert File
             case "-i" -> {
+                for (DataObject<String> dataElement : data){
                 for ( int i = 0; i < data.size(); i++){
                     DataObject dataElement = data.get(i);
                     //System.out.println("adding:"+ dataElement.getValues());
@@ -67,7 +69,7 @@ public class Main {
                         }
 
                         @Override
-                        public void onFailure(Throwable throwable) {
+                        public void onFailure(@NotNull Throwable throwable) {
                             System.err.println("Insert Failed: " + throwable.getMessage());
                             throwable.printStackTrace();
                         }
@@ -79,7 +81,7 @@ public class Main {
 
             case "-q" -> {
                 //final int[] i = {0};
-                for (DataObject dataElement : data){
+                for (DataObject<String> dataElement : data){
 
                     //Execute Instruction
                     Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
@@ -96,7 +98,7 @@ public class Main {
                         }
 
                         @Override
-                        public void onFailure(Throwable throwable) {
+                        public void onFailure(@NotNull Throwable throwable) {
                             //Completed with error
                         }
                     }, dataContainer.getCallbackExecutor());

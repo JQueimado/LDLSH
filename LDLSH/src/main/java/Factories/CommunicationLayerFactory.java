@@ -1,7 +1,7 @@
 package Factories;
 
-import NetworkLayer.CommunicationLayer;
-import NetworkLayer.NettyCommunicationLayerPackage.NettyCommunicationLayer;
+import SystemLayer.Components.NetworkLayer.CommunicationLayer;
+import SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage.NettyCommunicationLayer;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 

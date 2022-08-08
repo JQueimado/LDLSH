@@ -5,7 +5,7 @@ import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
-import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
+import SystemLayer.Data.DataUnits.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.InvalidMapValueTypeException;
 import com.google.common.collect.*;
@@ -15,7 +15,7 @@ import java.util.Collection;
 
 public class GuavaInMemoryMultiMap extends MultiMapImpl{
 
-    private final Multimap<LSHHashImpl.LSHHashBlock, MultiMapValue> multiMap;
+    private final Multimap<LSHHashBlock, MultiMapValue> multiMap;
 
     //Constructors
     public GuavaInMemoryMultiMap(int hash_position, int total_hash_blocks, DataContainer appContext){
@@ -30,10 +30,10 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
     }
 
     @Override
-    public LSHHashImpl.LSHHashBlock getBlock(LSHHash hash) {
-        LSHHashImpl.LSHHashBlock rcv_block = hash.getBlockAt(hash_position);
+    public LSHHashBlock getBlock(LSHHash hash) {
+        LSHHashBlock rcv_block = hash.getBlockAt(hash_position);
 
-        for ( LSHHashImpl.LSHHashBlock current : multiMap.keys() ){
+        for ( LSHHashBlock current : multiMap.keys() ){
             if(Arrays.hashCode(current.lshBlock()) == Arrays.hashCode(rcv_block.lshBlock())){
                 return current;
             }
@@ -69,7 +69,7 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
     }
 
     @Override
-    public MultiMapValue[] query(LSHHashImpl.LSHHashBlock lshHash) {
+    public MultiMapValue[] query(LSHHashBlock lshHash) {
         Collection<MultiMapValue> collection = multiMap.get( lshHash );
         MultiMapValue[] result = new MultiMapValue[collection.size()];
         collection.toArray(result);

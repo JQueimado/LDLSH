@@ -1,18 +1,17 @@
 package SystemLayer.Components.MultiMapImpl;
 
-import NetworkLayer.CommunicationLayer;
-import NetworkLayer.Message;
-import NetworkLayer.MessageImpl;
+import SystemLayer.Components.NetworkLayer.CommunicationLayer;
+import SystemLayer.Components.NetworkLayer.Message;
+import SystemLayer.Components.NetworkLayer.MessageImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
-import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
+import SystemLayer.Data.DataUnits.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import io.netty.util.concurrent.Promise;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +85,7 @@ public class RemoteMultimap extends MultiMapImpl{
     }
 
     @Override
-    public MultiMapValue[] query(LSHHashImpl.LSHHashBlock lshHash) throws Exception {
+    public MultiMapValue[] query(LSHHashBlock lshHash) throws Exception {
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(lshHash);
         Message queryMessage = new MessageImpl(Message.types.QUERY_MESSAGE_SINGLE_BLOCK, messageBody);

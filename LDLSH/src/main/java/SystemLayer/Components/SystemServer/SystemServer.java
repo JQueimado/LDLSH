@@ -13,7 +13,7 @@ public interface SystemServer {
      * @return same object if the task was succesfull
      * @throws Exception if an error occurs
      */
-    ListenableFuture<DataObject> insert(DataObject object ) throws Exception;
+    ListenableFuture<DataObject<?>> insert(DataObject<?> object ) throws Exception;
 
     /**
      * Submits a Query task to the system
@@ -21,14 +21,14 @@ public interface SystemServer {
      * @return query result
      * @throws Exception if an error occurs
      */
-    ListenableFuture<DataObject> query(DataObject queryObject ) throws Exception ;
+    ListenableFuture<DataObject<?>> query(DataObject<?> queryObject ) throws Exception ;
 
     /**
      * Returns a new empty data object according to the System's specification
      * @return new DataObject
      * @throws Exception If an error occurs
      */
-    DataObject newDataObject() throws Exception;
+    DataObject<?> newDataObject() throws Exception;
 
     void stop();
 }
