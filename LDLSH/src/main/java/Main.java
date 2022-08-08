@@ -50,22 +50,21 @@ public class Main {
         switch (op) {
             //Insert File
             case "-i" -> {
-                for (DataObject<String> dataElement : data){
-                for ( int i = 0; i < data.size(); i++){
-                    DataObject dataElement = data.get(i);
+                for (DataObject<String> dataElement : data) {
                     //System.out.println("adding:"+ dataElement.getValues());
                     //Execute instruction
                     Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
-                    ListenableFuture<DataObject> result = system.insert(dataElement);
+                    ListenableFuture<DataObject<?>> result = system.insert(dataElement);
                     Futures.addCallback(result, new FutureCallback<>() {
-                        final DataObject elem = dataElement;
+                        final DataObject<?> elem = dataElement;
                         final Timestamp initialTimeStamp1 = initialTimeStamp;
+
                         @Override
                         public void onSuccess(DataObject object) {
                             //Complete
                             Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
                             long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
-                            System.out.println("insert for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
+                            System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms");
                         }
 
                         @Override
@@ -85,9 +84,9 @@ public class Main {
 
                     //Execute Instruction
                     Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
-                    ListenableFuture<DataObject> result = system.query(dataElement);
-                    Futures.addCallback(result, new FutureCallback<DataObject>() {
-                        final DataObject elem = dataElement;
+                    ListenableFuture<DataObject<?>> result = system.query(dataElement);
+                    Futures.addCallback(result, new FutureCallback<>() {
+                        final DataObject<?> elem = dataElement;
                         final Timestamp initialTimeStamp1 = initialTimeStamp;
                         @Override
                         public void onSuccess(DataObject object) {
