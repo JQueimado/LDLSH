@@ -19,8 +19,9 @@ LDLSH_Accuracy_Test(){
     RESULTSFOLDER="LDLSH_ACCURACY_TESTS"
 
     #Setup
-    ./run_quinta_server all --change_branch Test-Accuracy
-    ./run_quinta_server all -js
+    mkdir $RESULTSFOLDER
+    ./run_quinta_servers all --change_branch Test-Accuracy
+    ./run_quinta_servers all -js
 
     run_java $CONFIGFILE "i" $INSERTFILE $RESULTSFOLDER
 
