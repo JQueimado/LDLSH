@@ -34,10 +34,11 @@ run_client_jar(){
 
 run_test_client_jar(){
 	HOST=$1
-	OP=$2
-	FILE=$3
+	DIRCONFIG=$2
+	OP=$3
+	DATAFILE=$4
 	RESULTSFOLDER=$4
-	ssh $HOST "cd ${DIR}; ./run_test.sh ${OP} ${FILE} ${RESULTSFOLDER}"
+	ssh $HOST "cd ${DIR}; ./run_test.sh ${DIRCONFIG} ${OP} ${DATAFILE} ${RESULTSFOLDER}"
 }
 
 git_pull(){
@@ -113,13 +114,13 @@ accuracy_Test(){
 	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
 
 	#Insert
-    run_test_client_jar $CLIENT "-i" $INSERTFILE $RESULTSFOLDER
+    run_test_client_jar $CLIENT $CONFIGFILE "-i" $INSERTFILE $RESULTSFOLDER
 
 	#Test
     for IT in 1 .. $ITERATIONS
     do
 		#Query
-        run_test_client_jar $CLIENT "-q" $QUERYFILE $RESULTSFOLDER
+        run_test_client_jar $CLIENT $CONFIGFILE "-q" $QUERYFILE $RESULTSFOLDER
     done
 
 	#Stop Server
