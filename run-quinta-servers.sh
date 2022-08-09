@@ -36,7 +36,8 @@ run_test_client_jar(){
 	HOST=$1
 	OP=$2
 	FILE=$3
-	ssh $HOST "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties ${OP} ${FILE}"
+	RESULTSFOLDER=$4
+	ssh $HOST "cd ${DIR}; ./run_test.sh ${OP} ${FILE} ${RESULTSFOLDER}"
 }
 
 git_pull(){
@@ -78,6 +79,56 @@ check_ports(){
 	HOST=$1
 	ssh $HOST "sudo lsof -i -P -n | grep java"
 }
+
+### TESTS ###
+
+Accuracy_Test(){
+	#args
+    ITERATIONS=$1
+    INSERTFILE=$2
+    QUERYFILE=$3
+	#test configs
+    CONFIGFILE="LDLSH/LDLSH_Quinta"
+    RESULTSFOLDER="LDLSH_ACCURACY_TESTS"
+	CLIENT="t5.quinta"
+	SERVERS="t6.quinta t7.quinta t8.quinta"
+	BRANCHNAME="Tests-Accuracy"
+
+    #Setup
+	change_branch $CLIENT $BRANCHNAME
+
+	for SERVER in $SERVERS
+	do
+		change_branch $HOST $BRANCH
+	done
+
+    ### LDLSH ###
+	RESULTSFOLDER="LDLSH-ACCURACY"
+	#start server
+    for SERVER in $SERVERS
+	do
+		run_server_jar $SERVER
+	done
+
+	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
+
+	#Insert
+    run_test_client_jar $CLIENT "-i" $INSERTFILE $RESULTSFOLDER
+
+	#Test
+    for IT in 1 .. $ITERATIONS
+    do
+		#Query
+        run_test_client_jar $CLIENT "-q" $QUERYFILE $RESULTSFOLDER
+    done
+
+	#Stop Server
+    for SERVER in $SERVERS
+	do
+		kill_process $HOST
+	done
+}
+
 
 run_once(){
 	HOST=$1
