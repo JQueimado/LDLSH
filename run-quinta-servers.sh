@@ -82,7 +82,7 @@ check_ports(){
 
 ### TESTS ###
 
-Accuracy_Test(){
+accuracy_Test(){
 	#args
     ITERATIONS=$1
     INSERTFILE=$2
@@ -131,65 +131,71 @@ Accuracy_Test(){
 
 
 run_once(){
-	HOST=$1
-	OP=$2
-	ARG1=$3
-	ARG2=$4
+	ARG1=$1
+	ARG2=$2
+	ARG3=$3
+	ARG4=$4
 	# run jar 
-	if [ $OP = "-js" ]
+	if [ $ARG2 = "-js" ]
 	then
-		run_server_jar $HOST
+		run_server_jar $ARG1
 	fi
 
-	if [ $OP = "-jc" ]
+	if [ $ARG2 = "-jc" ]
 	then
-		run_test_client_jar $HOST $ARG1 $ARG2
+		run_test_client_jar $ARG1 $ARG3 $ARG4
+	fi
+
+	if [ $ARG1 = "-at" ]
+	then
+		# in this contest
+		accuracy_Test $ARG2 $ARG3 $ARG4
 	fi
 
 	# pull
-	if [ $OP = "-p" ]
+	if [ $ARG2 = "-p" ]
 	then
-		git_pull $HOST
+		git_pull $ARG1
 	fi
 
 	# build
-	if [ $OP = "-b" ]
+	if [ $ARG2 = "-b" ]
 	then
-		build $HOST
+		build $ARG1
 	fi
 
 	# hard reset
-	if [ $OP = "-hr" ]
+	if [ $ARG2 = "-hr" ]
 	then
-		hard_reset $HOST
+		hard_reset $ARG1
 	fi
 
 	# setup
-	if [ $OP = "-su" ]
+	if [ $ARG2 = "-su" ]
 	then
-		setup_machine $HOST
+		setup_machine $ARG1
 	fi
 
 	# kill
-	if [ $OP = "-k" ]
+	if [ $ARG2 = "-k" ]
 	then
-		kill_process $HOST
+		kill_process $ARG1
 	fi
 
 	# check
-	if [ $OP = "--check" ]
+	if [ $ARG2 = "--check" ]
 	then
-		check_ports $HOST
+		check_ports $ARG1
 	fi
 
-	if [ $OP = "--change-branch" ]
+	if [ $ARG2 = "--change-branch" ]
 	then
-		change_branch $HOST $ARG1
+		change_branch $ARG1 $ARG3
 	fi
 
-	if [ $OP = "--status" ]
+	if [ $ARG2 = "--status" ]
 	then
-		status $HOST
+		status $ARG1
 	fi
 
 }
@@ -205,7 +211,7 @@ main(){
 		for CURRENT_HOST in $HOSTS
 		do
 			echo "--- ${CURRENT_HOST} ---"
-			run_once $CURRENT_HOST $OP $ARG1
+			run_once $CURRENT_HOST $OP $ARG1 $ARG2
 		done
 	else
 		run_once $HOST $OP $ARG1 $ARG2
