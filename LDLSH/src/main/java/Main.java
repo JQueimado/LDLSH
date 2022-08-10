@@ -17,8 +17,6 @@ import java.util.concurrent.Future;
 
 public class Main {
 
-    private static final String ui_config = "UI";
-
     public static void main(String[] args) throws Exception {
         //Create context
         DataContainer dataContainer = new DataContainer(args[0]);
