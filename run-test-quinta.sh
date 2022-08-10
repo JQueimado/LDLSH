@@ -75,14 +75,14 @@ accuracy_Test(){
 
 	#Insert
 	echo "LDLDH-Acc: Runing Inserts..."
-    run_test_client_jar "$CLIENT" "$CONFIGFILE" "-i" "$INSERTFILE" "$RESULTSFOLDER"
+    run_test_client_jar "$CLIENT" "$CONFIGFILE" "i" "$INSERTFILE" "$RESULTSFOLDER"
 
 	#Test
     for IT in $(seq "$ITERATIONS")
     do
 		#Query
 		echo "LDLDH-Acc: Runing test ${IT} out of ${ITERATIONS}..."
-        run_test_client_jar "$CLIENT" "$CONFIGFILE" "-q" "$QUERYFILE" "$RESULTSFOLDER"
+        run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "$RESULTSFOLDER"
     done
 
 	#Stop Server
