@@ -1,27 +1,26 @@
 #env
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
-DIRCONFIG="Throughtput-test"
 
 build(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; ./run-server.sh -b"
+	ssh "$HOST" "cd ${DIR}; ./run-server.sh -b"
 }
 
 change_branch(){
 	HOST=$1
 	BRANCH=$2
-	ssh $HOST "cd ${DIR}; git checkout ${BRANCH}"
-	git_pull $HOST
+	ssh "$HOST" "cd ${DIR}; git checkout ${BRANCH}"
+	git_pull "$HOST"
 }
 
 git_pull(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; git pull;"
+	ssh "$HOST" "cd ${DIR}; git pull;"
 }
 
 run_server_jar(){
 	HOST=$1
- 	ssh $HOST "cd ${DIR}; ./run-server.sh -js"
+ 	ssh "$HOST" "cd ${DIR}; ./run-server.sh -js"
 }
 
 run_test_client_jar(){
@@ -30,12 +29,12 @@ run_test_client_jar(){
 	OP=$3
 	DATAFILE=$4
 	RESULTSFOLDER=$4
-	ssh $HOST "cd ${DIR}; ./run-test.sh ${DIRCONFIG} ${OP} ${DATAFILE} ${RESULTSFOLDER}"
+	ssh "$HOST" "cd ${DIR}; ./run-test.sh ${DIRCONFIG} ${OP} ${DATAFILE} ${RESULTSFOLDER}"
 }
 
 kill_process(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; ./run-server.sh -k"
+	ssh "$HOST" "cd ${DIR}; ./run-server.sh -k"
 }
 
 accuracy_Test(){
@@ -49,16 +48,18 @@ accuracy_Test(){
 	CLIENT="t5.quinta"
 	SERVERS="t6.quinta t7.quinta t8.quinta"
 	TESTBRANCHNAME="Tests-Accuracy"
-	BRANCH="Tests"
+	BRANCH="Tests-Accuracy"
 
     #Setup
 	echo "--- Setup client ${CLIENT} ---"
 	change_branch $CLIENT $TESTBRANCHNAME
+	build "$CLIENT"
 
 	for SERVER in $SERVERS
 	do
 		echo "--- Setup server ${SERVER} ---"
-		change_branch $SERVER $BRANCH
+		change_branch "$SERVER" $BRANCH
+		build "$SERVER"
 	done
 
     ### LDLSH ###
@@ -67,28 +68,28 @@ accuracy_Test(){
     for SERVER in $SERVERS
 	do
 		echo "LDLDH-Acc: Starting server at ${SERVER}"
-		run_server_jar $SERVER
+		run_server_jar "$SERVER"
 	done
 
 	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
 
 	#Insert
 	echo "LDLDH-Acc: Runing Inserts..."
-    run_test_client_jar $CLIENT $CONFIGFILE "-i" $INSERTFILE $RESULTSFOLDER
+    run_test_client_jar "$CLIENT" "$CONFIGFILE" "-i" "$INSERTFILE" "$RESULTSFOLDER"
 
 	#Test
-    for IT in $(seq $ITERATIONS)
+    for IT in $(seq "$ITERATIONS")
     do
 		#Query
 		echo "LDLDH-Acc: Runing test ${IT} out of ${ITERATIONS}..."
-        run_test_client_jar $CLIENT $CONFIGFILE "-q" $QUERYFILE $RESULTSFOLDER
+        run_test_client_jar "$CLIENT" "$CONFIGFILE" "-q" "$QUERYFILE" "$RESULTSFOLDER"
     done
 
 	#Stop Server
     for SERVER in $SERVERS
 	do
 		echo "LDLDH-Acc: Stoping server at ${SERVER}..."
-		kill_process $SERVER
+		kill_process "$SERVER"
 	done
 }
 
