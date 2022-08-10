@@ -51,7 +51,6 @@ change_branch(){
 	BRANCH=$2
 	ssh $HOST "cd ${DIR}; git checkout ${BRANCH}"
 	git_pull $HOST
-	build $HOST
 }
 
 status(){
@@ -93,14 +92,17 @@ accuracy_Test(){
     RESULTSFOLDER="LDLSH_ACCURACY_TESTS"
 	CLIENT="t5.quinta"
 	SERVERS="t6.quinta t7.quinta t8.quinta"
-	BRANCHNAME="Tests-Accuracy"
+	TESTBRANCHNAME="Tests-Accuracy"
+	BRANCH="Tests"
 
     #Setup
-	change_branch $CLIENT $BRANCHNAME
+	echo "--- Setup client ${CLIENT} ---"
+	change_branch $CLIENT $TESTBRANCHNAME
 
 	for SERVER in $SERVERS
 	do
-		change_branch $HOST $BRANCH
+		echo "--- Setup server ${SERVER} ---"
+		change_branch $SERVER $BRANCH
 	done
 
     ### LDLSH ###
@@ -108,6 +110,7 @@ accuracy_Test(){
 	#start server
     for SERVER in $SERVERS
 	do
+		echo "LDLDH-Acc: Starting server at ${SERVER}"
 		run_server_jar $SERVER
 	done
 
@@ -118,7 +121,7 @@ accuracy_Test(){
     run_test_client_jar $CLIENT $CONFIGFILE "-i" $INSERTFILE $RESULTSFOLDER
 
 	#Test
-    for IT in {1..$ITERATIONS}
+    for IT in $(seq $ITERATIONS)
     do
 		#Query
 		echo "LDLDH-Acc: Runing test ${IT} out of ${ITERATIONS}..."
@@ -194,6 +197,7 @@ run_once(){
 
 	if [ $ARG2 = "--change-branch" ]
 	then
+		echo "${ARG1} ${ARG3}"
 		change_branch $ARG1 $ARG3
 	fi
 
