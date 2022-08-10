@@ -114,19 +114,22 @@ accuracy_Test(){
 	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
 
 	#Insert
+	echo "LDLDH-Acc: Runing Inserts..."
     run_test_client_jar $CLIENT $CONFIGFILE "-i" $INSERTFILE $RESULTSFOLDER
 
 	#Test
-    for IT in 1 .. $ITERATIONS
+    for IT in {1..$ITERATIONS}
     do
 		#Query
+		echo "LDLDH-Acc: Runing test ${IT} out of ${ITERATIONS}..."
         run_test_client_jar $CLIENT $CONFIGFILE "-q" $QUERYFILE $RESULTSFOLDER
     done
 
 	#Stop Server
     for SERVER in $SERVERS
 	do
-		kill_process $HOST
+		echo "LDLDH-Acc: Stoping server at ${SERVER}..."
+		kill_process $SERVER
 	done
 }
 
