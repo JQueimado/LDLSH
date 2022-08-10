@@ -80,130 +80,62 @@ check_ports(){
 	ssh $HOST "sudo lsof -i -P -n | grep java"
 }
 
-### TESTS ###
-
-accuracy_Test(){
-	#args
-    ITERATIONS=$1
-    INSERTFILE=$2
-    QUERYFILE=$3
-	#test configs
-    CONFIGFILE="LDLSH/LDLSH_Quinta"
-    RESULTSFOLDER="LDLSH_ACCURACY_TESTS"
-	CLIENT="t5.quinta"
-	SERVERS="t6.quinta t7.quinta t8.quinta"
-	TESTBRANCHNAME="Tests-Accuracy"
-	BRANCH="Tests"
-
-    #Setup
-	echo "--- Setup client ${CLIENT} ---"
-	change_branch $CLIENT $TESTBRANCHNAME
-
-	for SERVER in $SERVERS
-	do
-		echo "--- Setup server ${SERVER} ---"
-		change_branch $SERVER $BRANCH
-	done
-
-    ### LDLSH ###
-	RESULTSFOLDER="LDLSH-ACCURACY"
-	#start server
-    for SERVER in $SERVERS
-	do
-		echo "LDLDH-Acc: Starting server at ${SERVER}"
-		run_server_jar $SERVER
-	done
-
-	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
-
-	#Insert
-	echo "LDLDH-Acc: Runing Inserts..."
-    run_test_client_jar $CLIENT $CONFIGFILE "-i" $INSERTFILE $RESULTSFOLDER
-
-	#Test
-    for IT in $(seq $ITERATIONS)
-    do
-		#Query
-		echo "LDLDH-Acc: Runing test ${IT} out of ${ITERATIONS}..."
-        run_test_client_jar $CLIENT $CONFIGFILE "-q" $QUERYFILE $RESULTSFOLDER
-    done
-
-	#Stop Server
-    for SERVER in $SERVERS
-	do
-		echo "LDLDH-Acc: Stoping server at ${SERVER}..."
-		kill_process $SERVER
-	done
-}
-
-
 run_once(){
-	ARG1=$1
-	ARG2=$2
-	ARG3=$3
-	ARG4=$4
 	# run jar 
-	if [ $ARG2 = "-js" ]
+	if [ "$2" = "-js" ];
 	then
-		run_server_jar $ARG1
+		run_server_jar "$1"
 	fi
 
-	if [ $ARG2 = "-jc" ]
+	if [ "$2" = "-jc" ];
 	then
-		run_test_client_jar $ARG1 $ARG3 $ARG4
-	fi
-
-	if [ $ARG1 = "-at" ]
-	then
-		# in this contest
-		accuracy_Test $ARG2 $ARG3 $ARG4
+		run_test_client_jar "$1" "$3" "$4"
 	fi
 
 	# pull
-	if [ $ARG2 = "-p" ]
+	if [ "$2" = "-p" ];
 	then
-		git_pull $ARG1
+		git_pull "$1"
 	fi
 
 	# build
-	if [ $ARG2 = "-b" ]
+	if [ "$2" = "-b" ];
 	then
-		build $ARG1
+		build "$1"
 	fi
 
 	# hard reset
-	if [ $ARG2 = "-hr" ]
+	if [ "$2" = "-hr" ];
 	then
-		hard_reset $ARG1
+		hard_reset "$1"
 	fi
 
 	# setup
-	if [ $ARG2 = "-su" ]
+	if [ "$2" = "-su" ];
 	then
-		setup_machine $ARG1
+		setup_machine "$1"
 	fi
 
 	# kill
-	if [ $ARG2 = "-k" ]
+	if [ "$2" = "-k" ];
 	then
-		kill_process $ARG1
+		kill_process "$1"
 	fi
 
 	# check
-	if [ $ARG2 = "--check" ]
+	if [ "$2" = "--check" ];
 	then
-		check_ports $ARG1
+		check_ports "$1"
 	fi
 
-	if [ $ARG2 = "--change-branch" ]
+	if [ "$2" = "--change-branch" ];
 	then
-		echo "${ARG1} ${ARG3}"
-		change_branch $ARG1 $ARG3
+		change_branch "$1" "$3"
 	fi
 
-	if [ $ARG2 = "--status" ]
+	if [ "$2" = "--status" ];
 	then
-		status $ARG1
+		status "$1"
 	fi
 
 }
