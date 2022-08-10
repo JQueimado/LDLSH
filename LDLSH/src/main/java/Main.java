@@ -78,6 +78,10 @@ public class Main {
                         final DataObject<?> e = dataElement;
                         @Override
                         public void onSuccess(DataObject object) {
+                            if( object != null )
+                                System.out.println(e.getValues() + " -> " + object.getValues());
+                            else
+                                System.out.println(e.getValues() + " -> null" );
                         }
 
                         @Override
