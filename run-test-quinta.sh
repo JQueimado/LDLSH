@@ -2,35 +2,28 @@
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
 
 build(){
-	HOST=$1
-	ssh "$HOST" "cd ${DIR}; ./run-server.sh -b"
+	ssh "$1" "cd ${DIR}; ./run-server.sh -b"
 }
 
 change_branch(){
-	HOST=$1
-	BRANCH=$2
-	ssh "$HOST" "cd ${DIR}; git checkout ${BRANCH}"
-	git_pull "$HOST"
+	ssh "$1" "cd ${DIR}; git checkout $2"
+	git_pull "$1"
 }
 
 git_pull(){
-	HOST=$1
-	ssh "$HOST" "cd ${DIR}; git pull;"
+	ssh "$1" "cd ${DIR}; git pull;"
 }
 
 run_server_jar(){
-	HOST=$1
- 	ssh "$HOST" "cd ${DIR}; ./run-server.sh -js"
+ 	ssh "$1" "cd ${DIR}; ./run-server.sh -js"
 }
 
 run_test_client_jar(){
-	RESULTSFOLDER=$4
 	ssh "$1" "cd ${DIR}; ./run-test.sh $2 $3 $4 $5"
 }
 
 kill_process(){
-	HOST=$1
-	ssh "$HOST" "cd ${DIR}; ./run-server.sh -k"
+	ssh "$1" "cd ${DIR}; ./run-server.sh -k"
 }
 
 accuracy_Test(){
