@@ -10,4 +10,4 @@ RESULTSFOLDER=$4
 TIMESTAMP=$(date +%s)
 FILENAME="${RESULTSFOLDER}/test_${OP}_${TIMESTAMP}.txt"
 echo "Test to be stored in ${FILENAME}"
-java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar "${DIRCONFIG}/ClientNode.properties" "-${OP}" "${DATAFILE}" >> "${RESULTSFOLDER}/test_${OP}_${TIMESTAMP}.txt"
+$(java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar "${DIRCONFIG}/ClientNode.properties" "-${OP}" "${DATAFILE}") >> "${FILENAME}"
