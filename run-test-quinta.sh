@@ -24,12 +24,8 @@ run_server_jar(){
 }
 
 run_test_client_jar(){
-	HOST=$1
-	DIRCONFIG=$2
-	OP=$3
-	DATAFILE=$4
 	RESULTSFOLDER=$4
-	ssh "$HOST" "cd ${DIR}; ./run-test.sh ${DIRCONFIG} ${OP} ${DATAFILE} ${RESULTSFOLDER}"
+	ssh "$1" "cd ${DIR}; ./run-test.sh $2 $3 $4 $5"
 }
 
 kill_process(){
@@ -48,7 +44,7 @@ accuracy_Test(){
 	CLIENT="t5.quinta"
 	SERVERS="t6.quinta t7.quinta t8.quinta"
 	TESTBRANCHNAME="Tests-Accuracy"
-	BRANCH="Tests-Accuracy"
+	BRANCH="Tests"
 
     #Setup
 	echo "--- Setup client ${CLIENT} ---"
@@ -58,7 +54,7 @@ accuracy_Test(){
 	for SERVER in $SERVERS
 	do
 		echo "--- Setup server ${SERVER} ---"
-		change_branch "$SERVER" $BRANCH
+		change_branch "$SERVER" "$BRANCH"
 		build "$SERVER"
 	done
 
