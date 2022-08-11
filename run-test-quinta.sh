@@ -80,6 +80,10 @@ accuracy_Test(){
 		echo "LDLDH-Acc: Stoping server at ${SERVER}..."
 		kill_process "$SERVER"
 	done
+
+	#Copy results
+	mkdir "${RESULTSFOLDER}"
+	scp -r "${CLIENT}:${DIR}/${RESULTSFOLDER}" "${RESULTSFOLDER}"
 }
 
 ### main ###
