@@ -69,7 +69,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             if( appContext.getDebug() )
                 System.out.println("Process message: Read Buffer");
              response = (Message) ois.readObject();
-        }catch (EOFException | StreamCorruptedException e ){
+        }catch (EOFException e){
             //System.out.println("Decode attempt failed: Stream wasn't complete");
             if( appContext.getDebug() )
                 System.out.println("Process message: Read Failed resetting message buffer");
