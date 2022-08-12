@@ -28,14 +28,14 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
         if( appContext.getDebug() )
-            System.out.println("Handler added for" + ctx.channel().remoteAddress());
+            System.out.println("Handler added for" + ctx.channel().localAddress());
         temp = ctx.alloc().directBuffer();
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
         if( appContext.getDebug() )
-            System.out.println("Handler removed for "  + ctx.channel().remoteAddress());
+            System.out.println("Handler removed for "  + ctx.channel().localAddress());
         if( temp.release() )
             temp = null;
     }
@@ -44,7 +44,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if( appContext.getDebug() )
-            System.out.println("Received " + ((ByteBuf) msg).readableBytes() + "bytes");
+            System.out.println("Process message: Received " + ((ByteBuf) msg).readableBytes() + "bytes");
         temp.writeBytes((ByteBuf) msg);
     }
 
@@ -52,7 +52,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
         if( appContext.getDebug() )
-            System.out.println("Read Complete");
+            System.out.println("Process message: Read Complete");
 
         //Decode
         byte[] body = new byte[temp.readableBytes()];
@@ -60,19 +60,25 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
         Message response = null;
         try {
+            if( appContext.getDebug() )
+                System.out.println("Process message: Start Buffer");
             ByteArrayInputStream bis = new ByteArrayInputStream(body);
             ObjectInputStream ois = new ObjectInputStream(bis);
 
             //Process Message
+            if( appContext.getDebug() )
+                System.out.println("Process message: Read Buffer");
              response = (Message) ois.readObject();
         }catch (EOFException | StreamCorruptedException e ){
             //System.out.println("Decode attempt failed: Stream wasn't complete");
+            if( appContext.getDebug() )
+                System.out.println("Process message: Read Failed resetting message buffer");
             temp.writeBytes(body);
             return;
         }
 
         if( appContext.getDebug() )
-            System.out.println( "Received "+response.getType()
+            System.out.println( "Process message: Received "+response.getType()
                     +" message from "+ctx.channel().remoteAddress()
                     +" of size: "+temp.writerIndex()
             );

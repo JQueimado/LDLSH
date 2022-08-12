@@ -52,27 +52,40 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        if( appContext.getDebug() )
+            System.out.println("Process message: Received " + ((ByteBuf) msg).readableBytes() + "bytes");
         temp.writeBytes( (ByteBuf) msg);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        if( appContext.getDebug() )
+            System.out.println("Process message: Read Complete");
         //Decode
         byte[] body = new byte[temp.writerIndex()];
         temp.readBytes(body);
 
         ObjectInputStream ois;
+        Message message;
         try {
+            if( appContext.getDebug() )
+                System.out.println("Process message: Start Buffer");
             ByteArrayInputStream bis = new ByteArrayInputStream(body);
             ois = new ObjectInputStream(bis);
+            if( appContext.getDebug() )
+                System.out.println("Process message: Read Buffer");
+            message = (Message) ois.readObject();
         }catch (EOFException eof){
+            if( appContext.getDebug() )
+                System.out.println("Process message: Read Failed resetting message buffer");
+            temp.writeBytes(body);
             return;
         }
 
         //Process
-        Message message = (Message) ois.readObject();
+
         if( appContext.getDebug() )
-            System.out.println( "Received "+message.getType()
+            System.out.println( "Process message: Received "+message.getType()
                     +" message from "+ctx.channel().remoteAddress()
                     +" of size: "+temp.writerIndex()
             );
