@@ -52,7 +52,7 @@ public class Main {
                     Futures.addCallback(result, new FutureCallback<>() {
                         @Override
                         public void onSuccess(DataObject object) {
-                            //Nothing
+                            System.out.println("insert: " + object.getValues());
                         }
 
                         @Override
@@ -78,6 +78,10 @@ public class Main {
                         final DataObject<?> e = dataElement;
                         @Override
                         public void onSuccess(DataObject object) {
+                            if( object != null )
+                                System.out.println(e.getValues() + " -> " + object.getValues());
+                            else
+                                System.out.println(e.getValues() + " -> null" );
                         }
 
                         @Override
