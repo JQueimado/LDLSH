@@ -1,9 +1,10 @@
 BASE_DIR="LDLSH"
 DIRCONFIG="Throughtput-test"
-HOST=`hostname`
+HOST=$(hostname)
 
 run_server(){
-    nohup java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $DIRCONFIG/MultimapNode-$HOST.quinta.properties >& nohup.out &
+    timestamp=$(date +%s)
+    nohup java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $DIRCONFIG/MultimapNode-$HOST.quinta.properties >& nohup_"$timestamp".out &
     echo $! > pid.nohup
     cat pid.nohup
 }
