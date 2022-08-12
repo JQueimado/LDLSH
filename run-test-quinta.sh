@@ -1,17 +1,14 @@
 #env
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
 
-build(){
-	ssh "$1" "cd ${DIR}; ./run-server.sh -b"
-}
-
 change_branch(){
 	ssh "$1" "cd ${DIR}; git checkout $2"
-	git_pull "$1"
-}
-
-git_pull(){
-	ssh "$1" "cd ${DIR}; git pull;"
+	pulloutput=$(ssh "$1" "cd ${DIR}; git pull;")
+	echo "$pulloutput"
+	if ! [ "$pulloutput" = "Already up-to-date." ];
+	then
+		ssh "$1" "cd ${DIR}; ./run-server.sh -b"
+	fi
 }
 
 run_server_jar(){
@@ -45,13 +42,11 @@ accuracy_Test(){
     #Setup
 	echo "--- Setup client ${CLIENT} ---"
 	change_branch $CLIENT $TESTBRANCHNAME
-	build "$CLIENT"
 
 	for SERVER in $SERVERS
 	do
 		echo "--- Setup server ${SERVER} ---"
 		change_branch "$SERVER" "$BRANCH"
-		build "$SERVER"
 	done
 
     ### LDLSH ###
@@ -73,6 +68,7 @@ accuracy_Test(){
     for IT in $(seq "$ITERATIONS")
     do
 		#Query
+		sleep 1
 		echo "LDLDH-Acc: Runing test ${IT} out of ${ITERATIONS}..."
         run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "$RESULTSFOLDER"
     done
