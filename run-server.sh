@@ -17,8 +17,8 @@ build(){
 }
 
 kill_process(){
-    kill -9 `cat pid.nohup`
-    rm pid.nohup nohup.out
+    kill -9 $(cat pid.nohup)
+    rm pid.nohup
 }
 
 project_setup(){
