@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
@@ -41,6 +43,8 @@ public class Main {
                 data.add( dataObject );
             }
 
+        AtomicInteger successCounter = new AtomicInteger();
+
         //Execute
         switch (op) {
             //Insert File
@@ -52,6 +56,8 @@ public class Main {
                     Futures.addCallback(result, new FutureCallback<>() {
                         @Override
                         public void onSuccess(DataObject object) {
+                            //Nothing
+                            successCounter.getAndIncrement();
                             System.out.println("insert: " + object.getValues());
                         }
 
@@ -62,10 +68,6 @@ public class Main {
                         }
                     }, dataContainer.getCallbackExecutor());
                 }
-                //System.out.println("done");
-                dataContainer.getExecutorService().shutdown(); //waits all tasks termination
-                //assert i[0] == operations;
-                System.exit(0);
             }
 
             case "-q" -> {
@@ -82,6 +84,7 @@ public class Main {
                                 System.out.println(e.getValues() + " -> " + object.getValues());
                             else
                                 System.out.println(e.getValues() + " -> null" );
+                            successCounter.getAndIncrement();
                         }
 
                         @Override
@@ -90,10 +93,28 @@ public class Main {
                         }
                     }, dataContainer.getCallbackExecutor());
                 }
-                dataContainer.getExecutorService().shutdown(); //waits all tasks termination
-                //assert i[0] == operations;
-                System.exit(0);
             }
         }
+
+        //Shutdown
+        //End
+        try {
+            if(! dataContainer.getExecutorService().awaitTermination(1, TimeUnit.SECONDS))
+                dataContainer.getExecutorService().shutdownNow();
+        }catch (InterruptedException e){
+            dataContainer.getExecutorService().shutdownNow();
+        }
+
+        try {
+            if(! dataContainer.getCallbackExecutor().awaitTermination(1, TimeUnit.SECONDS))
+                dataContainer.getCallbackExecutor().shutdownNow();
+        }catch (InterruptedException e){
+            dataContainer.getCallbackExecutor().shutdownNow();
+        }
+
+        if (successCounter.get() != data.size() )
+            throw new Exception("Not all Inserts were performed.");
+
+        System.exit(0);
     }
 }
