@@ -37,16 +37,16 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        //if( appContext.getDebug() )
-        //    System.out.println("Handler added from " + ctx.channel().remoteAddress() + " to: " + ctx.channel().localAddress());
+        if( appContext.getDebug() )
+            System.out.println("Handler added from " + ctx.channel().remoteAddress() + " to: " + ctx.channel().localAddress());
         temp = ctx.alloc().directBuffer();
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        //if( appContext.getDebug() )
-        //    System.out.println("Handler removed from "  + ctx.channel().remoteAddress());
-        if( temp.release() );
+        if( appContext.getDebug() )
+            System.out.println("Handler removed from "  + ctx.channel().remoteAddress());
+        if( temp.release() )
             temp = null;
     }
 
@@ -71,11 +71,11 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
         //Process
         Message message = (Message) ois.readObject();
-        //if( appContext.getDebug() )
-        //    System.out.println( "Received "+message.getType()
-        //            +" message from "+ctx.channel().remoteAddress()
-        //            +" of size: "+temp.writerIndex()
-        //    );
+        if( appContext.getDebug() )
+            System.out.println( "Received "+message.getType()
+                    +" message from "+ctx.channel().remoteAddress()
+                    +" of size: "+temp.writerIndex()
+            );
 
         temp.clear();
 
