@@ -19,7 +19,10 @@ run_server_jar(){
 }
 
 run_test_client_jar(){
-	ssh "$1" "cd ${DIR}; ./run-test.sh $2 $3 $4 $5"
+	#ssh "$1" "cd ${DIR}; ./run-test.sh $2 $3 $4 $5"
+	TIMESTAMP=$(date +%s)
+	FILENAME="${RESULTSFOLDER}/test_${OP}_${TIMESTAMP}.txt"
+	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/ClientNode.properties -$3 $4 >> ${FILENAME}"
 }
 
 kill_process(){

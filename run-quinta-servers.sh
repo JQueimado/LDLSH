@@ -33,12 +33,7 @@ run_client_jar(){
 }
 
 run_test_client_jar(){
-	HOST=$1
-	DIRCONFIG=$2
-	OP=$3
-	DATAFILE=$4
-	RESULTSFOLDER=$4
-	ssh $HOST "cd ${DIR}; ./run_test.sh ${DIRCONFIG} ${OP} ${DATAFILE} ${RESULTSFOLDER}"
+	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/ClientNode.properties $3 $4"
 }
 
 git_pull(){
@@ -89,7 +84,7 @@ run_once(){
 
 	if [ "$2" = "-jc" ];
 	then
-		run_test_client_jar "$1" "$3" "$4"
+		run_test_client_jar "$1" "LDLSH/LDLSH_Quinta" "$3" "$4"
 	fi
 
 	# pull
