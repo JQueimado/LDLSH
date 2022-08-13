@@ -14,10 +14,13 @@ import io.netty.util.concurrent.Promise;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class RemoteMultimap extends MultiMapImpl{
 
     private static final String endpoint_config = "MULTIMAP_ENDPOINTS";
+    private static final int TIMEOUT = 1;
 
     //Remote
     private final DataContainer appContext;
@@ -67,7 +70,6 @@ public class RemoteMultimap extends MultiMapImpl{
                 e.printStackTrace();
             }
         });
-        responsePromise.get();
     }
 
     @Override
@@ -76,10 +78,14 @@ public class RemoteMultimap extends MultiMapImpl{
         messageBody.add(lshHash);
         messageBody.add(uniqueIdentifier);
         Message completionMessage = new MessageImpl(Message.types.COMPLETION_MESSAGE, messageBody);
-        Message response;
+        Promise<Message> response_promise;
         synchronized (this){
-            response = communicationLayer.send(completionMessage, host, port).get();
+            response_promise = communicationLayer.send(completionMessage, host, port);
         }
+        if (!response_promise.await(TIMEOUT, TimeUnit.SECONDS) )
+            throw new TimeoutException();
+
+        Message response = response_promise.get();
 
         if( response.getType() != Message.types.COMPLETION_RESPONSE ){
             throw new Exception( "ERROR: Invalid response format" );
@@ -95,10 +101,14 @@ public class RemoteMultimap extends MultiMapImpl{
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(lshHash);
         Message queryMessage = new MessageImpl(Message.types.QUERY_MESSAGE_SINGLE_BLOCK, messageBody);
-        Message response;
+        Promise<Message> response_promise;
         synchronized (this) {
-            response = communicationLayer.send(queryMessage, host, port).get();
+            response_promise = communicationLayer.send(queryMessage, host, port);
         }
+        if( response_promise.await(TIMEOUT, TimeUnit.SECONDS) )
+            throw new TimeoutException();
+
+        Message response = response_promise.get();
 
         if( response.getType() != Message.types.QUERY_RESPONSE ){
             throw new Exception( "ERROR: Invalid response format" );
