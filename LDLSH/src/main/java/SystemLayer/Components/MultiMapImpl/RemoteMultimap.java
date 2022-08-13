@@ -37,7 +37,10 @@ public class RemoteMultimap extends MultiMapImpl{
         messageBody.add(lshHash);
         messageBody.add(value);
         Message insertMessage = new MessageImpl(Message.types.INSERT_MESSAGE, messageBody);
-        Promise<Message> responsePromise = communicationLayer.send(insertMessage, host, port);
+        Promise<Message> responsePromise;
+        synchronized (this) {
+            responsePromise = communicationLayer.send(insertMessage, host, port);
+        }
 
         responsePromise.addListener(responseFuture -> {
             try {
@@ -73,7 +76,10 @@ public class RemoteMultimap extends MultiMapImpl{
         messageBody.add(lshHash);
         messageBody.add(uniqueIdentifier);
         Message completionMessage = new MessageImpl(Message.types.COMPLETION_MESSAGE, messageBody);
-        Message response = communicationLayer.send(completionMessage, host, port).get();
+        Message response;
+        synchronized (this){
+            response = communicationLayer.send(completionMessage, host, port).get();
+        }
 
         if( response.getType() != Message.types.COMPLETION_RESPONSE ){
             throw new Exception( "ERROR: Invalid response format" );
@@ -89,7 +95,10 @@ public class RemoteMultimap extends MultiMapImpl{
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(lshHash);
         Message queryMessage = new MessageImpl(Message.types.QUERY_MESSAGE_SINGLE_BLOCK, messageBody);
-        Message response = communicationLayer.send(queryMessage, host, port).get();
+        Message response;
+        synchronized (this) {
+            response = communicationLayer.send(queryMessage, host, port).get();
+        }
 
         if( response.getType() != Message.types.QUERY_RESPONSE ){
             throw new Exception( "ERROR: Invalid response format" );

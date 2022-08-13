@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SystemImpl implements SystemServer {
 
@@ -140,11 +141,26 @@ public class SystemImpl implements SystemServer {
 
     @Override
     public void stop() {
+        //Execution service
+        try {
+            context.getExecutorService().shutdown();
+            if(!context.getExecutorService().awaitTermination(1, TimeUnit.SECONDS))
+                context.getExecutorService().shutdownNow();
+        }catch (InterruptedException e){
+            context.getExecutorService().shutdownNow();
+        }
+        //Calback execution service
+        try {
+            context.getCallbackExecutor().shutdown();
+            if (!context.getCallbackExecutor().awaitTermination(1, TimeUnit.SECONDS))
+                context.getCallbackExecutor().shutdownNow();
+        }catch (InterruptedException e){
+            context.getCallbackExecutor().shutdownNow();
+        }
+        //Communication layer
         CommunicationLayer cl = context.getCommunicationLayer();
         if(cl != null){
             cl.shutdown();
         }
-        context.getExecutorService().shutdown();
-        context.getCallbackExecutor().shutdown();
     }
 }

@@ -25,6 +25,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     private final boolean hasClient;
     private final boolean hasServer;
 
+    private final DataContainer appContext;
     private Bootstrap clientBootstrap;
     private NettyReceiver nettyReceiver;
     private EventLoopGroup eventExecutors;
@@ -34,6 +35,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     HashMap<String, ChannelFuture> connections;
 
     public NettyCommunicationLayer( DataContainer appContext ) throws Exception {
+        this.appContext = appContext;
         //Client
         String hasClient_string = "";
         try {
@@ -77,16 +79,21 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     }
 
     @Override
-    public synchronized Promise<Message> send(Message message, String hostname, int port) throws Exception {
+    public Promise<Message> send(Message message, String hostname, int port) throws Exception {
         if( ! hasClient )
             throw new Exception("Node has not initialized a client");
 
         String connectionName = hostname + ":" + port;
         ChannelFuture channelFuture;
-        if( ( channelFuture = connections.get(connectionName) ) == null ) {
+        try {
+            if ((channelFuture = connections.get(connectionName)) == null) {
+                throw new Exception();
+            }
+        }catch (Exception e){
             channelFuture = clientBootstrap.connect(hostname, port).sync();
-            connections.put( connectionName, channelFuture );
+            connections.put(connectionName, channelFuture);
         }
+
         Channel channel = channelFuture.channel();
 
         Promise<Message> promise = channel.eventLoop().newPromise(); //Creates a response promise
@@ -100,6 +107,9 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         transactionMap.put( transactionId, promise ); //Adds transaction to the map
 
         channel.writeAndFlush(message); //Sends message to server
+        if(appContext.getDebug())
+            System.out.println("NettyCommunicationLayer: Sent " +
+                    message.getType().toString() + " to " +connectionName);
 
         return promise; //Returns the response promise
     }

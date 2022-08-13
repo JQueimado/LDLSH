@@ -12,6 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
@@ -85,9 +87,12 @@ public class Main {
                             BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName));
                             String line;
 
+                            AtomicInteger counter1 = new AtomicInteger();
+                            AtomicInteger counter2 = new AtomicInteger();
                             while ((line = fileBufferReader.readLine()) != null ){
                                 if(line.isEmpty() || line.isBlank())
                                     continue;
+                                counter1.getAndIncrement();
                                 System.out.println("Inserting object: "+ line);
                                 DataObject<String> temp = (DataObject<String>) system.newDataObject();
                                 temp.setValues(line);
@@ -96,6 +101,7 @@ public class Main {
                                     @Override
                                     public void onSuccess(DataObject<?> object) {
                                         System.out.println("Insert complete for object: "+ object.getValues());
+                                        counter2.getAndIncrement();
                                     }
 
                                     @Override
@@ -104,8 +110,20 @@ public class Main {
                                         throwable.printStackTrace();
                                     }
                                 }, dataContainer.getCallbackExecutor());
-
                             }
+                            //Wait for operations
+                            if(dataContainer.getDebug())
+                                System.out.println("Main: Waiting executor service to stop");
+                            dataContainer.getExecutorService().awaitTermination(10, TimeUnit.SECONDS);
+                            if(dataContainer.getDebug())
+                                System.out.println("Main: Waiting callback executor to stop");
+                            dataContainer.getCallbackExecutor().awaitTermination(10, TimeUnit.SECONDS);
+                            //Eval
+                            if( counter1.get() != counter2.get() ) {
+                                int dif = counter1.get() - counter2.get();
+                                throw new Exception("ERROR: " + dif + " operations were not performed");
+                            }
+                            System.out.println("Done");
                         }catch (IOException e){
                             System.err.println("File not found");
                             e.printStackTrace();
@@ -120,9 +138,12 @@ public class Main {
                             BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName));
                             String line;
 
+                            AtomicInteger counter1 = new AtomicInteger();
+                            AtomicInteger counter2 = new AtomicInteger();
                             while ((line = fileBufferReader.readLine()) != null ){
                                 if(line.isEmpty() || line.isBlank())
                                     continue;
+                                counter1.getAndIncrement();
                                 System.out.println("Querying object: "+ line);
                                 DataObject<Object> temp = (DataObject<Object>) system.newDataObject();
                                 temp.setValues(line);
@@ -143,6 +164,7 @@ public class Main {
                                                     temp.getValues() +
                                                     "\nCompleted with result:\n"
                                                     + object.getValues());
+                                        counter2.getAndIncrement();
                                     }
 
                                     @Override
@@ -151,6 +173,10 @@ public class Main {
                                         throwable.printStackTrace();
                                     }
                                 }, dataContainer.getCallbackExecutor());
+                            }
+                            if( counter1.get() != counter2.get() ) {
+                                int dif = counter1.get() - counter2.get();
+                                throw new Exception("ERROR: " + dif + " operations were not performed");
                             }
                         }catch (IOException e){
                             System.err.println("File not found");

@@ -28,14 +28,14 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
         if( appContext.getDebug() )
-            System.out.println("Handler added for" + ctx.channel().localAddress());
+            System.out.println("NettyClientHandler: Handler added for" + ctx.channel().localAddress());
         temp = ctx.alloc().directBuffer();
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
         if( appContext.getDebug() )
-            System.out.println("Handler removed for "  + ctx.channel().localAddress());
+            System.out.println("NettyClientHandler: Handler removed for "  + ctx.channel().localAddress());
         if( temp.release() )
             temp = null;
     }
@@ -44,7 +44,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if( appContext.getDebug() )
-            System.out.println("Process message: Received " + ((ByteBuf) msg).readableBytes() + "bytes");
+            System.out.println("NettyClientHandler: Received " + ((ByteBuf) msg).readableBytes() + "bytes");
         temp.writeBytes((ByteBuf) msg);
     }
 
@@ -52,7 +52,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
         if( appContext.getDebug() )
-            System.out.println("Process message: Read Complete");
+            System.out.println("NettyClientHandler: Read Complete");
 
         //Decode
         byte[] body = new byte[temp.readableBytes()];
@@ -61,30 +61,28 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
         Message response = null;
         try {
             if( appContext.getDebug() )
-                System.out.println("Process message: Start Buffer");
+                System.out.println("NettyClientHandler: Start Buffer");
             ByteArrayInputStream bis = new ByteArrayInputStream(body);
             ObjectInputStream ois = new ObjectInputStream(bis);
 
             //Process Message
             if( appContext.getDebug() )
-                System.out.println("Process message: Read Buffer");
+                System.out.println("NettyClientHandler: Read Buffer");
              response = (Message) ois.readObject();
         }catch (EOFException e){
             //System.out.println("Decode attempt failed: Stream wasn't complete");
             if( appContext.getDebug() )
-                System.out.println("Process message: Read Failed resetting message buffer");
+                System.out.println("NettyClientHandler: Read Failed resetting message buffer");
             temp.writeBytes(body);
             return;
         }
 
         if( appContext.getDebug() )
-            System.out.println( "Process message: Received "+response.getType()
+            System.out.println( "NettyClientHandler: Received "+response.getType()
                     +" message from "+ctx.channel().remoteAddress()
                     +" of size: "+temp.writerIndex()
             );
 
-        //if( temp.release() )
-        //    temp = ctx.alloc().directBuffer();
         temp.clear();
 
         int transactionId = response.getTransactionId();
