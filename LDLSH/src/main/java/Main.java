@@ -174,10 +174,19 @@ public class Main {
                                     }
                                 }, dataContainer.getCallbackExecutor());
                             }
+                            //Wait for operations
+                            if(dataContainer.getDebug())
+                                System.out.println("Main: Waiting executor service to stop");
+                            dataContainer.getExecutorService().awaitTermination(10, TimeUnit.SECONDS);
+                            if(dataContainer.getDebug())
+                                System.out.println("Main: Waiting callback executor to stop");
+                            dataContainer.getCallbackExecutor().awaitTermination(10, TimeUnit.SECONDS);
+                            //Eval
                             if( counter1.get() != counter2.get() ) {
                                 int dif = counter1.get() - counter2.get();
                                 throw new Exception("ERROR: " + dif + " operations were not performed");
                             }
+                            System.out.println("Done");
                         }catch (IOException e){
                             System.err.println("File not found");
                             e.printStackTrace();
