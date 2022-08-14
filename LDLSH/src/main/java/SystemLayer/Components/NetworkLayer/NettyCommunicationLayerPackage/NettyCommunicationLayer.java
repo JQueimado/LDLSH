@@ -32,7 +32,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     private ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
     private final AtomicInteger transactionIdGenerator = new AtomicInteger();
 
-    HashMap<String, ChannelFuture> connections;
+    HashMap<String, Channel> connections;
 
     public NettyCommunicationLayer( DataContainer appContext ) throws Exception {
         this.appContext = appContext;
@@ -84,17 +84,17 @@ public class NettyCommunicationLayer implements CommunicationLayer {
             throw new Exception("Node has not initialized a client");
 
         String connectionName = hostname + ":" + port;
-        ChannelFuture channelFuture;
+        Channel channel;
         try {
-            if ((channelFuture = connections.get(connectionName)) == null) {
+            if ((channel = connections.get(connectionName)) == null) {
                 throw new Exception();
             }
         }catch (Exception e){
-            channelFuture = clientBootstrap.connect(hostname, port).sync();
-            connections.put(connectionName, channelFuture);
+            ChannelFuture channelFuture = clientBootstrap.connect(hostname, port).sync();
+            channelFuture.await();
+            channel = channelFuture.channel();
+            connections.put(connectionName, channel);
         }
-
-        Channel channel = channelFuture.channel();
 
         Promise<Message> promise = channel.eventLoop().newPromise(); //Creates a response promise
 
@@ -106,7 +106,10 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         message.setTransactionId(transactionId); //Sets the message transaction id
         transactionMap.put( transactionId, promise ); //Adds transaction to the map
 
-        channel.writeAndFlush(message); //Sends message to server
+        synchronized (channel) {
+            channel.writeAndFlush(message); //Sends message to server
+        }
+
         if(appContext.getDebug())
             System.out.println("NettyCommunicationLayer: Sent " +
                     message.getType().toString() + " to " +connectionName);
@@ -117,13 +120,8 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     @Override
     public void shutdown() {
         if(hasClient)
-            for (ChannelFuture channelFuture : connections.values()){
-                try {
-                    channelFuture.sync();
-                } catch (InterruptedException e) {
-                    //pass
-                }
-                channelFuture.channel().close();
+            for (Channel channel : connections.values()){
+                channel.close();
             }
         if(hasServer)
             nettyReceiver.shutdown();

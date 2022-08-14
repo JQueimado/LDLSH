@@ -15,6 +15,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.ObjectInputStream;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -65,135 +66,147 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         byte[] body = new byte[temp.writerIndex()];
         temp.readBytes(body);
 
-        ObjectInputStream ois;
-        Message message;
+        if( appContext.getDebug() )
+            System.out.println("Process message: Start Buffer");
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(body);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+
+        List<Message> messages = new ArrayList<>();
         try {
-            if( appContext.getDebug() )
-                System.out.println("Process message: Start Buffer");
-            ByteArrayInputStream bis = new ByteArrayInputStream(body);
-            ois = new ObjectInputStream(bis);
+
             if( appContext.getDebug() )
                 System.out.println("Process message: Read Buffer");
-            message = (Message) ois.readObject();
-        }catch (EOFException eof){
+
+            Message message;
+            while ( (message = (Message) ois.readObject()) != null){
+                messages.add(message);
+            }
+
+        }catch (EOFException e){
             if( appContext.getDebug() )
                 System.out.println("Process message: Read Failed resetting message buffer");
-            temp.writeBytes(body);
-            return;
+            temp.writeBytes(ois.readAllBytes());
+        }catch (StreamCorruptedException e){
+            System.out.println("Found Corrupt message");
+            temp.clear();
+            temp.writeBytes(bis.readAllBytes());
         }
 
         //Process
+        for (Message message : messages) {
+            if (appContext.getDebug())
+                System.out.println("Process message: Received " + message.getType()
+                        + " message from " + ctx.channel().remoteAddress()
+                        + " of size: " + temp.writerIndex()
+                );
+            temp.clear();
 
-        if( appContext.getDebug() )
-            System.out.println( "Process message: Received "+message.getType()
-                    +" message from "+ctx.channel().remoteAddress()
-                    +" of size: "+temp.writerIndex()
-            );
+            //Process
+            try {
+                final int messageID = message.getTransactionId();
 
-        temp.clear();
+                switch (message.getType()) {
+                    //Multimap Server Side
+                    case COMPLETION_MESSAGE -> {
+                        MultimapTask task = appContext.getMultimapTaskFactory().getNewCompletionQueryTask(message);
+                        ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
 
-        //Process
-        try {
-            switch (message.getType()) {
-                //Multimap Server Side
-                case COMPLETION_MESSAGE -> {
-                    MultimapTask task = appContext.getMultimapTaskFactory().getNewCompletionQueryTask(message);
-                    ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
-
-                    FutureCallback<Message> responseCallback = new FutureCallback<>() {
-                        @Override
-                        public void onSuccess(Message response) {
-                            response.setTransactionId(message.getTransactionId());
-                            synchronized (bufferWriteLock) {
-                                ctx.write(response);
-                                ctx.flush();
+                        FutureCallback<Message> responseCallback = new FutureCallback<>() {
+                            @Override
+                            public void onSuccess(Message response) {
+                                response.setTransactionId(messageID);
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response);
+                                    ctx.flush();
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            //Create message body
-                            List<Object> responseBody = new ArrayList<>();
-                            responseBody.add("ERROR:Performing operation");
-                            responseBody.add(throwable.getMessage() );
-                            Message response = new MessageImpl( Message.types.COMPLETION_RESPONSE, responseBody );//Create response
-                            response.setTransactionId(message.getTransactionId() ); //Assign transaction id
-                            synchronized (bufferWriteLock) {
-                                ctx.write(response); //Send
-                                ctx.flush();
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                //Create message body
+                                List<Object> responseBody = new ArrayList<>();
+                                responseBody.add("ERROR:Performing operation");
+                                responseBody.add(throwable.getMessage());
+                                Message response = new MessageImpl(Message.types.COMPLETION_RESPONSE, responseBody);//Create response
+                                response.setTransactionId(messageID); //Assign transaction id
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response); //Send
+                                    ctx.flush();
+                                }
                             }
-                        }
-                    };
-                    Futures.addCallback( responseFuture, responseCallback, callBackExecutor );
+                        };
+                        Futures.addCallback(responseFuture, responseCallback, callBackExecutor);
+                    }
+
+                    case INSERT_MESSAGE -> {
+                        if (message.getBody().size() != 2)
+                            throw new Exception("Invalid body Size for message type: INSERT_MESSAGE");
+
+                        MultimapTask task = appContext.getMultimapTaskFactory().getNewMultimapInsertTask(message);
+                        ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
+                        FutureCallback<Message> responseCallback = new FutureCallback<>() {
+                            @Override
+                            public void onSuccess(Message response) {
+                                response.setTransactionId(messageID);
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response); //Send
+                                    ctx.flush();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                //Create message body
+                                List<Object> responseBody = new ArrayList<>();
+                                responseBody.add("ERROR:Performing operation");
+                                responseBody.add(throwable.getMessage());
+                                Message response = new MessageImpl(Message.types.INSERT_MESSAGE_RESPONSE, responseBody);//Create response
+                                response.setTransactionId(messageID); //Assign transaction id
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response); //Send
+                                    ctx.flush();
+                                }
+                            }
+                        };
+                        Futures.addCallback(responseFuture, responseCallback, callBackExecutor);
+                    }
+
+                    //Queries a message through the multi maps.
+                    case QUERY_MESSAGE_SINGLE_BLOCK, QUERY_MESSAGE -> {
+                        //Query
+                        MultimapTask task = appContext.getMultimapTaskFactory().getNewMultimapQueryTask(message);
+                        ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
+                        FutureCallback<Message> responseCallback = new FutureCallback<>() {
+                            @Override
+                            public void onSuccess(Message response) {
+                                response.setTransactionId(messageID);
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response);
+                                    ctx.flush();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                //Create message body
+                                List<Object> responseBody = new ArrayList<>();
+                                responseBody.add("ERROR:Performing operation");
+                                responseBody.add(throwable.getMessage());
+                                Message response = new MessageImpl(Message.types.QUERY_RESPONSE, responseBody);//Create response
+                                response.setTransactionId(messageID); //Assign transaction id
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response);
+                                    ctx.flush();
+                                }
+                            }
+                        };
+                        Futures.addCallback(responseFuture, responseCallback, callBackExecutor);
+                    }
                 }
-
-                case INSERT_MESSAGE -> {
-                    if( message.getBody().size() != 2 )
-                        throw new Exception("Invalid body Size for message type: INSERT_MESSAGE");
-
-                    MultimapTask task = appContext.getMultimapTaskFactory().getNewMultimapInsertTask(message);
-                    ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
-                    FutureCallback<Message> responseCallback = new FutureCallback<>() {
-                        @Override
-                        public void onSuccess(Message response) {
-                            response.setTransactionId(message.getTransactionId());
-                            synchronized (bufferWriteLock) {
-                                ctx.write(response); //Send
-                                ctx.flush();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            //Create message body
-                            List<Object> responseBody = new ArrayList<>();
-                            responseBody.add("ERROR:Performing operation");
-                            responseBody.add(throwable.getMessage() );
-                            Message response = new MessageImpl( Message.types.INSERT_MESSAGE_RESPONSE, responseBody );//Create response
-                            response.setTransactionId(message.getTransactionId() ); //Assign transaction id
-                            synchronized (bufferWriteLock) {
-                                ctx.write(response); //Send
-                                ctx.flush();
-                            }
-                        }
-                    };
-                    Futures.addCallback( responseFuture, responseCallback, callBackExecutor );
-                }
-
-                //Queries a message through the multi maps.
-                case QUERY_MESSAGE_SINGLE_BLOCK, QUERY_MESSAGE -> {
-                    //Query
-                    MultimapTask task = appContext.getMultimapTaskFactory().getNewMultimapQueryTask(message);
-                    ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
-                    FutureCallback<Message> responseCallback = new FutureCallback<>() {
-                        @Override
-                        public void onSuccess(Message response) {
-                            response.setTransactionId(message.getTransactionId());
-                            synchronized (bufferWriteLock) {
-                                ctx.write(response);
-                                ctx.flush();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            //Create message body
-                            List<Object> responseBody = new ArrayList<>();
-                            responseBody.add("ERROR:Performing operation");
-                            responseBody.add(throwable.getMessage() );
-                            Message response = new MessageImpl( Message.types.QUERY_RESPONSE, responseBody );//Create response
-                            response.setTransactionId(message.getTransactionId() ); //Assign transaction id
-                            synchronized (bufferWriteLock) {
-                                ctx.write(response);
-                                ctx.flush();
-                            }
-                        }
-                    };
-                    Futures.addCallback( responseFuture, responseCallback, callBackExecutor );
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }catch (Exception e ){
-            e.printStackTrace();
         }
     }
 }

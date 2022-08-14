@@ -98,10 +98,17 @@ public class Main {
                                 temp.setValues(line);
                                 ListenableFuture<DataObject<?>> result = system.insert(temp);
                                 Futures.addCallback(result, new FutureCallback<>() {
+                                    final DataObject<String> currentObject = temp;
                                     @Override
                                     public void onSuccess(DataObject<?> object) {
-                                        System.out.println("Insert complete for object: "+ object.getValues());
-                                        counter2.getAndIncrement();
+                                        if( object == null )
+                                            System.err.println("Insert failed for: " + currentObject.getValues());
+                                        else {
+                                            System.out.println("Insert complete for object: " + object.getValues());
+                                            synchronized (counter2) {
+                                                counter2.getAndIncrement();
+                                            }
+                                        }
                                     }
 
                                     @Override
