@@ -112,7 +112,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
 
         synchronized (channel) {
             channel.writeAndFlush(message); //Sends message to server
-            Thread.sleep(5);
+            //Thread.sleep(5);
         }
 
         if(appContext.getDebug())

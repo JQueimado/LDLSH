@@ -30,5 +30,14 @@ public interface SystemServer {
      */
     DataObject<?> newDataObject() throws Exception;
 
+    /**
+     * Suspends the thread until all operations are completed
+     * @throws Exception If an error occurs
+     */
+    void suspend() throws Exception;
+
+    /**
+     * Shutdown the system
+     */
     void stop();
 }
