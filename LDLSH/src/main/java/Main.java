@@ -18,8 +18,6 @@ import java.util.concurrent.Future;
 
 public class Main {
 
-    private static final String ui_config = "UI";
-
     public static void main(String[] args) throws Exception {
         //Create context
         DataContainer dataContainer = new DataContainer(args[0]);
@@ -37,13 +35,11 @@ public class Main {
         List<DataObject<String>> data = new ArrayList<>();
         BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName));
         String line;
-        int operations = 0;
         while((line = fileBufferReader.readLine()) != null)
             if (!line.isEmpty() || !line.isBlank()) {
                 DataObject<String> dataObject = (DataObject<String>) system.newDataObject();
                 dataObject.setValues(line);
                 data.add( dataObject );
-                operations ++;
             }
 
         //Execute
@@ -74,13 +70,10 @@ public class Main {
                         }
                     }, dataContainer.getCallbackExecutor());
                 }
-                dataContainer.getExecutorService().shutdown(); //waits all tasks termination
-                System.exit(0);
             }
 
             case "-q" -> {
-                //final int[] i = {0};
-                for (DataObject<String> dataElement : data){
+                for (DataObject<?> dataElement : data){
 
                     //Execute Instruction
                     Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
@@ -102,10 +95,10 @@ public class Main {
                         }
                     }, dataContainer.getCallbackExecutor());
                 }
-                dataContainer.getExecutorService().shutdown(); //waits all tasks termination
-                //assert i[0] == operations;
-                System.exit(0);
             }
         }
+        //Shutdown
+        system.stop();
+        System.exit(0);
     }
 }

@@ -53,13 +53,12 @@ public class ModelInsertWorkerTask extends WorkerTaskImpl {
                         processedData.object_erasureCodes().getBlockAt(indexes.get(i))
                 );
 
-                multiMap.insert(
-                        processedData.object_lsh(),
-                        modelMultimapValue
-                );
+                if (!multiMap.insert( processedData.object_lsh(), modelMultimapValue ))
+                        return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return object;
     }
