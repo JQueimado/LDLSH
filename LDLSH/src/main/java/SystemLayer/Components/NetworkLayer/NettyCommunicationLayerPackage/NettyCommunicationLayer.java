@@ -13,6 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Promise;
 
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,9 +29,9 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     private final DataContainer appContext;
     private Bootstrap clientBootstrap;
     private NettyReceiver nettyReceiver;
-    private EventLoopGroup eventExecutors;
     private ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
     private final AtomicInteger transactionIdGenerator = new AtomicInteger();
+    private final Object createChannelLock = new Object();
 
     HashMap<String, Channel> connections;
 
@@ -43,7 +44,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
             hasClient = Boolean.parseBoolean(hasClient_string);
             if (hasClient) {
                 transactionMap = new ConcurrentHashMap<>();
-                eventExecutors = new NioEventLoopGroup();
+                EventLoopGroup eventExecutors = new NioEventLoopGroup();
                 clientBootstrap = new Bootstrap();
                 clientBootstrap.group(eventExecutors);
                 clientBootstrap.channel(NioSocketChannel.class);
@@ -85,15 +86,17 @@ public class NettyCommunicationLayer implements CommunicationLayer {
 
         String connectionName = hostname + ":" + port;
         Channel channel;
-        try {
-            if ((channel = connections.get(connectionName)) == null) {
-                throw new Exception();
+        synchronized (createChannelLock) {
+            try {
+                if ((channel = connections.get(connectionName)) == null) {
+                    throw new Exception();
+                }
+            }catch (Exception e){
+                ChannelFuture channelFuture = clientBootstrap.connect(hostname, port).sync();
+                channelFuture.await();
+                channel = channelFuture.channel();
+                connections.put(connectionName, channel);
             }
-        }catch (Exception e){
-            ChannelFuture channelFuture = clientBootstrap.connect(hostname, port).sync();
-            channelFuture.await();
-            channel = channelFuture.channel();
-            connections.put(connectionName, channel);
         }
 
         Promise<Message> promise = channel.eventLoop().newPromise(); //Creates a response promise
@@ -103,11 +106,13 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         synchronized ( transactionIdGenerator ){
             transactionId = transactionIdGenerator.getAndIncrement();
         }
+
         message.setTransactionId(transactionId); //Sets the message transaction id
         transactionMap.put( transactionId, promise ); //Adds transaction to the map
 
         synchronized (channel) {
             channel.writeAndFlush(message); //Sends message to server
+            Thread.sleep(5);
         }
 
         if(appContext.getDebug())
