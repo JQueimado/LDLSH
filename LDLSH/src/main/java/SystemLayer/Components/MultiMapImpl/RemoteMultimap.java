@@ -40,12 +40,15 @@ public class RemoteMultimap extends MultiMapImpl{
         messageBody.add(lshHash);
         messageBody.add(value);
         Message insertMessage = new MessageImpl(Message.types.INSERT_MESSAGE, messageBody);
+
         Promise<Message> responsePromise;
-
-        responsePromise = communicationLayer.send(insertMessage, host, port);
-
-        if(!responsePromise.await(TIMEOUT, TimeUnit.SECONDS))
-            throw new TimeoutException();
+        while(true) {
+            responsePromise = communicationLayer.send(insertMessage, host, port);
+            if (!responsePromise.await(TIMEOUT, TimeUnit.SECONDS))
+                System.err.println("RemoteMultimap: Message timeout resending.");
+            else
+                break;
+        }
 
         Message response = responsePromise.get();
 
@@ -79,14 +82,16 @@ public class RemoteMultimap extends MultiMapImpl{
         messageBody.add(lshHash);
         messageBody.add(uniqueIdentifier);
         Message completionMessage = new MessageImpl(Message.types.COMPLETION_MESSAGE, messageBody);
-        Promise<Message> response_promise;
+        Promise<Message> responsePromise;
+        while(true) {
+            responsePromise = communicationLayer.send(completionMessage, host, port);
+            if (!responsePromise.await(TIMEOUT, TimeUnit.SECONDS))
+                System.err.println("RemoteMultimap: Message timeout resending.");
+            else
+                break;
+        }
 
-        response_promise = communicationLayer.send(completionMessage, host, port);
-
-        if (!response_promise.await(TIMEOUT, TimeUnit.SECONDS) )
-            throw new TimeoutException();
-
-        Message response = response_promise.get();
+        Message response = responsePromise.get();
 
         if( response.getType() != Message.types.COMPLETION_RESPONSE ){
             throw new Exception( "ERROR: Invalid response format" );
@@ -102,14 +107,17 @@ public class RemoteMultimap extends MultiMapImpl{
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(lshHash);
         Message queryMessage = new MessageImpl(Message.types.QUERY_MESSAGE_SINGLE_BLOCK, messageBody);
-        Promise<Message> response_promise;
 
-        response_promise = communicationLayer.send(queryMessage, host, port);
+        Promise<Message> responsePromise;
+        while(true) {
+            responsePromise = communicationLayer.send(queryMessage, host, port);
+            if (!responsePromise.await(TIMEOUT, TimeUnit.SECONDS))
+                System.err.println("RemoteMultimap: Message timeout in host "+host+":"+port+" resending.");
+            else
+                break;
+        }
 
-        if( response_promise.await(TIMEOUT, TimeUnit.SECONDS) )
-            throw new TimeoutException();
-
-        Message response = response_promise.get();
+        Message response = responsePromise.get();
 
         if( response.getType() != Message.types.QUERY_RESPONSE ){
             throw new Exception( "ERROR: Invalid response format" );
