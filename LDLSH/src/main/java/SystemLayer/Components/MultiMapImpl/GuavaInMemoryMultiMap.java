@@ -43,9 +43,10 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
     }
 
     @Override
-    public void insert(LSHHash lshHash, MultiMapValue value) {
+    public boolean insert(LSHHash lshHash, MultiMapValue value) {
         //Insert Values
         multiMap.put( lshHash.getBlockAt(hash_position), value );
+        return true;
     }
 
     @Override
