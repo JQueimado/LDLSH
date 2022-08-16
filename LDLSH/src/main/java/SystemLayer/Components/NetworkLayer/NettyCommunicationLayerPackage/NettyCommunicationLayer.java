@@ -115,9 +115,9 @@ public class NettyCommunicationLayer implements CommunicationLayer {
             //Thread.sleep(5);
         }
 
-        if(appContext.getDebug())
-            System.out.println("NettyCommunicationLayer: Sent " +
-                    message.getType().toString() + " to " +connectionName);
+        //if(appContext.getDebug())
+        //    System.out.println("NettyCommunicationLayer: Sent " +
+        //            message.getType().toString() + " to " +connectionName);
 
         return promise; //Returns the response promise
     }

@@ -141,11 +141,11 @@ public class SystemImpl implements SystemServer {
 
     @Override
     public void suspend() throws Exception {
-        if(context.getDebug())
-            System.out.println("Main: Waiting executor service to stop");
+        //if(context.getDebug())
+        //    System.out.println("Main: Waiting executor service to stop");
         context.getExecutorService().awaitTermination(10, TimeUnit.SECONDS);
-        if(context.getDebug())
-            System.out.println("Main: Waiting callback executor to stop");
+        //if(context.getDebug())
+        //    System.out.println("Main: Waiting callback executor to stop");
         context.getCallbackExecutor().awaitTermination(10, TimeUnit.SECONDS);
     }
 
