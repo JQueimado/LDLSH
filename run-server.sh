@@ -74,9 +74,9 @@ main(){
     fi
 }
 
-if [ $# -eq 1 ]
+if ! [ $# -eq 1 ]
 then
-    OP=$1
+   exit 1
 fi
 
-main $OP
+main "$1"
