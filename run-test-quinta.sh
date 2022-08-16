@@ -1,6 +1,6 @@
 #env
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
-
+DATASETS="${DIR}/data_sets"
 change_branch(){
 	ssh "$1" "cd ${DIR}; git checkout $2"
 	pulloutput=$(ssh "$1" "cd ${DIR}; git pull;")
@@ -26,17 +26,18 @@ kill_process(){
 	ssh "$1" "cd ${DIR}; ./run-server.sh -k"
 }
 
-accuracy_Test(){
+run_Test(){
 	#args
     ITERATIONS=$1
-    INSERTFILE=$2
-    QUERYFILE=$3
+    INSERTFILE="${DATASETS}/$2"
+    QUERYFILE="${DATASETS}/$3"
+	TESTBRANCHNAME=$4
+	CONFIGFILE=$5
 	#test configs
-    CONFIGFILE="LDLSH/LDLSH_Quinta"
-    RESULTSFOLDER="LDLSH_ACCURACY_TESTS"
+    RESULTSFOLDER="Test-${TESTBRANCHNAME}_Config-${CONFIGFILE}_I-${INSERTFILE}_Q-${QUERYFILE}_It-${ITERATIONS}"
 	CLIENT="t5.quinta"
 	SERVERS="t6.quinta t7.quinta t8.quinta"
-	TESTBRANCHNAME="Tests-Accuracy"
+
 	BRANCH="Tests"
 
     #Setup
@@ -50,7 +51,6 @@ accuracy_Test(){
 	done
 
     ### LDLSH ###
-	RESULTSFOLDER="LDLSH-ACCURACY"
 	#start server
     for SERVER in $SERVERS
 	do
@@ -94,5 +94,10 @@ fi
 
 if [ "$1" = "--accuracy" ];
 then
-    accuracy_Test "$2" "$3" "$4"
+    run_Test "$2" "$3" "$4" "Tests-Accuracy" "LDLSH_Quinta"
+fi
+
+if [ "$1" = "--latency" ];
+then
+    run_Test "$2" "$3" "$4" "Tests-Latency" "LDLSH_Quinta"
 fi
