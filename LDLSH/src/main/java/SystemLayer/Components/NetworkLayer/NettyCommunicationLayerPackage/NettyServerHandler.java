@@ -39,14 +39,14 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
         if( appContext.getDebug() )
-            System.out.println("Handler added from " + ctx.channel().remoteAddress() + " to: " + ctx.channel().localAddress());
+            System.out.println("NettyServerHandler: Handler added from " + ctx.channel().remoteAddress() + " to: " + ctx.channel().localAddress());
         temp = ctx.alloc().directBuffer();
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
         if( appContext.getDebug() )
-            System.out.println("Handler removed from "  + ctx.channel().remoteAddress());
+            System.out.println("NettyServerHandler: Handler removed from "  + ctx.channel().remoteAddress());
         if( temp.release() )
             temp = null;
     }
@@ -54,53 +54,55 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if( appContext.getDebug() )
-            System.out.println("Process message: Received " + ((ByteBuf) msg).readableBytes() + "bytes");
+            System.out.println("NettyServerHandler: Received " + ((ByteBuf) msg).readableBytes() + "bytes");
         temp.writeBytes( (ByteBuf) msg);
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         if( appContext.getDebug() )
-            System.out.println("Process message: Read Complete");
-        //Decode
-        byte[] body = new byte[temp.writerIndex()];
-        temp.readBytes(body);
+            System.out.println("NettyServerHandler: Read Complete. Buffer Size: "+ temp.readableBytes());
+        while (temp.readableBytes() > 0) {
+            //Decode
+            byte[] body = new byte[temp.readableBytes()];
+            temp.readBytes(body);
 
-        if( appContext.getDebug() )
-            System.out.println("Process message: Start Buffer");
+            if (appContext.getDebug())
+                System.out.println("NettyServerHandler: Start Buffer");
 
-        ByteArrayInputStream bis = new ByteArrayInputStream(body);
-        ObjectInputStream ois = new ObjectInputStream(bis);
+            ByteArrayInputStream bis = new ByteArrayInputStream(body);
+            ObjectInputStream ois = new ObjectInputStream(bis);
 
-        List<Message> messages = new ArrayList<>();
-        try {
+            Message message = null;
+            try {
 
-            if( appContext.getDebug() )
-                System.out.println("Process message: Read Buffer");
+                if (appContext.getDebug())
+                    System.out.println("NettyServerHandler: Read Buffer");
 
-            Message message;
-            while ( (message = (Message) ois.readObject()) != null){
-                messages.add(message);
+                message = (Message) ois.readObject();
+
+            } catch (EOFException e) {
+                if (appContext.getDebug())
+                    System.out.println("NettyServerHandler: Read Failed resetting message buffer");
+                temp.writeBytes(ois.readAllBytes());
+            } catch (StreamCorruptedException e) {
+                System.out.println("NettyServerHandler: Found Corrupt message");
+                temp.clear();
+                temp.writeBytes(bis.readAllBytes());
             }
 
-        }catch (EOFException e){
-            if( appContext.getDebug() )
-                System.out.println("Process message: Read Failed resetting message buffer");
-            temp.writeBytes(ois.readAllBytes());
-        }catch (StreamCorruptedException e){
-            System.out.println("Found Corrupt message");
-            temp.clear();
-            temp.writeBytes(bis.readAllBytes());
-        }
+            temp.writeBytes( bis.readAllBytes() );
 
-        //Process
-        for (Message message : messages) {
             if (appContext.getDebug())
-                System.out.println("Process message: Received " + message.getType()
+                System.out.println("NettyServerHandler: Remaining Bytes to process: " + temp.readableBytes());
+
+            if(message == null)
+                continue;
+            //Process
+            if (appContext.getDebug())
+                System.out.println("NettyServerHandler: Received " + message.getType()
                         + " message from " + ctx.channel().remoteAddress()
-                        + " of size: " + temp.writerIndex()
                 );
-            temp.clear();
 
             //Process
             try {
