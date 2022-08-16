@@ -82,7 +82,7 @@ accuracy_Test(){
 
 	#Copy results
 	mkdir "${RESULTSFOLDER}"
-	scp -r "${CLIENT}:${DIR}/${RESULTSFOLDER}" "${RESULTSFOLDER}"
+	scp -r "${CLIENT}:${DIR}/${RESULTSFOLDER}" "."
 	ssh "${CLIENT}" "cd ${DIR}; rm -rf ${RESULTSFOLDER}"
 }
 
