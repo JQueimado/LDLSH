@@ -13,7 +13,7 @@ public interface MultiMap {
     LSHHashBlock getBlock(LSHHash hash );
 
     //Inserts data into the MultiMap
-    void insert(
+    boolean insert(
             LSHHash lshHash,
             MultiMapValue value
     ) throws Exception;

@@ -13,6 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Promise;
 
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,15 +26,17 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     private final boolean hasClient;
     private final boolean hasServer;
 
+    private final DataContainer appContext;
     private Bootstrap clientBootstrap;
     private NettyReceiver nettyReceiver;
-    private EventLoopGroup eventExecutors;
     private ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
     private final AtomicInteger transactionIdGenerator = new AtomicInteger();
+    private final Object createChannelLock = new Object();
 
-    HashMap<String, ChannelFuture> connections;
+    HashMap<String, Channel> connections;
 
     public NettyCommunicationLayer( DataContainer appContext ) throws Exception {
+        this.appContext = appContext;
         //Client
         String hasClient_string = "";
         try {
@@ -41,7 +44,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
             hasClient = Boolean.parseBoolean(hasClient_string);
             if (hasClient) {
                 transactionMap = new ConcurrentHashMap<>();
-                eventExecutors = new NioEventLoopGroup();
+                EventLoopGroup eventExecutors = new NioEventLoopGroup();
                 clientBootstrap = new Bootstrap();
                 clientBootstrap.group(eventExecutors);
                 clientBootstrap.channel(NioSocketChannel.class);
@@ -77,17 +80,24 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     }
 
     @Override
-    public synchronized Promise<Message> send(Message message, String hostname, int port) throws Exception {
+    public Promise<Message> send(Message message, String hostname, int port) throws Exception {
         if( ! hasClient )
             throw new Exception("Node has not initialized a client");
 
         String connectionName = hostname + ":" + port;
-        ChannelFuture channelFuture;
-        if( ( channelFuture = connections.get(connectionName) ) == null ) {
-            channelFuture = clientBootstrap.connect(hostname, port).sync();
-            connections.put( connectionName, channelFuture );
+        Channel channel;
+        synchronized (createChannelLock) {
+            try {
+                if ((channel = connections.get(connectionName)) == null) {
+                    throw new Exception();
+                }
+            }catch (Exception e){
+                ChannelFuture channelFuture = clientBootstrap.connect(hostname, port).sync();
+                channelFuture.await();
+                channel = channelFuture.channel();
+                connections.put(connectionName, channel);
+            }
         }
-        Channel channel = channelFuture.channel();
 
         Promise<Message> promise = channel.eventLoop().newPromise(); //Creates a response promise
 
@@ -96,10 +106,18 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         synchronized ( transactionIdGenerator ){
             transactionId = transactionIdGenerator.getAndIncrement();
         }
+
         message.setTransactionId(transactionId); //Sets the message transaction id
         transactionMap.put( transactionId, promise ); //Adds transaction to the map
 
-        channel.writeAndFlush(message); //Sends message to server
+        synchronized (channel) {
+            channel.writeAndFlush(message); //Sends message to server
+            //Thread.sleep(5);
+        }
+
+        //if(appContext.getDebug())
+        //    System.out.println("NettyCommunicationLayer: Sent " +
+        //            message.getType().toString() + " to " +connectionName);
 
         return promise; //Returns the response promise
     }
@@ -107,13 +125,8 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     @Override
     public void shutdown() {
         if(hasClient)
-            for (ChannelFuture channelFuture : connections.values()){
-                try {
-                    channelFuture.sync();
-                } catch (InterruptedException e) {
-                    //pass
-                }
-                channelFuture.channel().close();
+            for (Channel channel : connections.values()){
+                channel.close();
             }
         if(hasServer)
             nettyReceiver.shutdown();

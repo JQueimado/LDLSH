@@ -57,8 +57,9 @@ public class Main {
                         @Override
                         public void onSuccess(DataObject object) {
                             //Nothing
-                            successCounter.getAndIncrement();
-                            System.out.println("insert: " + object.getValues());
+                            synchronized (successCounter) {
+                                successCounter.getAndIncrement();
+                            }
                         }
 
                         @Override
@@ -84,7 +85,9 @@ public class Main {
                                 System.out.println(e.getValues() + " -> " + object.getValues());
                             else
                                 System.out.println(e.getValues() + " -> null" );
-                            successCounter.getAndIncrement();
+                            synchronized (successCounter) {
+                                successCounter.getAndIncrement();
+                            }
                         }
 
                         @Override
@@ -97,20 +100,7 @@ public class Main {
         }
 
         //Shutdown
-        //End
-        try {
-            if(! dataContainer.getExecutorService().awaitTermination(1, TimeUnit.SECONDS))
-                dataContainer.getExecutorService().shutdownNow();
-        }catch (InterruptedException e){
-            dataContainer.getExecutorService().shutdownNow();
-        }
-
-        try {
-            if(! dataContainer.getCallbackExecutor().awaitTermination(1, TimeUnit.SECONDS))
-                dataContainer.getCallbackExecutor().shutdownNow();
-        }catch (InterruptedException e){
-            dataContainer.getCallbackExecutor().shutdownNow();
-        }
+        system.stop();
 
         if (successCounter.get() != data.size() )
             throw new Exception("Not all Inserts were performed.");
