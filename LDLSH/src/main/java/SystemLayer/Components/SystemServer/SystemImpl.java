@@ -24,6 +24,7 @@ public class SystemImpl implements SystemServer {
     private static final String nBands_config = "N_BANDS";
     private static final String nodeType_config = "NODE_TYPE";
     private static final String multiMapPosition_config = "MULTIMAP_POSITION";
+    private final int timeout = 1;
 
     private final DataContainer context;
     private final WorkerTaskFactory workerTaskFactory;
@@ -143,10 +144,10 @@ public class SystemImpl implements SystemServer {
     public void suspend() throws Exception {
         if(context.getDebug())
             System.out.println("Main: Waiting executor service to stop");
-        context.getExecutorService().awaitTermination(10, TimeUnit.SECONDS);
+        context.getExecutorService().awaitTermination(timeout, TimeUnit.SECONDS);
         if(context.getDebug())
             System.out.println("Main: Waiting callback executor to stop");
-        context.getCallbackExecutor().awaitTermination(10, TimeUnit.SECONDS);
+        context.getCallbackExecutor().awaitTermination(timeout, TimeUnit.SECONDS);
     }
 
     @Override
