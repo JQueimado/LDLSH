@@ -3,6 +3,7 @@ package Factories.ComponentFactories;
 import Factories.FactoryImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
+import SystemLayer.SystemMain.AccuracyTestMain;
 import SystemLayer.SystemMain.StandardMain;
 import SystemLayer.SystemMain.SystemMain;
 import SystemLayer.SystemMain.TestMain;
@@ -11,7 +12,7 @@ public class MainFactory extends FactoryImpl {
 
     private final String main_config = "MAIN";
 
-    private enum configurations {STANDARD, TEST}
+    private enum configurations {STANDARD, TEST, ACCURACY_TEST}
 
     public MainFactory(DataContainer appContext) {
         super(appContext);
@@ -37,7 +38,11 @@ public class MainFactory extends FactoryImpl {
                 }
 
                 case TEST -> {
-                    return new TestMain(args,appContext);
+                    return new TestMain(args, appContext);
+                }
+
+                case ACCURACY_TEST -> {
+                    return new AccuracyTestMain(args, appContext);
                 }
 
                 default -> {
