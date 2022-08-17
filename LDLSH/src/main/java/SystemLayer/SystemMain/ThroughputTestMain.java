@@ -67,7 +67,7 @@ public class ThroughputTestMain extends SystemMainImp {
                 long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp.getTime();
                 System.out.println("done:\n" +
                         "total execution time: "+ totalExecutionTime+" ms\n" +
-                        "throughput: "+ totalExecutionTime/operations +" ms/op");
+                        "throughput: "+ operations/(totalExecutionTime/1000) +" ops/s");
                 System.exit(0);
             }
 
