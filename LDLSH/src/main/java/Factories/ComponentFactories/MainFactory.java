@@ -5,12 +5,13 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import SystemLayer.SystemMain.StandardMain;
 import SystemLayer.SystemMain.SystemMain;
+import SystemLayer.SystemMain.TestMain;
 
 public class MainFactory extends FactoryImpl {
 
     private final String main_config = "MAIN";
 
-    private enum configurations {STANDARD}
+    private enum configurations {STANDARD, TEST}
 
     public MainFactory(DataContainer appContext) {
         super(appContext);
@@ -33,6 +34,10 @@ public class MainFactory extends FactoryImpl {
             switch (config){
                 case STANDARD -> {
                     return new StandardMain(args, appContext);
+                }
+
+                case TEST -> {
+                    return new TestMain(args,appContext);
                 }
 
                 default -> {
