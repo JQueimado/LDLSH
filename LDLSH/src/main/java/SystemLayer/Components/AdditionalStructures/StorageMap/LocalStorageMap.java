@@ -6,14 +6,15 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LocalStorageMap extends StorageMapImpl{
 
-    private Map<UniqueIdentifier, DataObject<?>> map;
+    private final ConcurrentHashMap<UniqueIdentifier, DataObject<?>> map;
 
     public LocalStorageMap(DataContainer appContext){
         super(appContext);
-        map = new HashMap<>();
+        map = new ConcurrentHashMap<>();
     }
 
     @Override
