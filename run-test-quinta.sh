@@ -36,8 +36,8 @@ run_Test(){
 	CONFIGFILE=$5
 	#test configs
     RESULTSFOLDER="TEST-${TESTBRANCHNAME}_CONFIG-${CONFIGFILE}_I-$2_Q-$3_IT-${ITERATIONS}"
-	CLIENT="t5.quinta"
-	SERVERS="t6.quinta t7.quinta t8.quinta"
+	CLIENT="t5"
+	SERVERS="t6 t7 t8."
 
 	BRANCH="Tests"
 
