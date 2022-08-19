@@ -4,7 +4,7 @@ HOST=$(hostname)
 
 run_server(){
     timestamp=$(date +%s)
-    nohup java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $DIRCONFIG/MultimapNode-$HOST.quinta.properties >& nohup_"$timestamp".out &
+    nohup java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/server-$1.properties >& nohup_"$timestamp".out &
     echo $! > pid.nohup
     cat pid.nohup
 }
@@ -55,7 +55,7 @@ main(){
     OP=$1
     if [ $OP = "-js" ]
     then
-        run_server
+        run_server "$HOST" "$2"
     fi
 
     if [ $OP = "-b" ]
@@ -74,9 +74,9 @@ main(){
     fi
 }
 
-if ! [ $# -eq 1 ]
+if [ $# -gt 2 ]
 then
    exit 1
 fi
 
-main "$1"
+main "$1" "$2"

@@ -1,26 +1,29 @@
 #env
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
 DATASETS="${DIR}/data_sets"
+CONFIGS="${DIR}/LDLSH/Test_Batery"
 change_branch(){
 	ssh "$1" "cd ${DIR}; git checkout $2"
 	pulloutput=$(ssh "$1" "cd ${DIR}; git pull;")
 	echo "$pulloutput"
-	#if ! [ "$pulloutput" = "Already up-to-date." ];
-	#then
-	#	ssh "$1" "cd ${DIR}; ./run-server.sh -b"
-	#fi
-	ssh "$1" "cd ${DIR}; ./run-server.sh -b"
+	
+	if ! [ "$pulloutput" = "Already up-to-date." ];
+	then
+		ssh "$1" "cd ${DIR}; ./run-server.sh -b"
+	fi
+	
+	#ssh "$1" "cd ${DIR}; ./run-server.sh -b"
 }
 
 run_server_jar(){
- 	ssh "$1" "cd ${DIR}; ./run-server.sh -js"
+ 	ssh "$1" "cd ${DIR}; ./run-server.sh -js ${2} "
 }
 
 run_test_client_jar(){
 	#ssh "$1" "cd ${DIR}; ./run-test.sh $2 $3 $4 $5"
 	TIMESTAMP=$(date +%s)
 	FILENAME="$5/test_$3_${TIMESTAMP}.txt"
-	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/ClientNode.properties -$3 $4 >> ${FILENAME}"
+	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/client_accuracy.properties -$3 $4 >> ${FILENAME}"
 }
 
 kill_process(){
@@ -30,20 +33,18 @@ kill_process(){
 run_Test(){
 	#args
     ITERATIONS=$1
-    INSERTFILE="${DATASETS}/$2"
-    QUERYFILE="${DATASETS}/$3"
-	TESTBRANCHNAME=$4
-	CONFIGFILE=$5
+	CONFIGFILE="${CONFIGS}/$2"
+    INSERTFILE="${DATASETS}/$3"
+    QUERYFILE="${DATASETS}/$4"
 	#test configs
-    RESULTSFOLDER="TEST-${TESTBRANCHNAME}_CONFIG-${CONFIGFILE}_I-$2_Q-$3_IT-${ITERATIONS}"
+    RESULTSFOLDER="TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
 	CLIENT="t5"
-	SERVERS="t6 t7 t8."
-
+	SERVERS="t6 t7 t8"
 	BRANCH="Tests"
 
     #Setup
 	echo "--- Setup client ${CLIENT} ---"
-	change_branch $CLIENT $TESTBRANCHNAME
+	change_branch $CLIENT $BRANCH
 
 	for SERVER in $SERVERS
 	do
@@ -56,7 +57,7 @@ run_Test(){
     for SERVER in $SERVERS
 	do
 		echo "LDLDH-Acc: Starting server at ${SERVER}"
-		run_server_jar "$SERVER"
+		run_server_jar "$SERVER" "$CONFIGFILE"
 	done
 
 	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
@@ -93,12 +94,14 @@ then
    exit 1
 fi
 
-if [ "$1" = "--accuracy" ];
-then
-    run_Test "$2" "$3" "$4" "Tests-Accuracy" "LDLSH_Quinta"
-fi
+run_Test "$1" "$2" "$3" "$4"
 
-if [ "$1" = "--latency" ];
-then
-    run_Test "$2" "$3" "$4" "Tests-Latency" "LDLSH_Quinta"
-fi
+#if [ "$1" = "--accuracy" ];
+#then
+#    run_Test "$2" "$3" "$4" "Tests-Accuracy" "LDLSH_Quinta"
+#fi
+
+#if [ "$1" = "--latency" ];
+#then
+#    run_Test "$2" "$3" "$4" "Tests-Latency" "LDLSH_Quinta"
+#fi
