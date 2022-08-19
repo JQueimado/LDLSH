@@ -5,10 +5,11 @@ change_branch(){
 	ssh "$1" "cd ${DIR}; git checkout $2"
 	pulloutput=$(ssh "$1" "cd ${DIR}; git pull;")
 	echo "$pulloutput"
-	if ! [ "$pulloutput" = "Already up-to-date." ];
-	then
-		ssh "$1" "cd ${DIR}; ./run-server.sh -b"
-	fi
+	#if ! [ "$pulloutput" = "Already up-to-date." ];
+	#then
+	#	ssh "$1" "cd ${DIR}; ./run-server.sh -b"
+	#fi
+	ssh "$1" "cd ${DIR}; ./run-server.sh -b"
 }
 
 run_server_jar(){
@@ -18,7 +19,7 @@ run_server_jar(){
 run_test_client_jar(){
 	#ssh "$1" "cd ${DIR}; ./run-test.sh $2 $3 $4 $5"
 	TIMESTAMP=$(date +%s)
-	FILENAME="${RESULTSFOLDER}/test_${OP}_${TIMESTAMP}.txt"
+	FILENAME="$5/test_$3_${TIMESTAMP}.txt"
 	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/ClientNode.properties -$3 $4 >> ${FILENAME}"
 }
 
@@ -34,7 +35,7 @@ run_Test(){
 	TESTBRANCHNAME=$4
 	CONFIGFILE=$5
 	#test configs
-    RESULTSFOLDER="Test-${TESTBRANCHNAME}_Config-${CONFIGFILE}_I-$3_Q-$3_It-${ITERATIONS}"
+    RESULTSFOLDER="TEST-${TESTBRANCHNAME}_CONFIG-${CONFIGFILE}_I-$2_Q-$3_IT-${ITERATIONS}"
 	CLIENT="t5.quinta"
 	SERVERS="t6.quinta t7.quinta t8.quinta"
 
