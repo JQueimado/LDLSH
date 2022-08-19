@@ -23,7 +23,7 @@ run_test_client_jar(){
 	#ssh "$1" "cd ${DIR}; ./run-test.sh $2 $3 $4 $5"
 	TIMESTAMP=$(date +%s)
 	FILENAME="$5/test_$3_${TIMESTAMP}.txt"
-	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/client_accuracy.properties -$3 $4 >> ${FILENAME}"
+	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/client_$6.properties -$3 $4 >> ${FILENAME}"
 }
 
 kill_process(){
@@ -64,7 +64,7 @@ run_Test(){
 
 	#Insert
 	echo "LDLDH-Acc: Runing Inserts..."
-    run_test_client_jar "$CLIENT" "$CONFIGFILE" "i" "$INSERTFILE" "$RESULTSFOLDER"
+    run_test_client_jar "$CLIENT" "$CONFIGFILE" "i" "$INSERTFILE" "$RESULTSFOLDER" "accuracy"
 
 	#Test
     for IT in $(seq "$ITERATIONS")
@@ -72,7 +72,7 @@ run_Test(){
 		#Query
 		sleep 1
 		echo "LDLDH-Acc: Runing test ${IT} out of ${ITERATIONS}..."
-        run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "$RESULTSFOLDER"
+        run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "$RESULTSFOLDER" "accuracy"
     done
 
 	#Stop Server
