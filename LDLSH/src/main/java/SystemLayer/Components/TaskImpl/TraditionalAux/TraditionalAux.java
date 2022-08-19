@@ -6,7 +6,7 @@ import SystemLayer.Containers.DataContainer;
 
 public class TraditionalAux {
 
-    public static StorageMap getStorageMap(DataContainer appContext){
+    public synchronized static StorageMap getStorageMap(DataContainer appContext){
         Object[] additionalStructures = appContext.getAdditionalStructures();
 
         if( additionalStructures == null || additionalStructures[0] == null ){
