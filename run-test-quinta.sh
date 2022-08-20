@@ -51,16 +51,14 @@ run_Test(){
 	#args
     ITERATIONS=$1
 	CONFIGFILE="${CONFIGS}/$2"
-	DATA1=$(cat "${CONFIGFILE}/data_sets.txt")
-	read -r -a DATA <<< "${DATA1}"
-    INSERTFILE="${DATASETS}/${DATA[0]}"
-    QUERYFILE="${DATASETS}/${DATA[1]}"
+	INSERTFILE="${DATASETS}/$3}"
+	QUERYFILE="${DATASETS}/$4}"
 
 	#test configs
-    RESULTSFOLDER="TEST-$2_I-${DATA[0]}_Q-${DATA[1]}_IT-${ITERATIONS}"
+	RESULTSFOLDER="TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
 	
 	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
-    
+	
 	for TEST in $TESTS
 	do
 		#start server
