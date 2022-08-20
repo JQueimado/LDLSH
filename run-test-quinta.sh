@@ -67,7 +67,7 @@ run_Test(){
 		done
 
 		#Insert
-		echo "LDLDH-Acc: Runing $TESTS Inserts..."
+		echo "LDLDH-Acc: Runing $TEST Inserts..."
 		run_test_client_jar "$CLIENT" "$CONFIGFILE" "i" "$INSERTFILE" "$RESULTSFOLDER" "$TEST"
 
 		#Test
@@ -75,7 +75,7 @@ run_Test(){
 		do
 			#Query
 			sleep 1
-			echo "LDLDH-Acc: Runing $TESTS test ${IT} out of ${ITERATIONS}..."
+			echo "LDLDH-Acc: Runing $TEST test ${IT} out of ${ITERATIONS}..."
 			run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "$RESULTSFOLDER" "$TEST"
 		done
 
