@@ -62,12 +62,12 @@ run_Test(){
 		#start server
 		for SERVER in $SERVERS
 		do
-			echo "Starting server at ${SERVER}"
+			echo "$2: Starting server at ${SERVER}"
 			run_server_jar "$SERVER" "$CONFIGFILE"
 		done
 
 		#Insert
-		echo "Runing $TEST Inserts..."
+		echo "$2: Runing $TEST Inserts..."
 		run_test_client_jar "$CLIENT" "$CONFIGFILE" "i" "$INSERTFILE" "$RESULTSFOLDER" "$TEST"
 
 		#Test
@@ -75,14 +75,14 @@ run_Test(){
 		do
 			#Query
 			sleep 1
-			echo "Runing $TEST test ${IT} out of ${ITERATIONS}..."
+			echo "$2: Runing $TEST test ${IT} out of ${ITERATIONS}..."
 			run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "$RESULTSFOLDER" "$TEST"
 		done
 
 		#Stop Server
 		for SERVER in $SERVERS
 		do
-			echo "Stoping server at ${SERVER}..."
+			echo "$2: Stoping server at ${SERVER}..."
 			kill_process "$SERVER"
 		done
 	done
