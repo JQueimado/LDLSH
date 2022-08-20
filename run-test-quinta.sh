@@ -87,26 +87,25 @@ run_Test(){
 		done
 	done
 	#Copy results
-	mkdir "${RESULTSFOLDER}"
-	scp -r "${CLIENT}:${DIR}/${RESULTSFOLDER}" "."
+	mkdir "TESTS/${RESULTSFOLDER}"
+	scp -r "${CLIENT}:${DIR}/${RESULTSFOLDER}" "TESTS"
 	ssh "${CLIENT}" "cd ${DIR}; rm -rf ${RESULTSFOLDER}"
 }
 
 ### main ###
-if ! [ $# -eq 4 ];
+# USE
+# ./run-test-quinta.sh <Iterations> <Insert_dataset> <Query_Dataset> 
+if ! [ $# -eq 3 ];
 then
    exit 1
 fi
 
+TEST_FOLDERS=$(ls LDLSH/Test_Batery)
+echo "Found tests: $TEST_FOLDERS"
 setup_tests
-run_Test "$1" "$2" "$3" "$4"
 
-#if [ "$1" = "--accuracy" ];
-#then
-#    run_Test "$2" "$3" "$4" "Tests-Accuracy" "LDLSH_Quinta"
-#fi
-
-#if [ "$1" = "--latency" ];
-#then
-#    run_Test "$2" "$3" "$4" "Tests-Latency" "LDLSH_Quinta"
-#fi
+for FOLDER in $TEST_FOLDERS
+do
+	echo "Runnig test: $FOLDER"
+	run_Test "$1" "$FOLDER" "$2" "$3"
+done
