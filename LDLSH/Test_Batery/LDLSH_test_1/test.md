@@ -4,9 +4,10 @@
 
 ### System
 
-* Model: LDLSH Optimized
+* Model: LDLSH
 * Execution Threads: 2
 * Callback Threads: 2
+* Maps: 3
 
 ### LSH
 
