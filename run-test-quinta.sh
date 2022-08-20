@@ -62,12 +62,12 @@ run_Test(){
 		#start server
 		for SERVER in $SERVERS
 		do
-			echo "LDLDH-Acc: Starting server at ${SERVER}"
+			echo "Starting server at ${SERVER}"
 			run_server_jar "$SERVER" "$CONFIGFILE"
 		done
 
 		#Insert
-		echo "LDLDH-Acc: Runing $TEST Inserts..."
+		echo "Runing $TEST Inserts..."
 		run_test_client_jar "$CLIENT" "$CONFIGFILE" "i" "$INSERTFILE" "$RESULTSFOLDER" "$TEST"
 
 		#Test
@@ -75,14 +75,14 @@ run_Test(){
 		do
 			#Query
 			sleep 1
-			echo "LDLDH-Acc: Runing $TEST test ${IT} out of ${ITERATIONS}..."
+			echo "Runing $TEST test ${IT} out of ${ITERATIONS}..."
 			run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "$RESULTSFOLDER" "$TEST"
 		done
 
 		#Stop Server
 		for SERVER in $SERVERS
 		do
-			echo "LDLDH-Acc: Stoping server at ${SERVER}..."
+			echo "Stoping server at ${SERVER}..."
 			kill_process "$SERVER"
 		done
 	done
