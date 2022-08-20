@@ -1,3 +1,4 @@
+#!/bin/bash
 #env
 BASE_DIR="LDLSH"
 HOST=$(hostname)

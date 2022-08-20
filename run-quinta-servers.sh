@@ -1,3 +1,4 @@
+#!/bin/bash
 # ops:
 # host=all 	: apply to all hosts in $HOSTS
 # -b 		: build

@@ -1,3 +1,4 @@
+#!/bin/bash
 #env
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
 DATASETS="${DIR}/data_sets"
@@ -50,10 +51,13 @@ run_Test(){
 	#args
     ITERATIONS=$1
 	CONFIGFILE="${CONFIGS}/$2"
-    INSERTFILE="${DATASETS}/$3"
-    QUERYFILE="${DATASETS}/$4"
+	DATA1=$(cat "${CONFIGFILE}/data_sets.txt")
+	read -r -a DATA <<< "${DATA1}"
+    INSERTFILE="${DATASETS}/${DATA[0]}"
+    QUERYFILE="${DATASETS}/${DATA[1]}"
+
 	#test configs
-    RESULTSFOLDER="TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
+    RESULTSFOLDER="TEST-$2_I-${DATA[0]}_Q-${DATA[1]}_IT-${ITERATIONS}"
 	
 	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
     
@@ -95,7 +99,7 @@ run_Test(){
 ### main ###
 # USE
 # ./run-test-quinta.sh <Iterations> <Insert_dataset> <Query_Dataset> 
-if ! [ $# -eq 3 ];
+if ! [ $# -eq 1 ];
 then
    exit 1
 fi
@@ -109,5 +113,5 @@ mkdir "TESTS"
 for FOLDER in $TEST_FOLDERS
 do
 	echo "Runnig test: $FOLDER"
-	run_Test "$1" "$FOLDER" "$2" "$3"
+	run_Test "$1" "$FOLDER"
 done
