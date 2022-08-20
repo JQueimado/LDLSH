@@ -54,8 +54,10 @@ run_Test(){
     QUERYFILE="${DATASETS}/$4"
 	#test configs
     RESULTSFOLDER="TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
-
-    for TEST in $TESTS
+	
+	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
+    
+	for TEST in $TESTS
 	do
 		#start server
 		for SERVER in $SERVERS
@@ -63,8 +65,6 @@ run_Test(){
 			echo "LDLDH-Acc: Starting server at ${SERVER}"
 			run_server_jar "$SERVER" "$CONFIGFILE"
 		done
-
-		ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
 
 		#Insert
 		echo "LDLDH-Acc: Runing $TESTS Inserts..."
