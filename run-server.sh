@@ -1,10 +1,10 @@
+#env
 BASE_DIR="LDLSH"
-DIRCONFIG="Throughtput-test"
 HOST=$(hostname)
 
 run_server(){
     timestamp=$(date +%s)
-    nohup java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/server-$1.properties >& nohup_"$timestamp".out &
+    nohup java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar $2/server-$1.properties >& nohup_"$timestamp".out &
     echo $! > pid.nohup
     cat pid.nohup
 }
