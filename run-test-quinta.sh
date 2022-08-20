@@ -104,6 +104,8 @@ TEST_FOLDERS=$(ls LDLSH/Test_Batery)
 echo "Found tests: $TEST_FOLDERS"
 setup_tests
 
+mkdir "TESTS"
+
 for FOLDER in $TEST_FOLDERS
 do
 	echo "Runnig test: $FOLDER"
