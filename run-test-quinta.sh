@@ -88,7 +88,7 @@ run_Test(){
 	done
 	#Copy results
 	mkdir "TESTS/${RESULTSFOLDER}"
-	scp -r "${CLIENT}:${DIR}/${RESULTSFOLDER}" "TESTS"
+	scp -r "${CLIENT}:${DIR}/${RESULTSFOLDER}" "TESTS/."
 	ssh "${CLIENT}" "cd ${DIR}; rm -rf ${RESULTSFOLDER}"
 }
 
