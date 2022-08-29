@@ -60,12 +60,11 @@ public class ThroughputTestMain extends SystemMainImp {
                         }
                     }, appContext.getCallbackExecutor());
                 }
-                appContext.getExecutorService().shutdown(); //waits all tasks termination
+                system.stop();
                 Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
                 long totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000;
-                System.out.println("done:\n" +
-                        "total execution time: "+ totalExecutionTime+" s\n" +
-                        "throughput: "+ data.size()/totalExecutionTime +" ops/s");
+                System.out.println("tet "+ totalExecutionTime +" s");
+                System.out.println("t "+ data.size()/totalExecutionTime +" ops/s");
                 System.exit(0);
             }
 
@@ -87,13 +86,11 @@ public class ThroughputTestMain extends SystemMainImp {
                         }
                     }, appContext.getCallbackExecutor());
                 }
-                appContext.getExecutorService().shutdown(); //waits all tasks termination
-                //assert i[0] == operations;
+                system.stop();
                 Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
                 long totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000;
-                System.out.println("done:\n" +
-                        "total execution time: "+ totalExecutionTime +" s\n" +
-                        "throughput: "+ data.size()/totalExecutionTime +" ops/s");
+                System.out.println("tet "+ totalExecutionTime +" s");
+                System.out.println("t "+ data.size()/totalExecutionTime +" ops/s");
                 System.exit(0);
             }
         }
