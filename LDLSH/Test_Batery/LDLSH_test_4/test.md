@@ -11,7 +11,7 @@
 
 ### LSH
 
-* Error: 0.1 (Threshold 0.9)
+* Error: 0.05 (Threshold 0.95)
 * Ngram level: 4
 
 ### Erasure codes
