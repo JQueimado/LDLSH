@@ -5,14 +5,14 @@
 ### System
 
 * Model: LDLSH
-* Execution Threads: 2
+* Execution Threads: 6
 * Callback Threads: 2
 * Maps: 3
 
 ### LSH
 
-* Error: 0.5
-* Ngram level: 3
+* Error: 0.5 (Threshold 0.5)
+* Ngram level: 4
 
 ### Erasure codes
 
