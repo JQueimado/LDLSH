@@ -7,6 +7,8 @@ import SystemLayer.Components.TaskImpl.Worker.Baseline.TraditionalQueryTask;
 import SystemLayer.Components.TaskImpl.Worker.Baseline.TraditionalReplicatedInsertTask;
 import SystemLayer.Components.TaskImpl.Worker.Baseline.TraditionalReplicatedQueryTask;
 import SystemLayer.Components.TaskImpl.Worker.Model.ModelInsertWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.Model.ModelOptimizedQueryWorkerTask;
+import SystemLayer.Components.TaskImpl.Worker.Model.ModelStandardQueryWorkerTask;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTask;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
@@ -14,9 +16,12 @@ import SystemLayer.SystemExceptions.UnknownConfigException;
 public class WorkerTaskFactory extends FactoryImpl {
 
     private static final String config_name = "WORKER_TASK_MODEL";
-    private enum configs {LDLSH, TRADITIONAL, TRADITIONAL_REPLICATED}
-
-    private WorkerQueryTaskFactory workerQueryTaskFactory = null;
+    private enum configs {
+        LDLSH,
+        LDLSH_OPTIMIZED,
+        TRADITIONAL,
+        TRADITIONAL_REPLICATED
+    }
 
     public WorkerTaskFactory(DataContainer appContext){
         super(appContext);
@@ -37,7 +42,7 @@ public class WorkerTaskFactory extends FactoryImpl {
         configs config = getConfig();
 
         switch (config){
-            case LDLSH -> {
+            case LDLSH, LDLSH_OPTIMIZED -> {
                 return new ModelInsertWorkerTask(message, appContext);
             }
 
@@ -61,9 +66,11 @@ public class WorkerTaskFactory extends FactoryImpl {
 
         switch (config){
             case LDLSH -> {
-                if( workerQueryTaskFactory == null )
-                    workerQueryTaskFactory = new WorkerQueryTaskFactory(appContext);
-                return workerQueryTaskFactory.getNewQueryTask(message);
+                return new ModelStandardQueryWorkerTask(message, appContext);
+            }
+
+            case LDLSH_OPTIMIZED -> {
+                return new ModelOptimizedQueryWorkerTask(message, appContext);
             }
 
             case TRADITIONAL_REPLICATED -> {
