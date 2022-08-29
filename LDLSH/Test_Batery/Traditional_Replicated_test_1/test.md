@@ -4,7 +4,7 @@
 
 ### System
 
-* Model: Traditional External
+* Model: Traditional Replicated
 * Execution Threads: 6
 * Callback Threads: 2
 * Maps:2
