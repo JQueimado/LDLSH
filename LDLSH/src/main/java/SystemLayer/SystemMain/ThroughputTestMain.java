@@ -62,7 +62,7 @@ public class ThroughputTestMain extends SystemMainImp {
                 }
                 system.stop();
                 Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
-                long totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000;
+                double totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000f;
                 System.out.println("tet "+ totalExecutionTime +" s");
                 System.out.println("t "+ data.size()/totalExecutionTime +" ops/s");
                 System.exit(0);
@@ -88,7 +88,7 @@ public class ThroughputTestMain extends SystemMainImp {
                 }
                 system.stop();
                 Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
-                long totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000;
+                double totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000f;
                 System.out.println("tet "+ totalExecutionTime +" s");
                 System.out.println("t "+ data.size()/totalExecutionTime +" ops/s");
                 System.exit(0);
