@@ -27,11 +27,9 @@ public class SystemImpl implements SystemServer {
     private final int timeout = 1;
 
     private final DataContainer context;
-    private final WorkerTaskFactory workerTaskFactory;
 
     public SystemImpl(DataContainer context ) throws Exception {
         this.context = context;
-        this.workerTaskFactory = new WorkerTaskFactory(context);
 
         Configurator configurator = context.getConfigurator();
 
@@ -122,7 +120,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
-        WorkerTask insertWorkerTask = workerTaskFactory.getNewWorkerInserterTask(insertMessage);
+        WorkerTask insertWorkerTask = context.getWorkerTaskFactory().getNewWorkerInserterTask(insertMessage);
         return context.getExecutorService().submit(insertWorkerTask);
     }
 
@@ -131,7 +129,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
-        WorkerTask queryWorkerTask = workerTaskFactory.getNewWorkerQueryTask(queryMessage);
+        WorkerTask queryWorkerTask = context.getWorkerTaskFactory().getNewWorkerQueryTask(queryMessage);
         return context.getExecutorService().submit(queryWorkerTask);
     }
 
@@ -155,7 +153,7 @@ public class SystemImpl implements SystemServer {
         //Execution service
         try {
             context.getExecutorService().shutdown();
-            if(!context.getExecutorService().awaitTermination(1, TimeUnit.SECONDS))
+            if(!context.getExecutorService().awaitTermination(timeout, TimeUnit.SECONDS))
                 context.getExecutorService().shutdownNow();
         }catch (InterruptedException e){
             context.getExecutorService().shutdownNow();
@@ -163,7 +161,7 @@ public class SystemImpl implements SystemServer {
         //Calback execution service
         try {
             context.getCallbackExecutor().shutdown();
-            if (!context.getCallbackExecutor().awaitTermination(1, TimeUnit.SECONDS))
+            if (!context.getCallbackExecutor().awaitTermination(timeout, TimeUnit.SECONDS))
                 context.getCallbackExecutor().shutdownNow();
         }catch (InterruptedException e){
             context.getCallbackExecutor().shutdownNow();

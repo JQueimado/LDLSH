@@ -9,7 +9,14 @@ public class MainFactory extends FactoryImpl {
 
     private final String main_config = "MAIN";
 
-    private enum configurations {STANDARD, TEST, ACCURACY_TEST, THROUGHPUT_TEST, LATENCY_TEST}
+    private enum configurations {
+        STANDARD,
+        TEST,
+        ACCURACY_TEST,
+        THROUGHPUT_TEST,
+        LATENCY_TEST,
+        TRADITIONAL_LOCAL_TEST
+    }
 
     public MainFactory(DataContainer appContext) {
         super(appContext);
@@ -48,6 +55,10 @@ public class MainFactory extends FactoryImpl {
 
                 case LATENCY_TEST -> {
                     return new LatencyTestMain(args, appContext);
+                }
+
+                case TRADITIONAL_LOCAL_TEST -> {
+                    return new TraditionalLocalTestMain(args, appContext);
                 }
 
                 default -> {
