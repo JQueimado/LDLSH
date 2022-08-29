@@ -9,13 +9,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TraditionalLocalTestMain extends SystemMainImp {
+public class TraditionalLocalLatencyTestMain extends SystemMainImp {
 
-    public TraditionalLocalTestMain(String[] args, DataContainer appContext) throws Exception {
+    public TraditionalLocalLatencyTestMain(String[] args, DataContainer appContext) throws Exception {
         super(args, appContext);
     }
 
@@ -51,13 +52,17 @@ public class TraditionalLocalTestMain extends SystemMainImp {
         //Insert
         final AtomicInteger successCounter = new AtomicInteger();
         for (DataObject<String> dataElement : insertData){
-            //System.out.println("adding:"+ dataElement.getValues());
-            //Execute instruction
+            Timestamp initialTimeStamp1 = new Timestamp(System.currentTimeMillis());
             ListenableFuture<DataObject<?>> result = system.insert(dataElement);
             Futures.addCallback(result, new FutureCallback<>() {
-
+                final DataObject<String> elem = dataElement;
+                final Timestamp timestamp = initialTimeStamp1;
                 @Override
                 public void onSuccess(DataObject object) {
+                    Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                    long totalExecutionTime = finalTimestamp.getTime() - timestamp.getTime();
+                    System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms");
+                    //Nothing
                     synchronized (successCounter) {
                         successCounter.getAndIncrement();
                     }
@@ -79,14 +84,18 @@ public class TraditionalLocalTestMain extends SystemMainImp {
         //Query
         final AtomicInteger successCounter2 = new AtomicInteger();
         for (DataObject<?> dataElement : queryData){
-
-            //Execute Instruction
+            Timestamp initialTimeStamp2 = new Timestamp(System.currentTimeMillis());
             ListenableFuture<DataObject<?>> result = system.query(dataElement);
-
             Futures.addCallback(result, new FutureCallback<>() {
-                final DataObject<?> e = dataElement;
+                final DataObject<?> elem = dataElement;
+                final Timestamp timestamp = initialTimeStamp2;
                 @Override
                 public void onSuccess(DataObject object) {
+                    //Complete
+                    Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                    long totalExecutionTime = finalTimestamp.getTime() - timestamp.getTime();
+                    System.out.println("query for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
+
                     synchronized (successCounter2) {
                         successCounter2.getAndIncrement();
                     }

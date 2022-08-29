@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TraditionalLocalTestMain extends SystemMainImp {
+public class TraditionalLocalAccuracyTestMain extends SystemMainImp {
 
-    public TraditionalLocalTestMain(String[] args, DataContainer appContext) throws Exception {
+    public TraditionalLocalAccuracyTestMain(String[] args, DataContainer appContext) throws Exception {
         super(args, appContext);
     }
 
@@ -48,8 +48,10 @@ public class TraditionalLocalTestMain extends SystemMainImp {
                 queryData.add( dataObject );
             }
 
-        //Insert
+
         final AtomicInteger successCounter = new AtomicInteger();
+
+        //InsertData
         for (DataObject<String> dataElement : insertData){
             //System.out.println("adding:"+ dataElement.getValues());
             //Execute instruction
@@ -58,6 +60,8 @@ public class TraditionalLocalTestMain extends SystemMainImp {
 
                 @Override
                 public void onSuccess(DataObject object) {
+                    System.out.println("insert: " + object.getValues());
+                    //Nothing
                     synchronized (successCounter) {
                         successCounter.getAndIncrement();
                     }
@@ -76,8 +80,8 @@ public class TraditionalLocalTestMain extends SystemMainImp {
         if(successCounter.get() != insertData.size())
             throw new Exception("Error: Not all operations have ben completed");
 
-        //Query
         final AtomicInteger successCounter2 = new AtomicInteger();
+
         for (DataObject<?> dataElement : queryData){
 
             //Execute Instruction
@@ -87,6 +91,10 @@ public class TraditionalLocalTestMain extends SystemMainImp {
                 final DataObject<?> e = dataElement;
                 @Override
                 public void onSuccess(DataObject object) {
+                    if( object != null )
+                        System.out.println(e.getValues() + " -> " + object.getValues());
+                    else
+                        System.out.println(e.getValues() + " -> null" );
                     synchronized (successCounter2) {
                         successCounter2.getAndIncrement();
                     }

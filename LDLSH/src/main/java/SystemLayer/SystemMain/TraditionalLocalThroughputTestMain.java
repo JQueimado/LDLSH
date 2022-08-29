@@ -9,13 +9,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TraditionalLocalTestMain extends SystemMainImp {
+public class TraditionalLocalThroughputTestMain extends SystemMainImp {
 
-    public TraditionalLocalTestMain(String[] args, DataContainer appContext) throws Exception {
+    public TraditionalLocalThroughputTestMain(String[] args, DataContainer appContext) throws Exception {
         super(args, appContext);
     }
 
@@ -49,15 +50,14 @@ public class TraditionalLocalTestMain extends SystemMainImp {
             }
 
         //Insert
+        Timestamp initialTimeStamp1 = new Timestamp(System.currentTimeMillis());
         final AtomicInteger successCounter = new AtomicInteger();
         for (DataObject<String> dataElement : insertData){
-            //System.out.println("adding:"+ dataElement.getValues());
-            //Execute instruction
             ListenableFuture<DataObject<?>> result = system.insert(dataElement);
             Futures.addCallback(result, new FutureCallback<>() {
-
                 @Override
                 public void onSuccess(DataObject object) {
+                    //Nothing
                     synchronized (successCounter) {
                         successCounter.getAndIncrement();
                     }
@@ -70,21 +70,24 @@ public class TraditionalLocalTestMain extends SystemMainImp {
                 }
             }, appContext.getCallbackExecutor());
         }
-
         system.suspend();
-
         if(successCounter.get() != insertData.size())
             throw new Exception("Error: Not all operations have ben completed");
+        Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+        long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
+        System.out.println("done:\n" +
+                "total execution time: "+ totalExecutionTime+" ms\n" +
+                "throughput: "+ insertData.size()/(totalExecutionTime/1000) +" ops/s");
+
 
         //Query
+        Timestamp initialTimeStamp2 = new Timestamp(System.currentTimeMillis());
         final AtomicInteger successCounter2 = new AtomicInteger();
         for (DataObject<?> dataElement : queryData){
-
-            //Execute Instruction
             ListenableFuture<DataObject<?>> result = system.query(dataElement);
-
             Futures.addCallback(result, new FutureCallback<>() {
-                final DataObject<?> e = dataElement;
+                final DataObject<?> elem = dataElement;
+                final Timestamp timestamp = initialTimeStamp2;
                 @Override
                 public void onSuccess(DataObject object) {
                     synchronized (successCounter2) {
@@ -98,11 +101,15 @@ public class TraditionalLocalTestMain extends SystemMainImp {
                 }
             }, appContext.getCallbackExecutor());
         }
-
         system.suspend();
-
         if(successCounter2.get() != queryData.size())
             throw new Exception("Error: Not all operations have ben completed");
+        Timestamp finalTimestamp2 = new Timestamp(System.currentTimeMillis());
+        totalExecutionTime = finalTimestamp2.getTime() - initialTimeStamp2.getTime();
+        System.out.println("done:\n" +
+                "total execution time: "+ totalExecutionTime+" ms\n" +
+                "throughput: "+ queryData.size()/(totalExecutionTime/1000) +" ops/s");
+
 
         system.stop();
         System.exit(0);
