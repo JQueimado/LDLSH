@@ -40,6 +40,7 @@ public class LatencyTestMain extends SystemMainImp{
             }
 
         //Execute
+        AtomicInteger successCounter = new AtomicInteger();
         switch (op) {
             //Insert File
             case "-i" -> {
@@ -56,6 +57,9 @@ public class LatencyTestMain extends SystemMainImp{
                         public void onSuccess(DataObject object) {
                             //Complete
                             Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                            synchronized (successCounter) {
+                                successCounter.getAndIncrement();
+                            }
                             long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
                             System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms");
                         }
@@ -82,6 +86,9 @@ public class LatencyTestMain extends SystemMainImp{
                         public void onSuccess(DataObject object) {
                             //Complete
                             Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                            synchronized (successCounter) {
+                                successCounter.getAndIncrement();
+                            }
                             long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
                             System.out.println("query for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
                         }
@@ -96,6 +103,8 @@ public class LatencyTestMain extends SystemMainImp{
         }
         //Shutdown
         system.stop();
+        if (successCounter.get() != data.size() )
+            throw new Exception("Not all Inserts were performed.");
         System.exit(0);
     }
 }

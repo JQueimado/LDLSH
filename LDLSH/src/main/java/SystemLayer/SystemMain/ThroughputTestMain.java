@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThroughputTestMain extends SystemMainImp {
 
@@ -39,10 +40,12 @@ public class ThroughputTestMain extends SystemMainImp {
             }
 
         //Execute
+        Timestamp initialTimeStamp = null;
+        final AtomicInteger successCounter = new AtomicInteger();
         switch (op) {
             //Insert File
             case "-i" -> {
-                Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
+                initialTimeStamp = new Timestamp(System.currentTimeMillis());
                 for (DataObject<String> dataElement : data){
                     //System.out.println("adding:"+ dataElement.getValues());
                     //Execute instruction
@@ -50,6 +53,9 @@ public class ThroughputTestMain extends SystemMainImp {
                     Futures.addCallback(result, new FutureCallback<>() {
                         @Override
                         public void onSuccess(DataObject object) {
+                            synchronized (successCounter){
+                                successCounter.getAndIncrement();
+                            }
                             //Complete
                         }
 
@@ -60,17 +66,11 @@ public class ThroughputTestMain extends SystemMainImp {
                         }
                     }, appContext.getCallbackExecutor());
                 }
-                system.stop();
-                Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
-                double totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000f;
-                System.out.println("tet "+ totalExecutionTime +" s");
-                System.out.println("t "+ data.size()/totalExecutionTime +" ops/s");
-                System.exit(0);
             }
 
             case "-q" -> {
                 //final int[] i = {0};
-                Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
+                initialTimeStamp = new Timestamp(System.currentTimeMillis());
                 for (DataObject<String> dataElement : data){
 
                     //Execute Instruction
@@ -79,6 +79,9 @@ public class ThroughputTestMain extends SystemMainImp {
                     Futures.addCallback(result, new FutureCallback<>() {
                         @Override
                         public void onSuccess(DataObject object) {
+                            synchronized (successCounter){
+                                successCounter.getAndIncrement();
+                            }
                         }
 
                         @Override
@@ -86,13 +89,17 @@ public class ThroughputTestMain extends SystemMainImp {
                         }
                     }, appContext.getCallbackExecutor());
                 }
-                system.stop();
-                Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
-                double totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000f;
-                System.out.println("tet "+ totalExecutionTime +" s");
-                System.out.println("t "+ data.size()/totalExecutionTime +" ops/s");
-                System.exit(0);
             }
         }
+        system.stop();
+        Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+        double totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000f;
+
+        if (successCounter.get() != data.size() )
+            throw new Exception("Not all Inserts were performed.");
+
+        System.out.println("tet "+ totalExecutionTime +" s");
+        System.out.println("t "+ data.size()/totalExecutionTime +" ops/s");
+        System.exit(0);
     }
 }
