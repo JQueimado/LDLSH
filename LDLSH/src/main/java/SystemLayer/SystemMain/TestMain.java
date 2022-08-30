@@ -94,7 +94,7 @@ public class TestMain extends SystemMainImp{
         system.stop();
 
         if (successCounter.get() != data.size() )
-            throw new Exception("Not all Inserts were performed.");
+            throw new Exception("Not all Inserts were performed. Missing: " + (data.size() - successCounter.get()) );
 
         System.exit(0);
     }
