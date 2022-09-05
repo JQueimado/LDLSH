@@ -20,7 +20,7 @@ import java.util.concurrent.TimeoutException;
 public class RemoteMultimap extends MultiMapImpl{
 
     private static final String endpoint_config = "MULTIMAP_ENDPOINTS";
-    private static final int TIMEOUT = 5;
+    private static final int TIMEOUT = 10;
 
     //Remote
     private final DataContainer appContext;
