@@ -75,12 +75,8 @@ public class TraditionalLocalAccuracyTestMain extends SystemMainImp {
             }, appContext.getCallbackExecutor());
         }
 
-        system.await();
-
         if(successCounter.get() != insertData.size())
             throw new Exception("Error: Not all operations have ben completed");
-
-        final AtomicInteger successCounter2 = new AtomicInteger();
 
         for (DataObject<?> dataElement : queryData){
 
@@ -95,8 +91,8 @@ public class TraditionalLocalAccuracyTestMain extends SystemMainImp {
                         System.out.println(e.getValues() + " -> " + object.getValues());
                     else
                         System.out.println(e.getValues() + " -> null" );
-                    synchronized (successCounter2) {
-                        successCounter2.getAndIncrement();
+                    synchronized (successCounter) {
+                        successCounter.getAndIncrement();
                     }
                 }
 
@@ -107,12 +103,11 @@ public class TraditionalLocalAccuracyTestMain extends SystemMainImp {
             }, appContext.getCallbackExecutor());
         }
 
-        system.await();
+        system.stop();
 
-        if(successCounter2.get() != queryData.size())
+        if(successCounter.get() != (queryData.size() + insertData.size()))
             throw new Exception("Error: Not all operations have ben completed");
 
-        system.stop();
         System.exit(0);
     }
 }

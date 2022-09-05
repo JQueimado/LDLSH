@@ -116,8 +116,8 @@ public class StandardMain extends SystemMainImp{
                                     }
                                 }, appContext.getCallbackExecutor());
                             }
-                            //Wait for operations
-                            system.await();
+
+                            system.stop();
 
                             //Eval
                             if( counter1.get() != counter2.get() ) {
@@ -180,7 +180,7 @@ public class StandardMain extends SystemMainImp{
                                 }, appContext.getCallbackExecutor());
                             }
                             //Wait for operations
-                            system.await();
+                            system.stop();
 
                             //Eval
                             if( counter1.get() != counter2.get() ) {

@@ -76,13 +76,7 @@ public class TraditionalLocalLatencyTestMain extends SystemMainImp {
             }, appContext.getCallbackExecutor());
         }
 
-        system.await();
-
-        if(successCounter.get() != insertData.size())
-            throw new Exception("Error: Not all operations have ben completed");
-
         //Query
-        final AtomicInteger successCounter2 = new AtomicInteger();
         for (DataObject<?> dataElement : queryData){
             Timestamp initialTimeStamp2 = new Timestamp(System.currentTimeMillis());
             ListenableFuture<DataObject<?>> result = system.query(dataElement);
@@ -96,8 +90,8 @@ public class TraditionalLocalLatencyTestMain extends SystemMainImp {
                     long totalExecutionTime = finalTimestamp.getTime() - timestamp.getTime();
                     System.out.println("query for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
 
-                    synchronized (successCounter2) {
-                        successCounter2.getAndIncrement();
+                    synchronized (successCounter) {
+                        successCounter.getAndIncrement();
                     }
                 }
 
@@ -108,12 +102,10 @@ public class TraditionalLocalLatencyTestMain extends SystemMainImp {
             }, appContext.getCallbackExecutor());
         }
 
-        system.await();
-
-        if(successCounter2.get() != queryData.size())
+        system.stop();
+        if(successCounter.get() != (queryData.size() + insertData.size() ))
             throw new Exception("Error: Not all operations have ben completed");
 
-        system.stop();
         System.exit(0);
     }
 }

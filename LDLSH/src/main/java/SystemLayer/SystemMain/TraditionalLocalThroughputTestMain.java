@@ -70,9 +70,7 @@ public class TraditionalLocalThroughputTestMain extends SystemMainImp {
                 }
             }, appContext.getCallbackExecutor());
         }
-        system.await();
-        if(successCounter.get() != insertData.size())
-            throw new Exception("Error: Not all operations have ben completed");
+
         Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
         long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
         System.out.println("done:\n" +
@@ -101,9 +99,10 @@ public class TraditionalLocalThroughputTestMain extends SystemMainImp {
                 }
             }, appContext.getCallbackExecutor());
         }
-        system.await();
-        if(successCounter2.get() != queryData.size())
+        system.stop();
+        if(successCounter2.get() != (queryData.size() + insertData.size()))
             throw new Exception("Error: Not all operations have ben completed");
+
         Timestamp finalTimestamp2 = new Timestamp(System.currentTimeMillis());
         totalExecutionTime = finalTimestamp2.getTime() - initialTimeStamp2.getTime();
         System.out.println("done:\n" +
