@@ -1,10 +1,7 @@
 package SystemLayer.Components.SystemServer;
 
 import SystemLayer.Data.DataObjectsImpl.DataObject;
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import java.util.concurrent.Future;
 
 public interface SystemServer {
     /**
@@ -31,10 +28,10 @@ public interface SystemServer {
     DataObject<?> newDataObject() throws Exception;
 
     /**
-     * Suspends the thread until all operations are completed
+     * blocks the current thread until all tasks are completed
      * @throws Exception If an error occurs
      */
-    void suspend() throws Exception;
+    void await() throws Exception;
 
     /**
      * Shutdown the system

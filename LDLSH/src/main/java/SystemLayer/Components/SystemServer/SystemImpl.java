@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SystemImpl implements SystemServer {
@@ -139,33 +140,30 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public void suspend() throws Exception {
-        //if(context.getDebug())
-        //    System.out.println("Main: Waiting executor service to stop");
-        context.getExecutorService().awaitTermination(timeout, TimeUnit.SECONDS);
-        //if(context.getDebug())
-        //    System.out.println("Main: Waiting callback executor to stop");
-        context.getCallbackExecutor().awaitTermination(timeout, TimeUnit.SECONDS);
+    public void await() {
+        ExecutorService mainExecutor = context.getExecutorService();
+        ExecutorService secondaryExecutor = context.getCallbackExecutor();
+
+        while(!(mainExecutor.isTerminated() && secondaryExecutor.isTerminated())) {
+            try {
+                mainExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
+                secondaryExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
+            }catch (InterruptedException e){
+                //pass
+            }
+        }
     }
 
     @Override
     public void stop() {
         //Execution service
-        try {
-            context.getExecutorService().shutdown();
-            if(!context.getExecutorService().awaitTermination(timeout, TimeUnit.SECONDS))
-                context.getExecutorService().shutdownNow();
-        }catch (InterruptedException e){
-            context.getExecutorService().shutdownNow();
-        }
-        //Calback execution service
-        try {
-            context.getCallbackExecutor().shutdown();
-            if (!context.getCallbackExecutor().awaitTermination(timeout, TimeUnit.SECONDS))
-                context.getCallbackExecutor().shutdownNow();
-        }catch (InterruptedException e){
-            context.getCallbackExecutor().shutdownNow();
-        }
+        await();
+
+        context.getExecutorService().shutdown();
+
+        //Callback execution service
+        context.getCallbackExecutor().shutdown();
+
         //Communication layer
         CommunicationLayer cl = context.getCommunicationLayer();
         if(cl != null){
