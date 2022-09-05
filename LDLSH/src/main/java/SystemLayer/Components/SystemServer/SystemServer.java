@@ -26,13 +26,7 @@ public interface SystemServer {
      * @throws Exception If an error occurs
      */
     DataObject<?> newDataObject() throws Exception;
-
-    /**
-     * blocks the current thread until all tasks are completed
-     * @throws Exception If an error occurs
-     */
-    void await() throws Exception;
-
+    
     /**
      * Shutdown the system
      */

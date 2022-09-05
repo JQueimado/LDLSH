@@ -140,29 +140,32 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public void await() {
+    public void stop() {
+        //Execution services
         ExecutorService mainExecutor = context.getExecutorService();
         ExecutorService secondaryExecutor = context.getCallbackExecutor();
 
-        while(!(mainExecutor.isTerminated() && secondaryExecutor.isTerminated())) {
+        //main
+        mainExecutor.shutdown();
+        boolean terminated = false;
+        while (!terminated){
             try {
-                mainExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
-                secondaryExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
+                terminated = mainExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
             }catch (InterruptedException e){
                 //pass
             }
         }
-    }
 
-    @Override
-    public void stop() {
-        //Execution service
-        await();
-
-        context.getExecutorService().shutdown();
-
-        //Callback execution service
-        context.getCallbackExecutor().shutdown();
+        //secondary
+        secondaryExecutor.shutdown();
+        terminated = false;
+        while(!terminated) {
+            try {
+                terminated = secondaryExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
+            }catch (InterruptedException e){
+                //pass
+            }
+        }
 
         //Communication layer
         CommunicationLayer cl = context.getCommunicationLayer();
