@@ -97,7 +97,6 @@ public class AccuracyTestMain extends SystemMainImp{
 
         //Shutdown
         system.stop();
-
         if (successCounter.get() != data.size() )
             throw new Exception("Not all Inserts were performed. Missing: " + (data.size() - successCounter.get()) );
 

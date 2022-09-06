@@ -96,7 +96,7 @@ public class ThroughputTestMain extends SystemMainImp {
         double totalExecutionTime = (finalTimestamp.getTime() - initialTimeStamp.getTime())/1000f;
 
         if (successCounter.get() != data.size() )
-            throw new Exception("Not all Inserts were performed.");
+            throw new Exception("Not all Inserts were performed. Missing: " + (data.size() - successCounter.get()) );
 
         System.out.println("tet "+ totalExecutionTime +" s");
         System.out.println("t "+ data.size()/totalExecutionTime +" ops/s");
