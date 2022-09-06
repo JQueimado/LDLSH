@@ -14,11 +14,7 @@ public class MainFactory extends FactoryImpl {
         TEST,
         ACCURACY_TEST,
         THROUGHPUT_TEST,
-        LATENCY_TEST,
-        TRADITIONAL_LOCAL_TEST,
-        TRADITIONAL_LOCAL_ACCURACY_TEST,
-        TRADITIONAL_LOCAL_LATENCY_TEST,
-        TRADITIONAL_LOCAL_THROUGHPUT_TEST
+        LATENCY_TEST
     }
 
     public MainFactory(DataContainer appContext) {
@@ -58,22 +54,6 @@ public class MainFactory extends FactoryImpl {
 
                 case LATENCY_TEST -> {
                     return new LatencyTestMain(args, appContext);
-                }
-
-                case TRADITIONAL_LOCAL_TEST -> {
-                    return new TraditionalLocalTestMain(args, appContext);
-                }
-
-                case TRADITIONAL_LOCAL_ACCURACY_TEST -> {
-                    return new TraditionalLocalAccuracyTestMain(args, appContext);
-                }
-
-                case TRADITIONAL_LOCAL_LATENCY_TEST -> {
-                    return new TraditionalLocalLatencyTestMain(args, appContext);
-                }
-
-                case TRADITIONAL_LOCAL_THROUGHPUT_TEST -> {
-                    return new TraditionalLocalThroughputTestMain(args, appContext);
                 }
 
                 default -> {
