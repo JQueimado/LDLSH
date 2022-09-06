@@ -40,9 +40,10 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
         List<MultiMapValue> results = new ArrayList<>();
 
         //Query
-        for ( int i=0; i<multiMaps.length; i++ ){
-            MultiMap multiMap = multiMaps[i];
-            MultiMapValue[] multimap_results = multiMap.query( query_hash.getBlockAt( multiMap.getHashBlockPosition() ) );
+        for (MultiMap multiMap : multiMaps) {
+            MultiMapValue[] multimap_results = multiMap.query(query_hash.getBlockAt(multiMap.getHashBlockPosition()));
+            if (multimap_results == null || multimap_results.length == 0)
+                continue;
             Collections.addAll(results, multimap_results);
         }
 

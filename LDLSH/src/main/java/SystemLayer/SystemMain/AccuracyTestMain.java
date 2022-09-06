@@ -88,7 +88,8 @@ public class AccuracyTestMain extends SystemMainImp{
 
                         @Override
                         public void onFailure(@NotNull Throwable throwable) {
-                            //Completed with error
+                            System.err.println("ERROR: query failed for item: " + e.getValues());
+                            throwable.printStackTrace();
                         }
                     }, appContext.getCallbackExecutor());
                 }

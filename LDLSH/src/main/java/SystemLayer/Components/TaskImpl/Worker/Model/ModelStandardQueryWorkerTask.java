@@ -39,9 +39,10 @@ public class ModelStandardQueryWorkerTask extends WorkerTaskImpl {
         MultiMap[] multiMaps = appContext.getMultiMaps();
         List<MultiMapValue> results = new ArrayList<>();
 
-        for ( int i=0; i<multiMaps.length; i++ ){
-            MultiMap multiMap = multiMaps[i];
-            MultiMapValue[] multimap_results = multiMap.query( query_hash.getBlockAt( multiMap.getHashBlockPosition() ) );
+        for (MultiMap multiMap : multiMaps) {
+            MultiMapValue[] multimap_results = multiMap.query(query_hash.getBlockAt(multiMap.getHashBlockPosition()));
+            if (multimap_results == null || multimap_results.length == 0)
+                continue;
             Collections.addAll(results, multimap_results);
         }
 
@@ -53,6 +54,7 @@ public class ModelStandardQueryWorkerTask extends WorkerTaskImpl {
         Map<UniqueIdentifier, LSHHash> hashMapping = new HashMap<>();
         //-group erasure codes
         for(MultiMapValue rawMultiMapValue: results){
+
             ModelMultimapValue multiMapValue;
             try{
                 multiMapValue = (ModelMultimapValue) rawMultiMapValue;
