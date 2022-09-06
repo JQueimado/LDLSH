@@ -25,7 +25,7 @@ public class SystemImpl implements SystemServer {
     private static final String nBands_config = "N_BANDS";
     private static final String nodeType_config = "NODE_TYPE";
     private static final String multiMapPosition_config = "MULTIMAP_POSITION";
-    private final int timeout = 1;
+    private final int timeout = 10;
 
     private final DataContainer context;
 
@@ -140,31 +140,21 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public void stop() {
+    public void stop() throws InterruptedException {
         //Execution services
         ExecutorService mainExecutor = context.getExecutorService();
         ExecutorService secondaryExecutor = context.getCallbackExecutor();
 
         //main
         mainExecutor.shutdown();
-        boolean terminated = false;
-        while (!terminated){
-            try {
-                terminated = mainExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
-            }catch (InterruptedException e){
-                //pass
-            }
+        while (!mainExecutor.isTerminated()){
+            mainExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
         }
 
         //secondary
         secondaryExecutor.shutdown();
-        terminated = false;
-        while(!terminated) {
-            try {
-                terminated = secondaryExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
-            }catch (InterruptedException e){
-                //pass
-            }
+        while(!secondaryExecutor.isTerminated()) {
+            secondaryExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
         }
 
         //Communication layer

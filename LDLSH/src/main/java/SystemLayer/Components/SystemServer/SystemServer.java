@@ -30,5 +30,5 @@ public interface SystemServer {
     /**
      * Shutdown the system
      */
-    void stop();
+    void stop() throws Exception;
 }
