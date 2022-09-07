@@ -71,23 +71,22 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             //    System.out.println("NettyServerHandler: Start Buffer");
 
             ByteArrayInputStream bis = new ByteArrayInputStream(body);
-            ObjectInputStream ois = new ObjectInputStream(bis);
 
             Message message = null;
             try {
 
                 //if (appContext.getDebug())
                 //    System.out.println("NettyServerHandler: Read Buffer");
-
+                ObjectInputStream ois = new ObjectInputStream(bis);
                 message = (Message) ois.readObject();
 
             } catch (EOFException e) {
                 //if (appContext.getDebug())
                 //    System.out.println("NettyServerHandler: Read Failed resetting message buffer");
-                temp.writeBytes(ois.readAllBytes());
+                temp.writeBytes(bis.readAllBytes());
             } catch (StreamCorruptedException e) {
-                System.out.println("NettyServerHandler: Found Corrupt message");
-                temp.clear();
+                //System.out.println("NettyServerHandler: Found Corrupt message");
+                //temp.clear();
                 temp.writeBytes(bis.readAllBytes());
             }
 
