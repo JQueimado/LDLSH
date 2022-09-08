@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
+import java.sql.SQLTransactionRollbackException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class NettyClientHandler extends ChannelInboundHandlerAdapter {
@@ -76,7 +77,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
                 //if (appContext.getDebug())
                 //    System.out.println("NettyClientHandler: Remaining Bytes to process: " + temp.readableBytes());
 
-            } catch (EOFException e) {
+            } catch (EOFException | StreamCorruptedException e) {
                 //System.out.println("Decode attempt failed: Stream wasn't complete");
                 //if (appContext.getDebug())
                 //    System.out.println("NettyClientHandler: Read Failed resetting message buffer");

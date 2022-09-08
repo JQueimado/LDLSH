@@ -87,11 +87,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         String connectionName = hostname + ":" + port;
         Channel channel;
         synchronized (createChannelLock) {
-            try {
-                if ((channel = connections.get(connectionName)) == null) {
-                    throw new Exception();
-                }
-            }catch (Exception e){
+            if ((channel = connections.get(connectionName)) == null) {
                 ChannelFuture channelFuture = clientBootstrap.connect(hostname, port).sync();
                 channelFuture.await();
                 channel = channelFuture.channel();
