@@ -79,7 +79,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                 ObjectInputStream ois = new ObjectInputStream(bis);
                 message = (Message) ois.readObject();
 
-            } catch (Exception e) {
+            } catch (EOFException | StreamCorruptedException e) {
                 //if (appContext.getDebug())
                 //    System.out.println("NettyServerHandler: Read Failed resetting message buffer");
                 temp.writeBytes(body);
