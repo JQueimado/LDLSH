@@ -77,7 +77,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
                 //if (appContext.getDebug())
                 //    System.out.println("NettyClientHandler: Remaining Bytes to process: " + temp.readableBytes());
 
-            } catch (EOFException | StreamCorruptedException e) {
+            } catch (Exception e) {
                 //System.out.println("Decode attempt failed: Stream wasn't complete");
                 //if (appContext.getDebug())
                 //    System.out.println("NettyClientHandler: Read Failed resetting message buffer");
