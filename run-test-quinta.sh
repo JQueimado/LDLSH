@@ -32,15 +32,15 @@ run_test_client_jar(){
 	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar $2/client_$6.properties -$3 $4 >> ${FILENAME}"
 }
 
-run_test_client_traditional_local(){
+#run_test_client_traditional_local(){
 	#ssh "$1" "cd ${DIR}; ./run-test.sh $2 $3 $4 $5"
-	TIMESTAMP=$(date +%s)
-	FILENAME="$5/test_$6_${TIMESTAMP}.txt"
-	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar $2/client_$6.properties $3 $4 >> ${FILENAME}"
-}
+#	TIMESTAMP=$(date +%s)
+#	FILENAME="$5/test_$6_${TIMESTAMP}.txt"
+#	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar $2/client_$6.properties $3 $4 >> ${FILENAME}"
+#}
 
 kill_process(){
-	ssh "$1" "cd ${DIR}; ./run-server.sh -k"
+	ssh "$1" "cd ${DIR}; killall -9 java"
 }
 
 setup_tests(){
@@ -87,6 +87,8 @@ run_Test(){
 			echo "$2: Runing $TEST test ${IT} out of ${ITERATIONS}..."
 			run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "$RESULTSFOLDER" "$TEST"
 		done
+
+		kill_process "$CLIENT"
 
 		#Stop Server
 		for SERVER in $SERVERS
