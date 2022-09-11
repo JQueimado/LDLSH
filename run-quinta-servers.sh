@@ -25,7 +25,7 @@ run_server_jar(){
 
 kill_process(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; ./run-server.sh -k"
+	ssh $HOST "cd ${DIR}; killall -9 java"
 }
 
 run_client_jar(){
