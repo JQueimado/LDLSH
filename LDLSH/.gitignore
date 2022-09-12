@@ -3,3 +3,4 @@ target
 /dependency-reduced-pom.xml
 /libs/Dependancies.iml
 /.idea/artifacts/LDLSH_jar2.xml
+data*/
