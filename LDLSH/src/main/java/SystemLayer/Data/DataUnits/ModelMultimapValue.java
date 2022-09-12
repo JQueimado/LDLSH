@@ -27,4 +27,10 @@ public record ModelMultimapValue(LSHHash lshHash,
                 uniqueIdentifier.equals(modelMultimapValue.uniqueIdentifier) &&
                 erasureCode.equals(modelMultimapValue.erasureCode);
     }
+
+    @Override
+    public int hashCode() {
+        return uniqueIdentifier.hashCode();
+    }
+
 }

@@ -13,4 +13,9 @@ public record ObjectMultimapValue( byte[] object ) implements MultiMapValue {
         ObjectMultimapValue objectMultimapValue = (ObjectMultimapValue) obj;
         return Arrays.equals(object, objectMultimapValue.object);
     }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(object);
+    }
 }
