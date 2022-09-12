@@ -68,35 +68,29 @@ public class SemiPersistentMultiMap extends MultiMapImpl {
     }
 
     @Override
-    public boolean insert(LSHHash lshHash, MultiMapValue value) throws Exception {
+    public synchronized boolean insert(LSHHash lshHash, MultiMapValue value) throws Exception {
 
         Integer n = map.get(lshHash.getBlockAt(hash_position));
 
         if( n == null){
             //no file
-            synchronized (fileNames){
-                n = fileNames.getAndIncrement();
+            n = fileNames.getAndIncrement();
 
-                Set<MultiMapValue> set = new HashSet<>();
-                set.add(value);
+            Set<MultiMapValue> set = new HashSet<>();
+            set.add(value);
 
-                writeFile(set, n);
+            writeFile(set, n);
 
-                map.put(lshHash.getBlockAt(hash_position), n);
-            }
+            map.put(lshHash.getBlockAt(hash_position), n);
         }else {
+            //read
+            Set<MultiMapValue> set = readFile(n);
 
-            synchronized (n){
-                //read
-                Set<MultiMapValue> set = readFile(n);
+            //add
+            set.add(value);
 
-                //add
-                set.add(value);
-
-                //write
-                writeFile(set, n);
-            }
-
+            //write
+            writeFile(set, n);
         }
 
         return true;
@@ -128,12 +122,11 @@ public class SemiPersistentMultiMap extends MultiMapImpl {
 
         Integer n = map.get(lshHash);
         if( n == null )
-            return null;
+            return new MultiMapValue[0];
 
         //add
         Set<MultiMapValue> set = readFile(n);
-
-        return set.toArray(new MultiMapValue[0]);
-
+        MultiMapValue[] set_array = set.toArray(new MultiMapValue[0]);
+        return set_array;
     }
 }
