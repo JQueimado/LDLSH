@@ -40,7 +40,8 @@ run_test_client_jar(){
 #}
 
 kill_process(){
-	ssh "$1" "cd ${DIR}; killall -9 java"
+	ssh "$1" "killall -9 java"
+	ssh "$1" "cd ${DIR}; rm -rf data"
 }
 
 setup_tests(){
