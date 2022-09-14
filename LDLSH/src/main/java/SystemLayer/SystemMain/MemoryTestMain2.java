@@ -48,6 +48,8 @@ public class MemoryTestMain2 extends SystemMainImp {
         //Execute
         AtomicInteger successCounter = new AtomicInteger();
         Scanner scanner = new Scanner(System.in);
+        System.out.println("Done. Please Check memory.");
+        scanner.nextLine();
 
         //Insert File
         System.out.println("Inserting...");
