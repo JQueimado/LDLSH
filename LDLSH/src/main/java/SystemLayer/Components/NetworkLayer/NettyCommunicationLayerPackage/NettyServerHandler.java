@@ -66,6 +66,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             //Decode
             byte[] body = new byte[temp.readableBytes()];
             temp.readBytes(body);
+            temp.discardReadBytes();
 
             //if (appContext.getDebug())
             //    System.out.println("NettyServerHandler: Start Buffer");

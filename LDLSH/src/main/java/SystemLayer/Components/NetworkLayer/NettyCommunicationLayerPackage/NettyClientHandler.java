@@ -59,6 +59,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             //Decode
             byte[] body = new byte[temp.readableBytes()];
             temp.readBytes(body);
+            temp.discardReadBytes();
 
             Message response = null;
             try {
