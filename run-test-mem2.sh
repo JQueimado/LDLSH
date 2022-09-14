@@ -22,7 +22,7 @@ change_branch(){
 }
 
 run_server_jar(){
- 	ssh "$1" "cd ${DIR}; ./run-server.sh -js ${2} "
+ 	ssh "$1" "cd ${DIR}; ./run-server.sh -js LDLSH/MemoryTests/LDLSH_Optimized_mem_test/LDLSH_Optimized_mem_test/server-$1.properties"
 }
 
 run_test_client_jar(){
@@ -50,7 +50,7 @@ run_Test(){
     for SERVER in $SERVERS
     do
         echo "Starting server at ${SERVER}"
-        run_server_jar "$SERVER" "$CONFIGFILE"
+        run_server_jar "$SERVER"
     done
 
     #Insert
