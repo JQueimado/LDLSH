@@ -49,20 +49,20 @@ run_Test(){
     #start server
     for SERVER in $SERVERS
     do
-        echo "$2: Starting server at ${SERVER}"
+        echo "Starting server at ${SERVER}"
         run_server_jar "$SERVER" "$CONFIGFILE"
     done
 
     #Insert
-    echo "$2: Runing $TEST Inserts..."
-    run_test_client_jar "$CLIENT" "$CONFIGFILE" "i" "$INSERTFILE" "$RESULTSFOLDER" "$TEST"
+    echo "Runing MemTest Inserts..."
+    run_test_client_jar "$1" "$2"
 
-    kill_process "$CLIENT"
+    killall -9 java
 
     #Stop Server
     for SERVER in $SERVERS
     do
-        echo "$2: Stoping server at ${SERVER}..."
+        echo "Stoping server at ${SERVER}..."
         kill_process "$SERVER"
     done
 }
@@ -70,13 +70,7 @@ run_Test(){
 ### main ###
 # USE
 # ./run-test-quinta.sh <Iterations> <Insert_dataset> <Query_Dataset> 
-if ! [ $# -eq 3 ];
-then
-   exit 1
-fi
 
 setup_tests
 
-mkdir "TESTS"
-
-run_Test "$1" "MemoryTests" "$2" "$3"
+run_Test "$1" "$2"
