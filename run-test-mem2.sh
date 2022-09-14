@@ -22,7 +22,7 @@ change_branch(){
 }
 
 run_server_jar(){
- 	ssh "$1" "cd ${DIR}; ./run-server.sh -js LDLSH/MemoryTests/LDLSH_Optimized_mem_test/LDLSH_Optimized_mem_test/server-$1.properties"
+ 	ssh "$1" "cd ${DIR}; ./run-server.sh -js $1 LDLSH/MemoryTests/LDLSH_Optimized_mem_test/LDLSH_Optimized_mem_test"
 }
 
 run_test_client_jar(){
