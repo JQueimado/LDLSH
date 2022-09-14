@@ -112,8 +112,6 @@ public class MemoryTestMain2 extends SystemMainImp {
 
         //Shutdown
         system.stop();
-        if (successCounter.get() != data.size() )
-            throw new Exception("Not all Inserts were performed. Missing: " + (data.size() - successCounter.get()) );
         System.exit(0);
 
     }
