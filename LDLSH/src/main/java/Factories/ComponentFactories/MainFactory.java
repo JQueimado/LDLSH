@@ -15,7 +15,8 @@ public class MainFactory extends FactoryImpl {
         ACCURACY_TEST,
         THROUGHPUT_TEST,
         LATENCY_TEST,
-        MEMORY_TEST_1
+        MEMORY_TEST_1,
+        MEMORY_TEST_2
     }
 
     public MainFactory(DataContainer appContext) {
@@ -59,6 +60,10 @@ public class MainFactory extends FactoryImpl {
 
                 case MEMORY_TEST_1 -> {
                     return new MemoryTestMain1(args, appContext);
+                }
+
+                case MEMORY_TEST_2 -> {
+                    return new MemoryTestMain2(args, appContext);
                 }
 
                 default -> {
