@@ -26,7 +26,7 @@ run_server_jar(){
 }
 
 run_test_client_jar(){
-	java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/LDLSH_Optimized_mem_test/LDLSH_Optimized_mem_test/client_memoryTest2.properties "$1" "$2"
+	java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/LDLSH_Optimized_mem_test/client_memoryTest2.properties "$1" "$2"
 }
 
 kill_process(){
