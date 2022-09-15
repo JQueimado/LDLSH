@@ -70,7 +70,7 @@ public class MemoryTestMain2 extends SystemMainImp {
                         successCounter.getAndIncrement();
                     }
                     long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
-                    System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms");
+                    System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms - " + successCounter.getAndIncrement());
                 }
 
                 @Override
@@ -82,6 +82,8 @@ public class MemoryTestMain2 extends SystemMainImp {
         }
         System.out.println("Done. Please Check memory.");
         scanner.nextLine();
+
+        successCounter.set(0);
 
         System.out.println("Querying...");
         for (DataObject<?> dataElement : data){
