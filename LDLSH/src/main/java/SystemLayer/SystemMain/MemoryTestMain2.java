@@ -66,11 +66,12 @@ public class MemoryTestMain2 extends SystemMainImp {
                 public void onSuccess(DataObject object) {
                     //Complete
                     Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                    int i ;
                     synchronized (successCounter) {
-                        successCounter.getAndIncrement();
+                        i = successCounter.getAndIncrement();
                     }
                     long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
-                    System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms - " + successCounter.getAndIncrement());
+                    System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms - " + i);
                 }
 
                 @Override
