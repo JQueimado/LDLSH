@@ -46,7 +46,9 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         //if( appContext.getDebug() )
         //    System.out.println("Received " + ((ByteBuf) msg).readableBytes() + "bytes");
-        temp.writeBytes((ByteBuf) msg);
+        ByteBuf byteBuf = (ByteBuf) msg;
+        temp.writeBytes( byteBuf );
+        byteBuf.release();
     }
 
     @Override
