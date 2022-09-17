@@ -71,7 +71,7 @@ public class MemoryTestMain2 extends SystemMainImp {
                         i = successCounter.getAndIncrement();
                     }
                     long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
-                    System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms - " + i);
+                    System.out.println(i + "insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms");
                 }
 
                 @Override
@@ -99,11 +99,12 @@ public class MemoryTestMain2 extends SystemMainImp {
                 public void onSuccess(DataObject object) {
                     //Complete
                     Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                    int n;
                     synchronized (successCounter) {
-                        successCounter.getAndIncrement();
+                        n = successCounter.getAndIncrement();
                     }
                     long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
-                    System.out.println("query for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
+                    System.out.println(n + " - query for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
                 }
 
                 @Override
