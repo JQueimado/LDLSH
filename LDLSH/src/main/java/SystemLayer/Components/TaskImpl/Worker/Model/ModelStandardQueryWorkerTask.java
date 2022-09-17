@@ -27,13 +27,13 @@ public class ModelStandardQueryWorkerTask extends WorkerTaskImpl {
     }
 
     @Override
-    public DataObject call() throws Exception {
+    public DataObject<?> call() throws Exception {
 
         if( message.getType() != Message.types.QUERY_REQUEST )
             throw new InvalidMessageTypeException( Message.types.QUERY_REQUEST, message.getType() );
 
         //Preprocess
-        DataObject queryObject = (DataObject) message.getBody().get(0);
+        DataObject<?> queryObject = (DataObject<?>) message.getBody().get(0);
         LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
         MultiMap[] multiMaps = appContext.getMultiMaps();
@@ -50,8 +50,7 @@ public class ModelStandardQueryWorkerTask extends WorkerTaskImpl {
             return null;
 
         //Completion Grouping
-        Map<UniqueIdentifier, ErasureCodes> objectMapping = new HashMap<>();
-        Map<UniqueIdentifier, LSHHash> hashMapping = new HashMap<>();
+        Map<UniqueIdentifier, Pair> objectMapping = new HashMap<>();
         //-group erasure codes
         for(MultiMapValue rawMultiMapValue: results){
 
@@ -62,30 +61,31 @@ public class ModelStandardQueryWorkerTask extends WorkerTaskImpl {
                 throw new InvalidMapValueTypeException("Worker received invalid map value");
             }
 
-            ErasureCodes erasureCodes = objectMapping.get( multiMapValue.uniqueIdentifier() );
-            if( erasureCodes == null ){
+            Pair pair = objectMapping.get( multiMapValue.uniqueIdentifier() );
+            if( pair == null ){
                 ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory().getNewErasureCodes();
                 temp_erasure_codes.addBlockAt( multiMapValue.erasureCode() );
-                objectMapping.put( multiMapValue.uniqueIdentifier(), temp_erasure_codes );
-                hashMapping.put( multiMapValue.uniqueIdentifier(), multiMapValue.lshHash() );
+
+                pair = new Pair( temp_erasure_codes, multiMapValue.lshHash() );
+                objectMapping.put(multiMapValue.uniqueIdentifier(), pair);
+
             }else {
-                erasureCodes.addBlockAt( multiMapValue.erasureCode() );
+                pair.erasureCodes.addBlockAt( multiMapValue.erasureCode() );
             }
         }
 
         //-Completion
-        List<DataObject> potentialCandidates = new ArrayList<>();
+        Set<DataObject<?>> potentialCandidates = new HashSet<>();
         for( UniqueIdentifier uid : objectMapping.keySet() ){
-            ErasureCodes codes = objectMapping.get(uid);
+            ErasureCodes codes = objectMapping.get(uid).erasureCodes;
 
             //Attempt at decoding
-            DataObject temporaryObject = null;
+            DataObject<?> temporaryObject;
             try{
                 temporaryObject = appContext.getDataProcessor().postProcess(codes, uid);
-
             } catch (IncompleteBlockException ibe){
-                //If decode fails by an incomplete block error, runs completion TODO: OPTIMIZE COMPLETION
-                LSHHash objectHash = hashMapping.get( uid );
+                //If decode fails by an incomplete block error, runs completion
+                LSHHash objectHash = objectMapping.get( uid ).lshHash();
 
                 //Complete
                 for( MultiMap multiMap: multiMaps ){ //Go to all multiMaps and retrieve the intended erasure block
@@ -108,22 +108,26 @@ public class ModelStandardQueryWorkerTask extends WorkerTaskImpl {
         }
 
         //-Post Process
-        DataObject nearestNeighbour = potentialCandidates.get(0);
-        double distance = appContext.getDistanceMeasurer().getDistance(
-                nearestNeighbour.toByteArray(),
-                queryObject.toByteArray() );
+        DataObject<?> nearestNeighbour = null;
+        double distance = -1;
 
-        for ( int i = 1; i<potentialCandidates.size(); i++ ){
+        for( DataObject<?> potentialCandidate : potentialCandidates ){
+
             double c_distance = appContext.getDistanceMeasurer().getDistance(
-                    potentialCandidates.get(i).toByteArray(),
+                    potentialCandidate.toByteArray(),
                     queryObject.toByteArray() );
 
-            if( c_distance < distance ){
-                nearestNeighbour = potentialCandidates.get(i);
+            if( c_distance < distance || distance == -1 ){
+                nearestNeighbour = potentialCandidate;
                 distance = c_distance;
             }
         }
 
         return nearestNeighbour;
+    }
+
+    //Pair
+    private record Pair( ErasureCodes erasureCodes, LSHHash lshHash){
+
     }
 }
