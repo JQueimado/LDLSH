@@ -22,43 +22,38 @@ public class ModelInsertWorkerTask extends WorkerTaskImpl {
     }
 
     @Override
-    public DataObject call() throws Exception {
+    public DataObject<?> call() throws Exception {
         if( message.getType() != Message.types.INSERT_REQUEST )
             throw new InvalidMessageTypeException(
                     Message.types.INSERT_REQUEST,
                     message.getType());
 
-        DataObject object = (DataObject) message.getBody().get(0);
+        DataObject<?> object = (DataObject<?>) message.getBody().get(0);
 
         //PREPROCESS
         DataProcessor.ProcessedData processedData = appContext.getDataProcessor().preProcessData(object);
 
         //Package and Insert
-        try {
-            MultiMap[] multiMaps = appContext.getMultiMaps();
-            //Shuffle indexes
-            List<Integer> indexes = new ArrayList<>();
-            for ( int i=0; i<multiMaps.length; i++ ){
-                indexes.add( i );
-            }
-            Collections.shuffle(indexes);
+        MultiMap[] multiMaps = appContext.getMultiMaps();
+        //Shuffle indexes
+        List<Integer> indexes = new ArrayList<>();
+        for ( int i=0; i<multiMaps.length; i++ ){
+            indexes.add( i );
+        }
+        Collections.shuffle(indexes);
 
-            //Insert
-            for ( int i = 0; i<multiMaps.length; i++ ){
-                MultiMap multiMap = multiMaps[i];
+        //Insert
+        for ( int i = 0; i<multiMaps.length; i++ ){
+            MultiMap multiMap = multiMaps[i];
 
-                ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
-                        processedData.object_lsh(),
-                        processedData.object_uid(),
-                        processedData.object_erasureCodes().getBlockAt(indexes.get(i))
-                );
+            ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
+                    processedData.object_lsh(),
+                    processedData.object_uid(),
+                    processedData.object_erasureCodes().getBlockAt(indexes.get(i))
+            );
 
-                if (!multiMap.insert( processedData.object_lsh(), modelMultimapValue ))
-                        return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            if (!multiMap.insert( processedData.object_lsh(), modelMultimapValue ))
+                    throw new Exception("Insert failed.");
         }
         return object;
     }

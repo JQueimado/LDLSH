@@ -24,13 +24,13 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
     }
 
     @Override
-    public DataObject call() throws Exception {
+    public DataObject<?> call() throws Exception {
 
         if( message.getType() != Message.types.QUERY_REQUEST )
             throw new InvalidMessageTypeException( Message.types.QUERY_REQUEST, message.getType() );
 
         //Preprocess
-        DataObject queryObject = (DataObject) message.getBody().get(0);
+        DataObject<?> queryObject = (DataObject<?>) message.getBody().get(0);
         LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
         MultiMap[] multiMaps = appContext.getMultiMaps();
