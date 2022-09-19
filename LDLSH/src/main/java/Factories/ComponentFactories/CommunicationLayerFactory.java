@@ -1,14 +1,16 @@
-package Factories;
+package Factories.ComponentFactories;
 
+import Factories.FactoryImpl;
 import SystemLayer.Components.NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage.NettyCommunicationLayer;
+import SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage.ParallelNettyCommunicationLayer;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 
 public class CommunicationLayerFactory extends FactoryImpl {
 
     private static final String communication_config = "COMMUNICATION_LAYER";
-    private enum types {NONE, NETTY}
+    private enum types {NONE, NETTY, PARALLEL_NETTY}
 
     public CommunicationLayerFactory(DataContainer appContext) {
         super(appContext);
@@ -35,6 +37,10 @@ public class CommunicationLayerFactory extends FactoryImpl {
 
                 case NETTY -> {
                     return new NettyCommunicationLayer(appContext);
+                }
+
+                case PARALLEL_NETTY -> {
+                    return new ParallelNettyCommunicationLayer(appContext);
                 }
 
                 default -> {
