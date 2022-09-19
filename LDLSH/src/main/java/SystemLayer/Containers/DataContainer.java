@@ -1,6 +1,6 @@
 package SystemLayer.Containers;
 
-import Factories.CommunicationLayerFactory;
+import Factories.ComponentFactories.CommunicationLayerFactory;
 import Factories.ComponentFactories.DataProcessorFactory;
 import Factories.ComponentFactories.DistanceMeasurerFactory;
 import Factories.ComponentFactories.MultimapTaskFactory;
