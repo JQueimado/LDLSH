@@ -16,64 +16,15 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ParallelNettyCommunicationLayer implements CommunicationLayer {
+public class ParallelNettyCommunicationLayer extends NettyCommunicationLayer {
 
-    private static final String hasClient_config = "HAS_CLIENT";
-    private static final String hasServer_config = "HAS_SERVER";
-
-    private final boolean hasClient;
-    private final boolean hasServer;
-
-    private final DataContainer appContext;
-    private Bootstrap clientBootstrap;
-    private NettyReceiver nettyReceiver;
-    private ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
-    private final AtomicInteger transactionIdGenerator = new AtomicInteger();
-
-    private List<Channel> connections;
+    private List<Channel> connectionsList;
 
     public ParallelNettyCommunicationLayer(DataContainer appContext ) throws Exception {
-        this.appContext = appContext;
-        //Client
-        String hasClient_string = "";
-        try {
-            hasClient_string = appContext.getConfigurator().getConfig(hasClient_config);
-            hasClient = Boolean.parseBoolean(hasClient_string);
-            if (hasClient) {
-                transactionMap = new ConcurrentHashMap<>();
-                EventLoopGroup eventExecutors = new NioEventLoopGroup();
-                clientBootstrap = new Bootstrap();
-                clientBootstrap.group(eventExecutors);
-                clientBootstrap.channel(NioSocketChannel.class);
-                clientBootstrap.option(ChannelOption.SO_KEEPALIVE, true);
-                clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast(
-                                new NettyMessageEncoder( appContext ),
-                                new NettyClientHandler(transactionMap, appContext)
-                        );
-                    }
-                });
-
-                connections = new LinkedList<>();
-
-            }
-        }catch (IllegalArgumentException e){
-            throw new UnknownConfigException( hasClient_config,  hasClient_string);
-        }
-
-        //Server Side
-        String hasServer_string = "";
-        try{
-            hasServer_string = appContext.getConfigurator().getConfig(hasServer_config);
-            hasServer = Boolean.parseBoolean(hasServer_string);
-            if( hasServer ) {
-                nettyReceiver = new NettyReceiver(appContext);
-                nettyReceiver.run();
-            }
-        }catch ( IllegalArgumentException e){
-            throw new UnknownConfigException( hasServer_config,  hasServer_string);
+        super(appContext);
+        if( hasClient ) {
+            connectionsList = new LinkedList<>();
+            connections = null;
         }
     }
 
@@ -87,7 +38,7 @@ public class ParallelNettyCommunicationLayer implements CommunicationLayer {
         channelFuture.await();
         channel = channelFuture.channel();
 
-        connections.add(channel);
+        connectionsList.add(channel);
 
         Promise<Message> promise = channel.eventLoop().newPromise(); //Creates a response promise
 
@@ -108,7 +59,7 @@ public class ParallelNettyCommunicationLayer implements CommunicationLayer {
 
         promise.get(); //Await response
         channel.close();
-        connections.remove(channel);
+        connectionsList.remove(channel);
 
         return promise; //Returns the response promise
     }
@@ -116,7 +67,7 @@ public class ParallelNettyCommunicationLayer implements CommunicationLayer {
     @Override
     public void shutdown() {
         if(hasClient)
-            for (Channel channel : connections){
+            for (Channel channel : connectionsList){
                 channel.close();
             }
         if(hasServer)

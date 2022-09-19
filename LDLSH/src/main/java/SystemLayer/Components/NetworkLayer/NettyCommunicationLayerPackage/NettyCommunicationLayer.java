@@ -23,15 +23,15 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     private static final String hasClient_config = "HAS_CLIENT";
     private static final String hasServer_config = "HAS_SERVER";
 
-    private final boolean hasClient;
-    private final boolean hasServer;
+    protected final boolean hasClient;
+    protected final boolean hasServer;
 
-    private final DataContainer appContext;
-    private Bootstrap clientBootstrap;
-    private NettyReceiver nettyReceiver;
-    private ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
-    private final AtomicInteger transactionIdGenerator = new AtomicInteger();
-    private final Object createChannelLock = new Object();
+    protected final DataContainer appContext;
+    protected Bootstrap clientBootstrap;
+    protected NettyReceiver nettyReceiver;
+    protected ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
+    protected final AtomicInteger transactionIdGenerator = new AtomicInteger();
+    protected final Object createChannelLock = new Object();
 
     HashMap<String, Channel> connections;
 
