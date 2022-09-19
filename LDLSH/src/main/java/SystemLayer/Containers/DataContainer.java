@@ -1,10 +1,10 @@
 package SystemLayer.Containers;
 
-import Factories.CommunicationLayerFactory;
+import Factories.ComponentFactories.CommunicationLayerFactory;
 import Factories.ComponentFactories.DataProcessorFactory;
 import Factories.ComponentFactories.DistanceMeasurerFactory;
 import Factories.ComponentFactories.MultimapTaskFactory;
-import Factories.ComponentFactories.WorkerQueryTaskFactory;
+import Factories.ComponentFactories.WorkerTaskFactory;
 import Factories.DataFactories.DataObjectFactory;
 import Factories.DataFactories.ErasureCodesFactory;
 import Factories.DataFactories.LSHHashFactory;
@@ -13,7 +13,6 @@ import SystemLayer.Components.NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.DataProcessor.DataProcessor;
 import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.TaskImpl.Multimap.MultimapTask;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -38,7 +37,7 @@ public class DataContainer {
     private ErasureCodesFactory erasureCodesFactory = null;
     private UniqueIdentifierFactory uniqueIdentifierFactory = null;
     private MultimapTaskFactory multimapTaskFactory = null;
-    private WorkerQueryTaskFactory workerQueryTaskFactory = null;
+    private WorkerTaskFactory workerTaskFactory = null;
 
     //Components
     private final Configurator configurator;
@@ -52,17 +51,17 @@ public class DataContainer {
     private Object[] additionalStructures = null;
 
     //Variables
-    private boolean debug;
+    //private boolean debug;
     private int numberOfBands = -1;
 
     //Constructor
     public DataContainer( String f_name ){
         configurator = new Configurator(f_name);
-        try {
-            debug = Boolean.parseBoolean(configurator.getConfig(debug_config));
-        }catch (Exception e){
-            debug = false;
-        }
+    //    try {
+    //        debug = Boolean.parseBoolean(configurator.getConfig(debug_config));
+    //    }catch (Exception e){
+    //        debug = false;
+    //    }
     }
 
     //getters
@@ -102,10 +101,10 @@ public class DataContainer {
         return multimapTaskFactory;
     }
 
-    public WorkerQueryTaskFactory getWorkerQueryTaskFactory(){
-        if(workerQueryTaskFactory == null)
-            workerQueryTaskFactory = new WorkerQueryTaskFactory(this);
-        return workerQueryTaskFactory;
+    public WorkerTaskFactory getWorkerTaskFactory(){
+        if(workerTaskFactory == null)
+            workerTaskFactory = new WorkerTaskFactory(this);
+        return workerTaskFactory;
     }
 
     //Components
@@ -197,9 +196,9 @@ public class DataContainer {
 
     //Variables
     //Debug variable
-    public boolean getDebug(){
-        return debug;
-    }
+    //public boolean getDebug(){
+    //    return debug;
+    //}
 
     //Number of multi maps
     public int getNumberOfBands() {

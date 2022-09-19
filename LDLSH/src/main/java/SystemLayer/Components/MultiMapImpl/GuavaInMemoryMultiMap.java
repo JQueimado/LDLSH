@@ -15,7 +15,7 @@ import java.util.Collection;
 
 public class GuavaInMemoryMultiMap extends MultiMapImpl{
 
-    private final Multimap<LSHHashBlock, MultiMapValue> multiMap;
+    private final SetMultimap<LSHHashBlock, MultiMapValue> multiMap;
 
     //Constructors
     public GuavaInMemoryMultiMap(int hash_position, int total_hash_blocks, DataContainer appContext){
@@ -45,7 +45,9 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
     @Override
     public boolean insert(LSHHash lshHash, MultiMapValue value) {
         //Insert Values
-        multiMap.put( lshHash.getBlockAt(hash_position), value );
+        synchronized (multiMap) {
+            multiMap.put(lshHash.getBlockAt(hash_position), value);
+        }
         return true;
     }
 

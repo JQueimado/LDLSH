@@ -1,5 +1,6 @@
 data_sets/
-LDLSH-3.2.jar
+LDLSH-*
 original-LDLSH-3.2.jar
 apache-maven-3.8.6*
 jdk-17.0.4_linux-x64_bin.*
+TESTS

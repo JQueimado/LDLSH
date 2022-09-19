@@ -8,6 +8,7 @@ import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.JavaMinHashNgrams;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
+import SystemLayer.SystemMain.SystemMain;
 import info.debatty.java.lsh.MinHash;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class JavaMinHashNgramsTests {
         simulatedState = new DataContainer("");
         Configurator configurator = simulatedState.getConfigurator();
         configurator.setConfig("OBJECT_TYPE", "STRING");
-        configurator.setConfig("ERROR", "0.1");
+        configurator.setConfig("ERROR", "0.05");
         configurator.setConfig("VECTOR_DIMENSIONS", "5");
         configurator.setConfig("LSH_SEED", "11111");
         configurator.setConfig("LSH_HASH", "JAVA_MINHASH_NGRAMS");

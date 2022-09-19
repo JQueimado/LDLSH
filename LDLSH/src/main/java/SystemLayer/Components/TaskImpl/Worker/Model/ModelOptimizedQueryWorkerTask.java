@@ -11,10 +11,7 @@ import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
-import SystemLayer.SystemExceptions.CorruptDataException;
-import SystemLayer.SystemExceptions.IncompleteBlockException;
-import SystemLayer.SystemExceptions.InvalidMapValueTypeException;
-import SystemLayer.SystemExceptions.InvalidMessageTypeException;
+import SystemLayer.SystemExceptions.*;
 
 import java.util.*;
 
@@ -27,58 +24,56 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
     }
 
     @Override
-    public DataObject call() throws Exception {
+    public DataObject<?> call() throws Exception {
 
         if( message.getType() != Message.types.QUERY_REQUEST )
             throw new InvalidMessageTypeException( Message.types.QUERY_REQUEST, message.getType() );
 
         //Preprocess
-        DataObject queryObject = (DataObject) message.getBody().get(0);
+        DataObject<?> queryObject = (DataObject<?>) message.getBody().get(0);
         LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
         MultiMap[] multiMaps = appContext.getMultiMaps();
-        List<MultiMapValue> results = new ArrayList<>();
+        Map<UniqueIdentifier, Pair> objectMapping = new HashMap<>();
 
         //Query
-        for ( int i=0; i<multiMaps.length; i++ ){
-            MultiMap multiMap = multiMaps[i];
-            MultiMapValue[] multimap_results = multiMap.query( query_hash.getBlockAt( multiMap.getHashBlockPosition() ) );
-            Collections.addAll(results, multimap_results);
+        for (MultiMap multiMap : multiMaps) {
+            MultiMapValue[] multimap_results = multiMap.query(query_hash.getBlockAt(multiMap.getHashBlockPosition()));
+            if (multimap_results == null || multimap_results.length == 0)
+                continue;
+
+            for(MultiMapValue rawMultiMapValue : multimap_results){
+                ModelMultimapValue multimapValue;
+                try{
+                    multimapValue = (ModelMultimapValue) rawMultiMapValue;
+                }catch (Exception e){
+                    throw new InvalidMapValueTypeException("Worker received invalid map value");
+                }
+
+                Pair object = objectMapping.get( multimapValue.uniqueIdentifier() );
+                if( object == null ){
+                    ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory().getNewErasureCodes();
+                    temp_erasure_codes.addBlockAt( multimapValue.erasureCode() );
+
+                    object = new Pair( temp_erasure_codes, multimapValue.lshHash());
+
+                    objectMapping.put(multimapValue.uniqueIdentifier(), object);
+
+                }else {
+                    object.erasureCodes.addBlockAt( multimapValue.erasureCode() );
+                }
+            }
         }
 
-        if( results.size() == 0 )
+        if( objectMapping.size() == 0 )
             return null;
-
-        //Grouping
-        Map<UniqueIdentifier, ErasureCodes> objectMapping = new HashMap<>();
-        Map<UniqueIdentifier, LSHHash> hashMapping = new HashMap<>();
-        //-group erasure codes
-        for(MultiMapValue rawMultiMapValue: results){
-
-            ModelMultimapValue multiMapValue;
-            try{
-                multiMapValue = (ModelMultimapValue) rawMultiMapValue;
-            }catch (Exception e){
-                throw new InvalidMapValueTypeException("Worker received invalid map value");
-            }
-
-            ErasureCodes erasureCodes = objectMapping.get( multiMapValue.uniqueIdentifier() );
-            if( erasureCodes == null ){
-                ErasureCodes temp_erasure_codes = appContext.getErasureCodesFactory().getNewErasureCodes();
-                temp_erasure_codes.addBlockAt( multiMapValue.erasureCode() );
-                objectMapping.put( multiMapValue.uniqueIdentifier(), temp_erasure_codes );
-                hashMapping.put( multiMapValue.uniqueIdentifier(), multiMapValue.lshHash() );
-            }else {
-                erasureCodes.addBlockAt( multiMapValue.erasureCode() );
-            }
-        }
 
         //Evaluate
         UniqueIdentifier bestCandidateUID = null;
         double distance = -1;
 
         for( UniqueIdentifier currentUid: objectMapping.keySet() ){
-            LSHHash currentHash = hashMapping.get(currentUid);
+            LSHHash currentHash = objectMapping.get(currentUid).lshHash();
             double currentDistance = appContext.getDistanceMeasurer().getDistance(
                     currentHash.getSignature(),
                     query_hash.getSignature()
@@ -91,9 +86,10 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
         }
 
         //Completion and postprocessor
-        ErasureCodes bestCandidateErasureCodes = objectMapping.get(bestCandidateUID);
-        LSHHash bestCandidateLSH = hashMapping.get(bestCandidateUID);
-        DataObject bestCandidate = null;
+        Pair pair = objectMapping.get(bestCandidateUID);
+        ErasureCodes bestCandidateErasureCodes = pair.erasureCodes();
+        LSHHash bestCandidateLSH = pair.lshHash();
+        DataObject<?> bestCandidate;
 
         try{
             bestCandidate = appContext.getDataProcessor().postProcess(bestCandidateErasureCodes, bestCandidateUID);
@@ -114,10 +110,15 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
             try {
                 bestCandidate = appContext.getDataProcessor().postProcess(bestCandidateErasureCodes, bestCandidateUID);
             }catch (CorruptDataException | IncompleteBlockException e){
-                bestCandidate = null;
+                return null;
             }
         }
 
         return bestCandidate;
+    }
+
+    //Pair
+    private record Pair( ErasureCodes erasureCodes, LSHHash lshHash){
+
     }
 }

@@ -23,15 +23,15 @@ public class NettyCommunicationLayer implements CommunicationLayer {
     private static final String hasClient_config = "HAS_CLIENT";
     private static final String hasServer_config = "HAS_SERVER";
 
-    private final boolean hasClient;
-    private final boolean hasServer;
+    protected final boolean hasClient;
+    protected final boolean hasServer;
 
-    private final DataContainer appContext;
-    private Bootstrap clientBootstrap;
-    private NettyReceiver nettyReceiver;
-    private ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
-    private final AtomicInteger transactionIdGenerator = new AtomicInteger();
-    private final Object createChannelLock = new Object();
+    protected final DataContainer appContext;
+    protected Bootstrap clientBootstrap;
+    protected NettyReceiver nettyReceiver;
+    protected ConcurrentHashMap<Integer, Promise<Message>> transactionMap;
+    protected final AtomicInteger transactionIdGenerator = new AtomicInteger();
+    protected final Object createChannelLock = new Object();
 
     HashMap<String, Channel> connections;
 
@@ -87,11 +87,7 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         String connectionName = hostname + ":" + port;
         Channel channel;
         synchronized (createChannelLock) {
-            try {
-                if ((channel = connections.get(connectionName)) == null) {
-                    throw new Exception();
-                }
-            }catch (Exception e){
+            if ((channel = connections.get(connectionName)) == null) {
                 ChannelFuture channelFuture = clientBootstrap.connect(hostname, port).sync();
                 channelFuture.await();
                 channel = channelFuture.channel();
@@ -115,9 +111,9 @@ public class NettyCommunicationLayer implements CommunicationLayer {
             //Thread.sleep(5);
         }
 
-        if(appContext.getDebug())
-            System.out.println("NettyCommunicationLayer: Sent " +
-                    message.getType().toString() + " to " +connectionName);
+        //if(appContext.getDebug())
+        //    System.out.println("NettyCommunicationLayer: Sent " +
+        //            message.getType().toString() + " to " +connectionName);
 
         return promise; //Returns the response promise
     }
@@ -131,69 +127,4 @@ public class NettyCommunicationLayer implements CommunicationLayer {
         if(hasServer)
             nettyReceiver.shutdown();
     }
-
-    //Receiver | Server side
-    public class NettyReceiver implements CommunicationLayer.Receiver{
-
-        private static final String server_port_config = "SERVER_PORT";
-
-        private final DataContainer appContext;
-        private int server_port;
-        private ChannelFuture channelFuture;
-
-        public NettyReceiver(DataContainer context) throws UnknownConfigException {
-            this.appContext = context;
-            setup();
-        }
-
-        private void setup() throws UnknownConfigException {
-            String server_port_string_value = "";
-            try {
-                server_port_string_value = appContext.getConfigurator().getConfig(server_port_config);
-                this.server_port = Integer.parseInt(server_port_string_value);
-            }catch (Exception e){
-                throw new UnknownConfigException(server_port_config, server_port_string_value);
-            }
-        }
-
-        @Override
-        public void run() throws Exception {
-            EventLoopGroup masterGroup = new NioEventLoopGroup();
-            EventLoopGroup workerGroup = new NioEventLoopGroup();
-            try {
-                ServerBootstrap b = new ServerBootstrap();
-                b.group( masterGroup, workerGroup )
-                        .channel(NioServerSocketChannel.class)
-                        .childHandler(new ChannelInitializer<SocketChannel>() {
-                            @Override
-                            protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                socketChannel.pipeline().addLast(
-                                        new NettyMessageEncoder( appContext ),
-                                        new NettyServerHandler( appContext ));
-                            }
-                        }).option(ChannelOption.SO_BACKLOG, 128 )
-                        .childOption( ChannelOption.SO_KEEPALIVE, true );
-
-                channelFuture = b.bind(server_port).sync();
-                System.out.println( "Server opened at port " + server_port );
-                channelFuture.channel().closeFuture().sync();
-            }catch (Exception e){
-                throw new NettyServerException(e.getMessage());
-            } finally {
-                workerGroup.shutdownGracefully();
-                masterGroup.shutdownGracefully();
-            }
-        }
-
-        public void shutdown(){
-            try {
-                channelFuture.sync();
-            } catch (InterruptedException e) {
-                //pass
-            }
-            channelFuture.channel().close();
-            channelFuture.channel().parent().close();
-        }
-    }
-
 }

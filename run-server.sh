@@ -1,9 +1,11 @@
+#!/bin/bash
+#env
 BASE_DIR="LDLSH"
-DIRCONFIG="LDLSH/QS_1000_Demo_quinta"
-HOST=`hostname`
+HOST=$(hostname)
 
 run_server(){
-    nohup java -jar LDLSH-3.2.jar $DIRCONFIG/MultimapNode-$HOST.quinta.properties >& nohup.out &
+    timestamp=$(date +%s)
+    nohup java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar $2/server-$1.properties >& serverlog_"$timestamp".out &
     echo $! > pid.nohup
     cat pid.nohup
 }
@@ -17,8 +19,8 @@ build(){
 }
 
 kill_process(){
-    kill -9 `cat pid.nohup`
-    rm pid.nohup nohup.out
+    kill -9 $(cat pid.nohup)
+    rm pid.nohup
 }
 
 project_setup(){
@@ -54,7 +56,7 @@ main(){
     OP=$1
     if [ $OP = "-js" ]
     then
-        run_server
+        run_server "$HOST" "$2"
     fi
 
     if [ $OP = "-b" ]
@@ -73,9 +75,9 @@ main(){
     fi
 }
 
-if [ $# -eq 1 ]
+if [ $# -gt 2 ]
 then
-    OP=$1
+   exit 1
 fi
 
-main $OP
+main "$1" "$2"

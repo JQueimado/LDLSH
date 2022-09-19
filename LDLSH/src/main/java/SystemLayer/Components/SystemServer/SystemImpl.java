@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SystemImpl implements SystemServer {
@@ -24,14 +25,12 @@ public class SystemImpl implements SystemServer {
     private static final String nBands_config = "N_BANDS";
     private static final String nodeType_config = "NODE_TYPE";
     private static final String multiMapPosition_config = "MULTIMAP_POSITION";
-    private final int timeout = 1;
+    private final int timeout = 10;
 
     private final DataContainer context;
-    private final WorkerTaskFactory workerTaskFactory;
 
     public SystemImpl(DataContainer context ) throws Exception {
         this.context = context;
-        this.workerTaskFactory = new WorkerTaskFactory(context);
 
         Configurator configurator = context.getConfigurator();
 
@@ -122,7 +121,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(object);
         Message insertMessage = new MessageImpl( Message.types.INSERT_REQUEST, objectList);
-        WorkerTask insertWorkerTask = workerTaskFactory.getNewWorkerInserterTask(insertMessage);
+        WorkerTask insertWorkerTask = context.getWorkerTaskFactory().getNewWorkerInserterTask(insertMessage);
         return context.getExecutorService().submit(insertWorkerTask);
     }
 
@@ -131,7 +130,7 @@ public class SystemImpl implements SystemServer {
         List<Object> objectList = new ArrayList<>();
         objectList.add(queryObject);
         Message queryMessage = new MessageImpl( Message.types.QUERY_REQUEST, objectList );
-        WorkerTask queryWorkerTask = workerTaskFactory.getNewWorkerQueryTask(queryMessage);
+        WorkerTask queryWorkerTask = context.getWorkerTaskFactory().getNewWorkerQueryTask(queryMessage);
         return context.getExecutorService().submit(queryWorkerTask);
     }
 
@@ -141,33 +140,23 @@ public class SystemImpl implements SystemServer {
     }
 
     @Override
-    public void suspend() throws Exception {
-        if(context.getDebug())
-            System.out.println("Main: Waiting executor service to stop");
-        context.getExecutorService().awaitTermination(timeout, TimeUnit.SECONDS);
-        if(context.getDebug())
-            System.out.println("Main: Waiting callback executor to stop");
-        context.getCallbackExecutor().awaitTermination(timeout, TimeUnit.SECONDS);
-    }
+    public void stop() throws InterruptedException {
+        //Execution services
+        ExecutorService mainExecutor = context.getExecutorService();
+        ExecutorService secondaryExecutor = context.getCallbackExecutor();
 
-    @Override
-    public void stop() {
-        //Execution service
-        try {
-            context.getExecutorService().shutdown();
-            if(!context.getExecutorService().awaitTermination(1, TimeUnit.SECONDS))
-                context.getExecutorService().shutdownNow();
-        }catch (InterruptedException e){
-            context.getExecutorService().shutdownNow();
+        //main
+        mainExecutor.shutdown();
+        while (!mainExecutor.isTerminated()){
+            mainExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
         }
-        //Calback execution service
-        try {
-            context.getCallbackExecutor().shutdown();
-            if (!context.getCallbackExecutor().awaitTermination(1, TimeUnit.SECONDS))
-                context.getCallbackExecutor().shutdownNow();
-        }catch (InterruptedException e){
-            context.getCallbackExecutor().shutdownNow();
+
+        //secondary
+        secondaryExecutor.shutdown();
+        while(!secondaryExecutor.isTerminated()) {
+            secondaryExecutor.awaitTermination(timeout, TimeUnit.SECONDS);
         }
+
         //Communication layer
         CommunicationLayer cl = context.getCommunicationLayer();
         if(cl != null){

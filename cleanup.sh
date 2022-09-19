@@ -1,4 +1,5 @@
-HOSTS="t5.quinta t6.quinta t7.quinta t8.quinta t9.quinta"
+#! /bin/bash
+HOSTS="t5 t6 t7 t8 t9"
 
 for HOST in $HOSTS
 do

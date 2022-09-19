@@ -24,7 +24,7 @@ public class NettyMessageEncoder extends MessageToByteEncoder<Message> {
         oos.writeObject( message );
         oos.flush();
         byteBuf.writeBytes(bos.toByteArray());
-        if( appContext.getDebug() )
-            System.out.println( "Sent "+message.getType()+" message of size: " + byteBuf.readableBytes() );
+        //if( appContext.getDebug() )
+        //    System.out.println( "Sent "+message.getType()+" message of size: " + byteBuf.readableBytes() );
     }
 }

@@ -3,14 +3,21 @@ package Factories.ComponentFactories;
 import Factories.FactoryImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
-import SystemLayer.SystemMain.StandardMain;
-import SystemLayer.SystemMain.SystemMain;
+import SystemLayer.SystemMain.*;
 
 public class MainFactory extends FactoryImpl {
 
     private final String main_config = "MAIN";
 
-    private enum configurations {STANDARD}
+    private enum configurations {
+        STANDARD,
+        TEST,
+        ACCURACY_TEST,
+        THROUGHPUT_TEST,
+        LATENCY_TEST,
+        MEMORY_TEST_1,
+        MEMORY_TEST_2
+    }
 
     public MainFactory(DataContainer appContext) {
         super(appContext);
@@ -33,6 +40,30 @@ public class MainFactory extends FactoryImpl {
             switch (config){
                 case STANDARD -> {
                     return new StandardMain(args, appContext);
+                }
+
+                case TEST -> {
+                    return new TestMain(args, appContext);
+                }
+
+                case ACCURACY_TEST -> {
+                    return new AccuracyTestMain(args, appContext);
+                }
+
+                case THROUGHPUT_TEST -> {
+                    return new ThroughputTestMain(args, appContext);
+                }
+
+                case LATENCY_TEST -> {
+                    return new LatencyTestMain(args, appContext);
+                }
+
+                case MEMORY_TEST_1 -> {
+                    return new MemoryTestMain1(args, appContext);
+                }
+
+                case MEMORY_TEST_2 -> {
+                    return new MemoryTestMain2(args, appContext);
                 }
 
                 default -> {

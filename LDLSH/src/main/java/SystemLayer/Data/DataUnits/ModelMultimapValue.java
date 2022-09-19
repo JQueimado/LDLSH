@@ -16,4 +16,21 @@ public record ModelMultimapValue(LSHHash lshHash,
         this.uniqueIdentifier = uniqueIdentifier;
         this.erasureCode = erasureCode;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj.getClass() != ModelMultimapValue.class)
+            return false;
+
+        ModelMultimapValue modelMultimapValue = (ModelMultimapValue) obj;
+        return lshHash.equals(modelMultimapValue.lshHash) &&
+                uniqueIdentifier.equals(modelMultimapValue.uniqueIdentifier) &&
+                erasureCode.equals(modelMultimapValue.erasureCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return uniqueIdentifier.hashCode();
+    }
+
 }

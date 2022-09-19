@@ -1,3 +1,4 @@
+#!/bin/bash
 # ops:
 # host=all 	: apply to all hosts in $HOSTS
 # -b 		: build
@@ -14,8 +15,8 @@
 REPOSITORY="https://github.com/JQueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing.git"
 BASE_DIR="/root/jqueimado"
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
-DIRCONFIG="LDLSH/QS_1000_Demo_quinta"
-HOSTS="t5.quinta t6.quinta t7.quinta t8.quinta"
+DIRCONFIG="Throughtput-test"
+HOSTS="t5 t6 t7 t8"
 
 run_server_jar(){
 	HOST=$1
@@ -24,12 +25,16 @@ run_server_jar(){
 
 kill_process(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; ./run-server.sh -k"
+	ssh $HOST "cd ${DIR}; killall -9 java"
 }
 
 run_client_jar(){
 	HOST=$1
-	ssh $HOST "cd ${DIR}; java -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties"
+	ssh $HOST "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar ${DIRCONFIG}/ClientNode.properties"
+}
+
+run_test_client_jar(){
+	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -jar LDLSH-3.2.jar $2/ClientNode.properties $3 $4"
 }
 
 git_pull(){
@@ -42,6 +47,11 @@ change_branch(){
 	BRANCH=$2
 	ssh $HOST "cd ${DIR}; git checkout ${BRANCH}"
 	git_pull $HOST
+}
+
+status(){
+	HOST=$1
+	ssh $HOST "cd ${DIR}; git status"
 }
 
 build(){
@@ -67,59 +77,61 @@ check_ports(){
 }
 
 run_once(){
-	HOST=$1
-	OP=$2
-	ARG1=$3
 	# run jar 
-	if [ $OP = "-js" ]
+	if [ "$2" = "-js" ];
 	then
-		run_server_jar $HOST
+		run_server_jar "$1"
 	fi
 
-	if [ $OP = "-jc" ]
+	if [ "$2" = "-jc" ];
 	then
-		run_client_jar $HOST
+		run_test_client_jar "$1" "LDLSH/LDLSH_Quinta" "$3" "$4"
 	fi
 
 	# pull
-	if [ $OP = "-p" ]
+	if [ "$2" = "-p" ];
 	then
-		git_pull $HOST
+		git_pull "$1"
 	fi
 
 	# build
-	if [ $OP = "-b" ]
+	if [ "$2" = "-b" ];
 	then
-		build $HOST
+		build "$1"
 	fi
 
 	# hard reset
-	if [ $OP = "-hr" ]
+	if [ "$2" = "-hr" ];
 	then
-		hard_reset $HOST
+		hard_reset "$1"
 	fi
 
 	# setup
-	if [ $OP = "-su" ]
+	if [ "$2" = "-su" ];
 	then
-		setup_machine $HOST
+		setup_machine "$1"
 	fi
 
 	# kill
-	if [ $OP = "-k" ]
+	if [ "$2" = "-k" ];
 	then
-		kill_process $HOST
+		kill_process "$1"
 	fi
 
 	# check
-	if [ $OP = "--check" ]
+	if [ "$2" = "--check" ];
 	then
-		check_ports $HOST
+		check_ports "$1"
 	fi
 
-	if [ $OP = "--change-branch" ]
+	if [ "$2" = "--change-branch" ];
 	then
-		change_branch $HOST $ARG1
+		change_branch "$1" "$3"
+	fi
+
+	if [ "$2" = "--status" ];
+	then
+		status "$1"
 	fi
 
 }
@@ -129,30 +141,22 @@ main(){
 	HOST=$1
 	OP=$2
 	ARG1=$3
+	ARG2=$4
 	if [ $HOST = "all" ]
 	then
 		for CURRENT_HOST in $HOSTS
 		do
 			echo "--- ${CURRENT_HOST} ---"
-			run_once $CURRENT_HOST $OP $ARG1
+			run_once $CURRENT_HOST $OP $ARG1 $ARG2
 		done
 	else
-		run_once $HOST $OP $ARG1
+		run_once $HOST $OP $ARG1 $ARG2
 	fi
 }
 
 if ! [ $# -lt 2 ];
 then
-	HOST=$1
-	OP=$2
-	
-	if [ $# -eq 3 ]
-	then
-		main $HOST $OP $3
-	else
-		main $HOST $OP ""
-	fi
-
+	main $1 $2 $3 $4
 else
 	exit 1
 fi

@@ -20,18 +20,27 @@ import java.util.concurrent.TimeoutException;
 public class RemoteMultimap extends MultiMapImpl{
 
     private static final String endpoint_config = "MULTIMAP_ENDPOINTS";
-    private static final int TIMEOUT = 5;
+    private static final String msg_timeout_config = "MESSAGE_TIMEOUT";
 
     //Remote
     private final DataContainer appContext;
     private String host = "";
     private int port = 0;
     private final CommunicationLayer communicationLayer;
+    private int TIMEOUT;
 
     public RemoteMultimap( DataContainer appContext ){
         super(appContext);
         this.appContext = appContext;
         this.communicationLayer = appContext.getCommunicationLayer();
+
+        String msg_timeout_value = "";
+        try{
+            msg_timeout_value = appContext.getConfigurator().getConfig(msg_timeout_config);
+            TIMEOUT = Integer.parseInt(msg_timeout_value);
+        }catch (Exception e){
+            UnknownConfigException.handler(new UnknownConfigException(msg_timeout_config, msg_timeout_value));
+        }
     }
 
     @Override
@@ -42,6 +51,8 @@ public class RemoteMultimap extends MultiMapImpl{
         Message insertMessage = new MessageImpl(Message.types.INSERT_MESSAGE, messageBody);
 
         Promise<Message> responsePromise;
+        //responsePromise = communicationLayer.send(insertMessage, host, port);
+
         while(true) {
             responsePromise = communicationLayer.send(insertMessage, host, port);
             if (!responsePromise.await(TIMEOUT, TimeUnit.SECONDS))
@@ -60,8 +71,8 @@ public class RemoteMultimap extends MultiMapImpl{
             }
 
             if (response.getBody().size() == 1) {
-                if (appContext.getDebug())
-                    System.out.println("Insert Complete");
+                //if (appContext.getDebug())
+                //    System.out.println("Insert Complete");
                 return true;
             } else {
                 System.err.println( "Remote error:\n" +
@@ -83,6 +94,8 @@ public class RemoteMultimap extends MultiMapImpl{
         messageBody.add(uniqueIdentifier);
         Message completionMessage = new MessageImpl(Message.types.COMPLETION_MESSAGE, messageBody);
         Promise<Message> responsePromise;
+        //responsePromise = communicationLayer.send(completionMessage, host, port);
+
         while(true) {
             responsePromise = communicationLayer.send(completionMessage, host, port);
             if (!responsePromise.await(TIMEOUT, TimeUnit.SECONDS))
@@ -109,6 +122,7 @@ public class RemoteMultimap extends MultiMapImpl{
         Message queryMessage = new MessageImpl(Message.types.QUERY_MESSAGE_SINGLE_BLOCK, messageBody);
 
         Promise<Message> responsePromise;
+        //responsePromise = communicationLayer.send(queryMessage, host, port);
         while(true) {
             responsePromise = communicationLayer.send(queryMessage, host, port);
             if (!responsePromise.await(TIMEOUT, TimeUnit.SECONDS))
