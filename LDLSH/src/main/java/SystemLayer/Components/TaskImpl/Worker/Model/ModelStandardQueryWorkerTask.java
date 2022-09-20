@@ -36,7 +36,8 @@ public class ModelStandardQueryWorkerTask extends WorkerTaskImpl {
         DataObject<?> queryObject = (DataObject<?>) message.getBody().get(0);
         LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
-        MultiMap[] multiMaps = appContext.getMultiMaps();
+        List<MultiMap> multiMaps = Arrays.asList(appContext.getMultiMaps());
+        Collections.shuffle(multiMaps);
         List<MultiMapValue> results = new ArrayList<>();
 
         for (MultiMap multiMap : multiMaps) {

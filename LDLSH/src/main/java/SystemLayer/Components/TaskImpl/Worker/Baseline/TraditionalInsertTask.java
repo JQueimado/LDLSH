@@ -12,6 +12,10 @@ import SystemLayer.Data.DataUnits.ObjectMultimapValue;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class TraditionalInsertTask extends WorkerTaskImpl {
 
     StorageMap storageMap;
@@ -36,7 +40,8 @@ public class TraditionalInsertTask extends WorkerTaskImpl {
 
 
         try {
-            MultiMap[] multimaps = appContext.getMultiMaps();
+            List<MultiMap> multimaps = Arrays.asList(appContext.getMultiMaps());
+            Collections.shuffle(multimaps);
             for ( MultiMap multiMap : multimaps ){
                 multiMap.insert(objectHash, new ObjectMultimapValue( uid.getUID() ));
             }
