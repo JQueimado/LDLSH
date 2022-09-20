@@ -40,7 +40,7 @@ public class TraditionalQueryTask extends WorkerTaskImpl {
             Set<UniqueIdentifier> candidatesUid = new HashSet<>();
 
             //Query candidates Unique identifiers
-            List<MultiMap> multimaps = Arrays.asList( appContext.getMultiMaps() );
+            List<MultiMap> multimaps = new ArrayList<>( appContext.getMultiMaps() );
             Collections.shuffle(multimaps);
             for (MultiMap currentMultimap : multimaps) {
                 MultiMapValue[] results = currentMultimap.query(

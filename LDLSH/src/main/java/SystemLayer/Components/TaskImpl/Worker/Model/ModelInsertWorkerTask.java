@@ -35,7 +35,7 @@ public class ModelInsertWorkerTask extends WorkerTaskImpl {
         DataProcessor.ProcessedData processedData = appContext.getDataProcessor().preProcessData(object);
 
         //Package and Insert
-        List<MultiMap> multiMaps = Arrays.asList( appContext.getMultiMaps() );
+        List<MultiMap> multiMaps = new ArrayList<>( appContext.getMultiMaps() );
         Collections.shuffle(multiMaps);
 
         //Insert

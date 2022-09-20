@@ -73,13 +73,13 @@ public class SystemImpl implements SystemServer {
                     return;
                 }
 
-                MultiMap[] multiMaps = new MultiMap[1]; //Set array to size 1
+                List<MultiMap> multiMaps = new ArrayList<>();
 
                 MultiMap current = multimapFactory.getNewMultiMap(multimapConfig); //get new Multimap
                 current.setHashBlockPosition(multiMapPosition);
                 current.setTotalBlocks(bands);
 
-                multiMaps[0] = current;
+                multiMaps.add( current );
                 context.setMultiMaps(multiMaps);
             }
 
@@ -100,12 +100,12 @@ public class SystemImpl implements SystemServer {
                     }
 
 
-                    MultiMap[] multiMaps = new MultiMap[bands];
+                    List<MultiMap> multiMaps = new ArrayList<>();
                     for (int i = 0; i < bands; i++) {
                         MultiMap current = multimapFactory.getNewMultiMap(multimapConfig);
                         current.setHashBlockPosition(i);
                         current.setTotalBlocks(bands);
-                        multiMaps[i] = current;
+                        multiMaps.add( current );
                     }
                     context.setMultiMaps(multiMaps);
                 }

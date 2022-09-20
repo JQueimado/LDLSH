@@ -34,7 +34,7 @@ public class TraditionalReplicatedQueryTask extends WorkerTaskImpl {
 
         try {
             //Query values
-            List<MultiMap> multimaps = Arrays.asList( appContext.getMultiMaps() );
+            List<MultiMap> multimaps = new ArrayList<>( appContext.getMultiMaps() );
             Collections.shuffle(multimaps);
             for (MultiMap multiMap : multimaps) {
                 Collections.addAll(

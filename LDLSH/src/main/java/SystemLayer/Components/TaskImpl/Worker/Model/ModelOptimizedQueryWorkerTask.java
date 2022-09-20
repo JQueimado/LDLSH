@@ -33,7 +33,7 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
         DataObject<?> queryObject = (DataObject<?>) message.getBody().get(0);
         LSHHash query_hash = appContext.getDataProcessor().preprocessLSH(queryObject);
 
-        List<MultiMap> multiMaps = Arrays.asList( appContext.getMultiMaps() );
+        List<MultiMap> multiMaps = new ArrayList<>( appContext.getMultiMaps() );
         Collections.shuffle(multiMaps);
         Map<UniqueIdentifier, Pair> objectMapping = new HashMap<>();
 

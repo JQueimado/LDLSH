@@ -8,6 +8,7 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataUnits.ObjectMultimapValue;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +29,7 @@ public class TraditionalReplicatedInsertTask extends WorkerTaskImpl {
         LSHHash objectHash = appContext.getDataProcessor().preprocessLSH( object );
 
         try {
-            List<MultiMap> multimaps = Arrays.asList( appContext.getMultiMaps() );
+            List<MultiMap> multimaps = new ArrayList<>( appContext.getMultiMaps() );
             Collections.shuffle(multimaps);
             for ( MultiMap multiMap : multimaps ){
                 multiMap.insert(objectHash, new ObjectMultimapValue( object.toByteArray() ));
