@@ -1,12 +1,9 @@
 #!/bin/bash
 #env
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
-DATASETS="${DIR}/data_sets"
-CONFIGS="${DIR}/LDLSH/Test_Batery"
 CLIENT="t5"
 SERVERS="t6 t7 t8"
 BRANCH="Tests"
-TESTS="accuracy latency throughput"
 
 change_branch(){
 	ssh "$1" "cd ${DIR}; git checkout $2"
@@ -26,7 +23,7 @@ run_server_jar(){
 }
 
 run_test_client_jar(){
-	java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/LDLSH_Optimized_mem_test/client_memoryTest2.properties "$1" "$2"
+	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/LDLSH_Optimized_mem_test/client_memoryTest2.properties "$1" "$2"
 }
 
 kill_process(){
