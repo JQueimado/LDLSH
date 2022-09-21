@@ -10,6 +10,7 @@ import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,22 +35,17 @@ public class ModelInsertWorkerTask extends WorkerTaskImpl {
         DataProcessor.ProcessedData processedData = appContext.getDataProcessor().preProcessData(object);
 
         //Package and Insert
-        MultiMap[] multiMaps = appContext.getMultiMaps();
-        //Shuffle indexes
-        List<Integer> indexes = new ArrayList<>();
-        for ( int i=0; i<multiMaps.length; i++ ){
-            indexes.add( i );
-        }
-        Collections.shuffle(indexes);
+        List<MultiMap> multiMaps = new ArrayList<>( appContext.getMultiMaps() );
+        Collections.shuffle(multiMaps);
 
         //Insert
-        for ( int i = 0; i<multiMaps.length; i++ ){
-            MultiMap multiMap = multiMaps[i];
+        for ( int i = 0; i<multiMaps.size(); i++ ){
+            MultiMap multiMap = multiMaps.get(i);
 
             ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
                     processedData.object_lsh(),
                     processedData.object_uid(),
-                    processedData.object_erasureCodes().getBlockAt(indexes.get(i))
+                    processedData.object_erasureCodes().getBlockAt(i)
             );
 
             if (!multiMap.insert( processedData.object_lsh(), modelMultimapValue ))

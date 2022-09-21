@@ -19,6 +19,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.concurrent.*;
 
 
@@ -41,7 +42,7 @@ public class DataContainer {
 
     //Components
     private final Configurator configurator;
-    private MultiMap[] multiMaps;
+    private List<MultiMap> multiMaps;
     private ListeningExecutorService executorService;
     private DistanceMeasurer distanceMeasurer = null;
     private DataProcessor dataProcessor = null;
@@ -109,11 +110,11 @@ public class DataContainer {
 
     //Components
     // -MultiMaps
-    public void setMultiMaps( MultiMap[] multiMaps ){
+    public void setMultiMaps(List<MultiMap> multiMaps ){
         this.multiMaps = multiMaps;
     }
 
-    public MultiMap[] getMultiMaps() throws Exception {
+    public List<MultiMap> getMultiMaps() throws Exception {
         return multiMaps;
     }
 

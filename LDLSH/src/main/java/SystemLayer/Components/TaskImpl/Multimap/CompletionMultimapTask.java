@@ -26,7 +26,7 @@ public class CompletionMultimapTask extends MultimapTaskImpl {
         LSHHash hash = (LSHHash) message.getBody().get(0);
         UniqueIdentifier uid = (UniqueIdentifier) message.getBody().get(1);
 
-        MultiMap[] multiMaps = appContext.getMultiMaps();
+        List<MultiMap> multiMaps = appContext.getMultiMaps();
         List<ErasureBlock> results = new ArrayList<>();
         for (MultiMap multiMap : multiMaps) {
             ErasureBlock block = multiMap.complete(hash, uid);

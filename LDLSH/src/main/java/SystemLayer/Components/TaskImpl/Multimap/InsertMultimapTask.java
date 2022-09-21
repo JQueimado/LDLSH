@@ -26,7 +26,7 @@ public class InsertMultimapTask extends MultimapTaskImpl {
 
         List<Object> responseBody = new ArrayList<>();
         try {
-            MultiMap[] multiMaps = appContext.getMultiMaps();
+            List<MultiMap> multiMaps = appContext.getMultiMaps();
             for ( MultiMap multiMap : multiMaps ){
                 multiMap.insert(hash, value);
             }

@@ -25,7 +25,7 @@ public class QueryMultimapTask extends MultimapTaskImpl {
         }
         LSHHashBlock block = (LSHHashBlock) message.getBody().get(0); //fetch body
 
-        MultiMap[] multiMaps = appContext.getMultiMaps();
+        List<MultiMap> multiMaps = appContext.getMultiMaps();
         List<MultiMapValue> results = new ArrayList<>();
         for( MultiMap multiMap : multiMaps ) {
             MultiMapValue[] temp = multiMap.query(block);
