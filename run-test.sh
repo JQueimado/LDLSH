@@ -1,7 +1,21 @@
 #! /bin/bash
-#./run-test-quinta.sh 100 Split1.txt Split2.txt > log_S1_S2.txt 2>&1;
-#./run-test-quinta.sh 100 Split2.txt Split1.txt > log_S2_S1.txt 2>&1;
-#./run-test-quinta.sh 100 jqueimado_QS_1000.txt jqueimado_QS_1000.txt > log_jqueimado_QS_1000.txt 2>&1;
-./run-test-quinta.sh 1 SRR46099591_split1.txt SRR46099591_split2.txt > log_SRR_lim1.txt 2>&1;
-#./run-test-quinta.sh 1 SRR50_split1.txt SRR50_split2.txt > log_SRR_50.txt 2>&1;
-#./run-test-quinta.sh 1 SRR75_split1.txt SRR75_split2.txt > log_SRR_75.txt 2>&1;
+
+./run-test-quinta.sh 5 SRR_100I_aa SRR_100000000_Q_aa > log_SRRaa_SRRaa_L.txt 2>&1;
+./run-test-quinta.sh 5 SRR_100I_aa SRR_100000000_Q_ab > log_SRRaa_SRRab_L.txt 2>&1;
+./run-test-quinta.sh 5 SRR_100I_aa SRR_100000000_Q_ac > log_SRRaa_SRRac_L.txt 2>&1;
+
+./run-test-quinta.sh 20 SRR_100I_aa SRR_100I_aa > log_SRRaa_SRRaa.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_aa SRR_100I_ab > log_SRRaa_SRRab.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_aa SRR_100I_ac > log_SRRaa_SRRac.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_aa SRR_100I_aw > log_SRRaa_SRRaw.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_aw SRR_100I_aa > log_SRRaw_SRRaa.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_aw SRR_100I_ax > log_SRRaw_SRRax.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_aw SRR_100I_ay > log_SRRaw_SRRay.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_aw SRR_100I_az > log_SRRaw_SRRaz.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_br SRR_100I_aa > log_SRRbr_SRRaa.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_br SRR_100I_aw > log_SRRbr_SRRaw.txt 2>&1;
+./run-test-quinta.sh 20 SRR_100I_br SRR_100I_bs > log_SRRbr_SRRbs.txt 2>&1;
+
+#./run-test-quinta.sh 5 SRR_100I_aa SRR_100000000_Q_aa > log_SRRaa_SRRaa_L.txt 2>&1;
+#./run-test-quinta.sh 5 SRR_100I_aa SRR_100000000_Q_ab > log_SRRaa_SRRab_L.txt 2>&1;
+#./run-test-quinta.sh 5 SRR_100I_aa SRR_100000000_Q_ac > log_SRRaa_SRRac_L.txt 2>&1;
