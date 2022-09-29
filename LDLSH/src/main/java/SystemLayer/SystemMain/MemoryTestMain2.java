@@ -1,6 +1,7 @@
 package SystemLayer.SystemMain;
 
 import Factories.ComponentFactories.MainFactory;
+import SystemLayer.Components.SystemServer.SystemImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import com.google.common.util.concurrent.FutureCallback;
@@ -83,6 +84,9 @@ public class MemoryTestMain2 extends SystemMainImp {
         }
         System.out.println("Done. Please Check memory.");
         scanner.nextLine();
+
+        system.stop();
+        system = new SystemImpl(appContext);
 
         successCounter.set(0);
 
