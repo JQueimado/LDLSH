@@ -57,8 +57,9 @@ run_Test(){
     #Insert
     echo "Runing MemTest..."
     run_test_insert_client_jar "$1" "$2" "$3"
-	run_test_query_client_jar "$1" "$2" "$3"
+	killall -9 java
 
+	run_test_query_client_jar "$1" "$2" "$3"
     killall -9 java
 
     #Stop Server
