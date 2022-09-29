@@ -82,10 +82,10 @@ public class MemoryTestMain2 extends SystemMainImp {
                 }
             }, appContext.getCallbackExecutor());
         }
+        system.stop();
         System.out.println("Done. Please Check memory.");
         scanner.nextLine();
 
-        system.stop();
         system = new SystemImpl(appContext);
 
         successCounter.set(0);
@@ -108,7 +108,9 @@ public class MemoryTestMain2 extends SystemMainImp {
                         n = successCounter.getAndIncrement();
                     }
                     long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
-                    System.out.println(n + " - query for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
+                    System.out.println(n + " - query for "+ elem.getValues() +
+                            " returned: " + object.getValues() +
+                            "execution time: "+ totalExecutionTime+" ms");
                 }
 
                 @Override
