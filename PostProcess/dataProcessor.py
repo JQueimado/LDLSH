@@ -3,6 +3,8 @@ import os
 import pandas as pd
 import numpy as np
 
+levels = [4,3,2,1]
+
 #Accuracy Aux
 def createNgram( s : str, l : int ):
     r = set()
@@ -67,6 +69,8 @@ def accuracyQueryProcessor( testfname : str , ngramLevel : int ):
 
     stats.to_csv(testfname + ".acc.stats.csv")
 
+#LatencyProcessor:
+# testfname: str -> filename
 def latencyProcessor( testfname : str ):
     df = pd.read_csv(testfname, sep=" ", header=None)
     df = df.drop([0,1,3,4,6], axis=1)
@@ -80,49 +84,79 @@ def latencyProcessor( testfname : str ):
 
     stats.to_csv(testfname + ".lat.stats.csv")
 
-def throughputProcessor( testfname: str ):
-    df = pd.read_csv(testfname, sep=" ", header=None)
-    df = df.drop([2], axis=1)
+#ThroughputProcessor:
+# testfname: [] -> list of files to process
+def throughputProcessor( files, dir ):
 
-    df.to_csv( testfname + ".thr.results.csv" )
+    df = pd.DataFrame({'total time':[], 'throughput':[]})
+
+    for file in files:
+        temp_df = pd.read_csv(file, sep=" ", header=None)
+        temp_df = temp_df.drop([0,2], axis=1)
+        df.loc[len(df.index)] = [ temp_df[1][0], temp_df[1][1] ]
+
+    df.to_csv( dir + "/throughput.results.csv" )
+    stats = df.agg({
+        'total time': ["min", "max", "median", "skew", "mean"],
+        'throughput': ["min", "max", "median", "skew", "mean"]
+    })
+    stats.to_csv(dir + "/throughput.stats.csv")
 
 if __name__ == "__main__":
     argv = sys.argv
-    if( len(argv) != 2 ):
+    if( len(argv) != 3 ):
         exit(1)
 
     test = argv[1]
+    datasetFolder = argv[2]
+    if( not datasetFolder.endswith("/") ):
+        datasetFolder = datasetFolder + "/"
+
+    test_name = test.split("/")[-1]
 
     #Namingformat:
     # <TEST-Name>_<I-InsertData>_<Q-QueryData>_<IT-Iterations>
-    test_data = test.split("_")
+    test_data = test_name.split("_")
 
     test_contents = os.listdir(test)
 
     throughputFiles = []
 
     for file in test_contents:
-        if( (not file.endswith(".txt")) or (not os.path.isfile(file)) ):
+        if( (not file.endswith(".txt")) ):
             continue
-        
+
+        print( file )
+
         #Namingformat:
         # test_<type>_<op>_<timestamp>.txt
         test_split = file.split("_")
         test_type = test_split[1]
 
+        file = test + "/" + file
+
         if( test_type == "accuracy" ):
             test_op = test_split[2]
+            
             if( test_op == "i" ):
-                insert_dataset = test_data[1].split("-")[1]
+                insert_dataset = datasetFolder + test_data[1].split("-")[1]
                 accuracyInsertProcessor(file, insert_dataset)
+
             elif( test_op == "q" ):
-                test_name = int( test_data[0].split("-")[1] )
+                test_n = int( test_data[0].split("-")[-1] )
+                level = 0
+                
+                if( test_n < 6 ):
+                    level = levels[0]
+                else:
+                    level = levels[test_n - 6]
+                
+                accuracyQueryProcessor(file, level)
 
         elif( test_type == "latency" ):
             latencyProcessor( file )
+        
         elif( test_type == "throughput" ):
             throughputFiles.append(file)
 
-
-
-
+    throughputProcessor( throughputFiles, test )
