@@ -1,7 +1,5 @@
 package SystemLayer.SystemMain;
 
-import Factories.ComponentFactories.MainFactory;
-import SystemLayer.Components.SystemServer.SystemImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import com.google.common.util.concurrent.FutureCallback;
@@ -30,7 +28,7 @@ public class MemoryTestMain2 extends SystemMainImp {
         // cmd <file> <lines>
         String op = args[1];
         String fileName = args[2];
-        Integer lines = Integer.parseInt(args[3]);
+        int lines = Integer.parseInt(args[3]);
 
         //LoadFile
         List<DataObject<String>> data = new ArrayList<>();
@@ -97,7 +95,6 @@ public class MemoryTestMain2 extends SystemMainImp {
                     Futures.addCallback(result, new FutureCallback<>() {
                         final DataObject<?> elem = dataElement;
                         final Timestamp initialTimeStamp1 = initialTimeStamp;
-
                         @Override
                         public void onSuccess(DataObject object) {
                             //Complete
@@ -109,7 +106,7 @@ public class MemoryTestMain2 extends SystemMainImp {
                             long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
                             System.out.println(n + " - query for " + elem.getValues() +
                                     " returned: " + object.getValues() +
-                                    "execution time: " + totalExecutionTime + " ms");
+                                    " execution time: " + totalExecutionTime + " ms");
                         }
 
                         @Override
