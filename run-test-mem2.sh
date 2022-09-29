@@ -1,12 +1,9 @@
 #!/bin/bash
 #env
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
-DATASETS="${DIR}/data_sets"
-CONFIGS="${DIR}/LDLSH/Test_Batery"
 CLIENT="t5"
 SERVERS="t6 t7 t8"
 BRANCH="Tests"
-TESTS="accuracy latency throughput"
 
 change_branch(){
 	ssh "$1" "cd ${DIR}; git checkout $2"
@@ -22,11 +19,15 @@ change_branch(){
 }
 
 run_server_jar(){
- 	ssh "$1" "cd ${DIR}; ./run-server.sh -js LDLSH/MemoryTests/LDLSH_Optimized_mem_test"
+ 	ssh "$1" "cd ${DIR}; ./run-server.sh -js LDLSH/MemoryTests/$2"
 }
 
-run_test_client_jar(){
-	java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/LDLSH_Optimized_mem_test/client_memoryTest2.properties "$1" "$2"
+run_test_insert_client_jar(){
+	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/"$3"/client_memoryTest2.properties -i "$1" "$2"
+}
+
+run_test_query_client_jar(){
+	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/"$3"/client_memoryTest2.properties -q "$1" "$2"
 }
 
 kill_process(){
@@ -50,13 +51,15 @@ run_Test(){
     for SERVER in $SERVERS
     do
         echo "Starting server at ${SERVER}"
-        run_server_jar "$SERVER"
+        run_server_jar "$SERVER" "$3"
     done
 
     #Insert
-    echo "Runing MemTest Inserts..."
-    run_test_client_jar "$1" "$2"
+    echo "Runing MemTest..."
+    run_test_insert_client_jar "$1" "$2" "$3"
+	killall -9 java
 
+	run_test_query_client_jar "$1" "$2" "$3"
     killall -9 java
 
     #Stop Server
@@ -73,4 +76,5 @@ run_Test(){
 
 setup_tests
 
-run_Test "$1" "$2"
+run_Test "$1" "$2" "LDLSH_Optimized_mem_test"
+#run_Test "$1" "$2" "LDLSH_mem_test"

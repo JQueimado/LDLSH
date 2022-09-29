@@ -29,7 +29,8 @@ run_test_client_jar(){
 	#ssh "$1" "cd ${DIR}; ./run-test.sh $2 $3 $4 $5"
 	TIMESTAMP=$(date +%s)
 	FILENAME="$5/test_$6_$3_${TIMESTAMP}.txt"
-	ssh $1 "cd ${DIR}; java -server -Xmx100g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar $2/client_$6.properties -$3 $4 >> ${FILENAME}"
+	#ssh $1 "cd ${DIR}; java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar $2/client_$6.properties -$3 $4 >> ${FILENAME}"
+	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar "$2/client_$6.properties" -"$3" "$4" >> "${FILENAME}"
 }
 
 #run_test_client_traditional_local(){
@@ -63,7 +64,7 @@ run_Test(){
 	QUERYFILE="${DATASETS}/$4"
 
 	#test configs
-	RESULTSFOLDER="TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
+	RESULTSFOLDER="TESTS/TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
 	
 	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
 	
@@ -98,21 +99,21 @@ run_Test(){
 			kill_process "$SERVER"
 		done
 	done
-	#Copy results
-	mkdir "TESTS/${RESULTSFOLDER}"
-	scp -r "${CLIENT}:${DIR}/${RESULTSFOLDER}" "TESTS/."
-	ssh "${CLIENT}" "cd ${DIR}; rm -rf ${RESULTSFOLDER}"
+	#Move results
+	#mkdir "TESTS/${RESULTSFOLDER}"
+	#mv "${DIR}/${RESULTSFOLDER}" "TESTS/."
+	#ssh "${CLIENT}" "cd ${DIR}; rm -rf ${RESULTSFOLDER}"
 }
 
 ### main ###
 # USE
 # ./run-test-quinta.sh <Iterations> <Insert_dataset> <Query_Dataset> 
-if ! [ $# -eq 3 ];
+if ! [ $# -eq 4 ];
 then
    exit 1
 fi
 
-TEST_FOLDERS=$(ls LDLSH/Test_Batery)
+TEST_FOLDERS=$(ls LDLSH/Test_Batery | grep "$1")
 echo "Found tests: $TEST_FOLDERS"
 setup_tests
 
@@ -121,5 +122,5 @@ mkdir "TESTS"
 for FOLDER in $TEST_FOLDERS
 do
 	echo "Runnig test: $FOLDER"
-	run_Test "$1" "$FOLDER" "$2" "$3"
+	run_Test "$2" "$FOLDER" "$3" "$4"
 done

@@ -10,6 +10,7 @@ import SystemLayer.Data.DataUnits.ObjectMultimapValue;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,10 +34,13 @@ public class TraditionalReplicatedQueryTask extends WorkerTaskImpl {
 
         try {
             //Query values
-            MultiMap[] multimaps = appContext.getMultiMaps();
-            for ( int i = 0; i< multimaps.length; i++ ){
-                MultiMap multiMap = multimaps[i];
-                Collections.addAll( multiMapValues, multiMap.query(queryHash.getBlockAt(i)) );
+            List<MultiMap> multimaps = new ArrayList<>( appContext.getMultiMaps() );
+            Collections.shuffle(multimaps);
+            for (MultiMap multiMap : multimaps) {
+                Collections.addAll(
+                        multiMapValues,
+                        multiMap.query(queryHash.getBlockAt(multiMap.getHashBlockPosition()))
+                );
             }
 
             if( multiMapValues.size() == 0 )

@@ -8,6 +8,11 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataUnits.ObjectMultimapValue;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class TraditionalReplicatedInsertTask extends WorkerTaskImpl {
 
     public TraditionalReplicatedInsertTask(Message insertMessage, DataContainer appContext) throws Exception{
@@ -18,13 +23,14 @@ public class TraditionalReplicatedInsertTask extends WorkerTaskImpl {
     }
 
     @Override
-    public DataObject call() throws Exception {
+    public DataObject<?> call() throws Exception {
 
-        DataObject object = (DataObject) message.getBody().get(0);
+        DataObject<?> object = (DataObject<?>) message.getBody().get(0);
         LSHHash objectHash = appContext.getDataProcessor().preprocessLSH( object );
 
         try {
-            MultiMap[] multimaps = appContext.getMultiMaps();
+            List<MultiMap> multimaps = new ArrayList<>( appContext.getMultiMaps() );
+            Collections.shuffle(multimaps);
             for ( MultiMap multiMap : multimaps ){
                 multiMap.insert(objectHash, new ObjectMultimapValue( object.toByteArray() ));
             }

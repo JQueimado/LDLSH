@@ -16,10 +16,7 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 
 import java.rmi.server.UID;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TraditionalQueryTask extends WorkerTaskImpl {
 
@@ -43,7 +40,8 @@ public class TraditionalQueryTask extends WorkerTaskImpl {
             Set<UniqueIdentifier> candidatesUid = new HashSet<>();
 
             //Query candidates Unique identifiers
-            MultiMap[] multimaps = appContext.getMultiMaps();
+            List<MultiMap> multimaps = new ArrayList<>( appContext.getMultiMaps() );
+            Collections.shuffle(multimaps);
             for (MultiMap currentMultimap : multimaps) {
                 MultiMapValue[] results = currentMultimap.query(
                         objectHash.getBlockAt(currentMultimap.getHashBlockPosition())
