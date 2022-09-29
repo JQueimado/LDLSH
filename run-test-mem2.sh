@@ -22,8 +22,12 @@ run_server_jar(){
  	ssh "$1" "cd ${DIR}; ./run-server.sh -js LDLSH/MemoryTests/$2"
 }
 
-run_test_client_jar(){
-	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/"$3"/client_memoryTest2.properties "$1" "$2"
+run_test_insert_client_jar(){
+	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar -i LDLSH/MemoryTests/"$3"/client_memoryTest2.properties "$1" "$2"
+}
+
+run_test_query_client_jar(){
+	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar -q LDLSH/MemoryTests/"$3"/client_memoryTest2.properties "$1" "$2"
 }
 
 kill_process(){
@@ -52,7 +56,8 @@ run_Test(){
 
     #Insert
     echo "Runing MemTest..."
-    run_test_client_jar "$1" "$2" "$3"
+    run_test_insert_client_jar "$1" "$2" "$3"
+	run_test_query_client_jar "$1" "$2" "$3"
 
     killall -9 java
 
