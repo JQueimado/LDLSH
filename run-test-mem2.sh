@@ -23,11 +23,11 @@ run_server_jar(){
 }
 
 run_test_insert_client_jar(){
-	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar -i LDLSH/MemoryTests/"$3"/client_memoryTest2.properties "$1" "$2"
+	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/"$3"/client_memoryTest2.properties -i "$1" "$2"
 }
 
 run_test_query_client_jar(){
-	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar -q LDLSH/MemoryTests/"$3"/client_memoryTest2.properties "$1" "$2"
+	java -server -Xmx32g -XX:+UseG1GC -Dio.netty.leakDetection.level=disabled -jar LDLSH-3.2.jar LDLSH/MemoryTests/"$3"/client_memoryTest2.properties -q "$1" "$2"
 }
 
 kill_process(){
