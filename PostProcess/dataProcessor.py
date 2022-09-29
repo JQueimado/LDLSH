@@ -1,5 +1,5 @@
-from doctest import testfile
 import sys
+import os
 import pandas as pd
 import numpy as np
 
@@ -20,61 +20,53 @@ def jcDistance( a : str, b : str, l : int ):
     b = createNgram(b, l)
     return 1 - float(len(a.intersection(b)))/len(a.union(b))
 
-#usages: 
-# - python dataProcessor.py -a -i <tetsFile> <dataSetFile>
-# - python dataProcessor.py -a -q <tetsFile> <dataGramLevel>
-def accuracyProcessor( op : str, testfname : str , aditionalArgument : str ):
+def accuracyInsertProcessor( testfname : str , datasetfname : str ):
+    #Read Dataset
+    dsdf = pd.read_csv(datasetfname, sep=' ', header=None)
+    dsdf.columns = ['dastasetValue']
 
-    if( op == '-i' ):
-        #Read Dataset
-        dsdf = pd.read_csv(aditionalArgument, sep=' ', header=None)
-        dsdf.columns = ['dastasetValue']
+    #Read Results
+    tfdf = pd.read_csv(testfname, sep=' ', header=None)
+    tfdf = tfdf.drop(0, axis=1)
+    tfdf.columns = ['insertedValue']
 
-        #Read Results
-        tfdf = pd.read_csv(testfname, sep=' ', header=None)
-        tfdf = tfdf.drop(0, axis=1)
-        tfdf.columns = ['insertedValue']
+    dsdf = dsdf.sort_values(by=['dastasetValue'])
+    dsdf = dsdf.reset_index(drop=True)
 
-        dsdf = dsdf.sort_values(by=['dastasetValue'])
-        dsdf = dsdf.reset_index(drop=True)
+    tfdf = tfdf.sort_values(by=['insertedValue'])
+    tfdf = tfdf.reset_index(drop=True)
 
-        tfdf = tfdf.sort_values(by=['insertedValue'])
-        tfdf = tfdf.reset_index(drop=True)
+    dsdf['insertedValue'] = tfdf['insertedValue']
 
-        dsdf['insertedValue'] = tfdf['insertedValue']
+    dsdf['eval'] = np.where(dsdf['dastasetValue'] == dsdf['insertedValue'], True, False)
+    dsdf.head()
 
-        dsdf['eval'] = np.where(dsdf['dastasetValue'] == dsdf['insertedValue'], True, False)
-        dsdf.head()
+    dsdf.to_csv( testfname + ".acc.results.csv")
 
-        dsdf.to_csv( testfname + ".acc.results.csv")
+    stats = dsdf.agg({
+        'eval': ["min", "max", "median", "skew", "mean"]
+    })
 
-        stats = dsdf.agg({
-            'eval': ["min", "max", "median", "skew", "mean"]
-        })
+    stats.to_csv(testfname + ".acc.stats.csv")
 
-        stats.to_csv(testfname + ".acc.stats.csv")
+def accuracyQueryProcessor( testfname : str , ngramLevel : int ):
+    #Read Dataset
+    dsdf = pd.read_csv(testfname, sep=' ', header=None)
+    dsdf.columns = ['query', 'sep', 'result']
+    dsdf = dsdf.drop(columns=['sep'])
 
-    elif( op == '-q' ):
-        l = int(aditionalArgument)
-        #Read Dataset
-        dsdf = pd.read_csv(testfname, sep=' ', header=None)
-        dsdf.columns = ['query', 'sep', 'result']
-        dsdf = dsdf.drop(columns=['sep'])
+    dsdf['jaccard distance'] = dsdf.apply( lambda row : jcDistance(row['query'], row['result'], ngramLevel), axis=1 )
+    dsdf.head()
 
-        dsdf['jaccard distance'] = dsdf.apply( lambda row : jcDistance(row['query'], row['result'], l), axis=1 )
-        dsdf.head()
+    dsdf.to_csv( testfname + ".acc.results.csv" )
 
-        dsdf.to_csv( testfname + ".acc.results.csv" )
+    #print( "avg: " + str( dsdf['jaccard distance'].mean() ))
+    stats = dsdf.agg({
+        'jaccard distance': ["min", "max", "median", "skew", "mean"]
+    })
 
-        #print( "avg: " + str( dsdf['jaccard distance'].mean() ))
-        stats = dsdf.agg({
-            'jaccard distance': ["min", "max", "median", "skew", "mean"]
-        })
+    stats.to_csv(testfname + ".acc.stats.csv")
 
-        stats.to_csv(testfname + ".acc.stats.csv")
-
-#usage
-# - python3 dataProcessor -l <testFile>
 def latencyProcessor( testfname : str ):
     df = pd.read_csv(testfname, sep=" ", header=None)
     df = df.drop([0,1,3,4,6], axis=1)
@@ -88,35 +80,49 @@ def latencyProcessor( testfname : str ):
 
     stats.to_csv(testfname + ".lat.stats.csv")
 
-#usage
-# - python3 dataProcessor -t <testFile>
 def throughputProcessor( testfname: str ):
     df = pd.read_csv(testfname, sep=" ", header=None)
     df = df.drop([2], axis=1)
 
     df.to_csv( testfname + ".thr.results.csv" )
 
-#usage: 
-# - python dataProcessor.py <test> [*args]
 if __name__ == "__main__":
     argv = sys.argv
-    la = len(argv)
-    if( la < 2 ):
+    if( len(argv) != 2 ):
         exit(1)
 
     test = argv[1]
 
-    if( test == "-a" ):
-        if( la != 5 ):
-            exit(1)
-        accuracyProcessor( argv[2], argv[3], argv[4] )
-    elif( test == "-l" ):
-        if( la != 3 ):
-            exit(1)
-        latencyProcessor(argv[2])
-    elif( test == "-t" ):
-        if( la != 3 ):
-            exit(1)
-        throughputProcessor(argv[2])
+    #Namingformat:
+    # <TEST-Name>_<I-InsertData>_<Q-QueryData>_<IT-Iterations>
+    test_data = test.split("_")
+
+    test_contents = os.listdir(test)
+
+    throughputFiles = []
+
+    for file in test_contents:
+        if( (not file.endswith(".txt")) or (not os.path.isfile(file)) ):
+            continue
+        
+        #Namingformat:
+        # test_<type>_<op>_<timestamp>.txt
+        test_split = file.split("_")
+        test_type = test_split[1]
+
+        if( test_type == "accuracy" ):
+            test_op = test_split[2]
+            if( test_op == "i" ):
+                insert_dataset = test_data[1].split("-")[1]
+                accuracyInsertProcessor(file, insert_dataset)
+            elif( test_op == "q" ):
+                test_name = int( test_data[0].split("-")[1] )
+
+        elif( test_type == "latency" ):
+            latencyProcessor( file )
+        elif( test_type == "throughput" ):
+            throughputFiles.append(file)
+
+
 
 

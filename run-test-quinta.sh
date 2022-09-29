@@ -108,12 +108,12 @@ run_Test(){
 ### main ###
 # USE
 # ./run-test-quinta.sh <Iterations> <Insert_dataset> <Query_Dataset> 
-if ! [ $# -eq 3 ];
+if ! [ $# -eq 4 ];
 then
    exit 1
 fi
 
-TEST_FOLDERS=$(ls LDLSH/Test_Batery)
+TEST_FOLDERS=$(ls LDLSH/Test_Batery | grep "$1")
 echo "Found tests: $TEST_FOLDERS"
 setup_tests
 
@@ -122,5 +122,5 @@ mkdir "TESTS"
 for FOLDER in $TEST_FOLDERS
 do
 	echo "Runnig test: $FOLDER"
-	run_Test "$1" "$FOLDER" "$2" "$3"
+	run_Test "$2" "$FOLDER" "$3" "$4"
 done
