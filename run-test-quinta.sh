@@ -107,8 +107,8 @@ run_Test(){
 
 ### main ###
 # USE
-# ./run-test-quinta.sh <Tests> <Iterations> <Insert_dataset> <Query_Dataset> 
-if ! [ $# -eq 5 ];
+# ./run-test-quinta.sh <Iterations> <Insert_dataset> <Query_Dataset> 
+if ! [ $# -eq 4 ];
 then
    exit 1
 fi
