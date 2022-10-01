@@ -41,9 +41,10 @@ public class MemoryTestMain2 extends SystemMainImp {
                 dataObject.setValues(line);
                 data.add(dataObject);
                 i++;
-                System.out.println("Loaded: " + i);
+                System.out.println("Loaded: " + i + "\r");
             }
         }
+        System.out.println("Loaded: " + i);
 
         //Execute
         AtomicInteger successCounter = new AtomicInteger();
