@@ -106,7 +106,7 @@ public class MemoryTestMain2 extends SystemMainImp {
                             }
                             long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
 
-                            if ( object != null ) {
+                            if ( object == null ) {
                                 System.out.println(n + " - query for " + elem.getValues() +
                                         " returned: null" +
                                         " execution time: " + totalExecutionTime + " ms");
