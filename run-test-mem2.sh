@@ -76,5 +76,7 @@ run_Test(){
 
 setup_tests
 
-run_Test "$1" "$2" "LDLSH_Optimized_mem_test"
-#run_Test "$1" "$2" "LDLSH_mem_test"
+#run_Test "$1" "$2" "LDLSH-Optimized-mem-test"
+#run_Test "$1" "$2" "LDLSH-mem-test"
+run_Test "$1" "$2" "Traditional-External-mem-test"
+run_Test "$1" "$2" "Traditional-Replicated-mem-test"
