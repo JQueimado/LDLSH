@@ -119,8 +119,12 @@ public class MemoryTestMain2 extends SystemMainImp {
         }
         //Shutdown
         system.stop();
+        if (successCounter.get() != data.size() )
+            throw new Exception("Not all Inserts were performed. Missing: " + (data.size() - successCounter.get()) );
+
         System.out.println("Done. Please Check memory.");
         scanner.nextLine();
+
         System.exit(0);
 
     }
