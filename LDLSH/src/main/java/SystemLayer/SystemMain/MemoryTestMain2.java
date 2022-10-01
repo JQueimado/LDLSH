@@ -97,7 +97,7 @@ public class MemoryTestMain2 extends SystemMainImp {
                         final DataObject<?> elem = dataElement;
                         final Timestamp initialTimeStamp1 = initialTimeStamp;
                         @Override
-                        public void onSuccess(DataObject object) {
+                        public void onSuccess(DataObject<?> object) {
                             //Complete
                             Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
                             int n;
@@ -105,9 +105,16 @@ public class MemoryTestMain2 extends SystemMainImp {
                                 n = successCounter.getAndIncrement();
                             }
                             long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
-                            System.out.println(n + " - query for " + elem.getValues() +
-                                    " returned: " + object.getValues() +
-                                    " execution time: " + totalExecutionTime + " ms");
+
+                            if ( object != null ) {
+                                System.out.println(n + " - query for " + elem.getValues() +
+                                        " returned: null" +
+                                        " execution time: " + totalExecutionTime + " ms");
+                            }else {
+                                System.out.println(n + " - query for " + elem.getValues() +
+                                        " returned: " + object.getValues() +
+                                        " execution time: " + totalExecutionTime + " ms");
+                            }
                         }
 
                         @Override
