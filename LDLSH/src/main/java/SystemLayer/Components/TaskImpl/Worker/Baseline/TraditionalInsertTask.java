@@ -48,10 +48,12 @@ public class TraditionalInsertTask extends WorkerTaskImpl {
             }
 
             //Storage map
-            storageMap.insert(uid, object);
+            if( !storageMap.insert(uid, object) )
+                throw new Exception("StorageMap insert failed!");
 
         }catch (Exception e){
             e.printStackTrace();
+            return null;
         }
 
         return object;

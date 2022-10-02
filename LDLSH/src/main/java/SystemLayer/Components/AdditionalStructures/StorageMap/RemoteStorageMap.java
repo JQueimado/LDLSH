@@ -33,38 +33,29 @@ public class RemoteStorageMap extends StorageMapImpl {
     }
 
     @Override
-    public void insert(UniqueIdentifier key, DataObject<?> value) throws Exception {
+    public boolean insert(UniqueIdentifier key, DataObject<?> value) throws Exception {
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(key);
         messageBody.add(value);
         Message message = new MessageImpl(Message.types.INSERT_MESSAGE, messageBody);
 
         Promise<Message> result_future = communicationLayer.send(message, host, port);
+        Message result = result_future.get();
 
-        result_future.addListener(future -> {
-            Message result = result_future.get();
+        if(result.getType() != Message.types.INSERT_MESSAGE_RESPONSE)
+            throw new InvalidMessageTypeException(Message.types.INSERT_MESSAGE_RESPONSE, result.getType());
 
-            if(result.getType() != Message.types.INSERT_MESSAGE_RESPONSE)
-                throw new InvalidMessageTypeException(Message.types.INSERT_MESSAGE_RESPONSE, result.getType());
+        if (result.getBody().size() != 1)
+            throw new InvalidMessageSizeException(1, result.getBody().size());
 
-            if (result.getBody().size() != 1)
-                throw new InvalidMessageSizeException(1, result.getBody().size());
+        Object result_body = result.getBody().get(0);
+        if( !(result_body instanceof Boolean) )
+            throw new InvalidMessageBodyObjectException(
+                    Boolean.class.toString(),
+                    result_body.getClass().toString()
+            );
 
-            Object result_body = result.getBody().get(0);
-            if( !(result_body instanceof Boolean) )
-                throw new InvalidMessageBodyObjectException(
-                        Boolean.class.toString(),
-                        result_body.getClass().toString()
-                );
-
-            boolean bool = (Boolean) result_body;
-
-            if( bool ) {
-                //All good
-            }else {
-                throw new Exception("ERROR: server side Insertion error");
-            }
-        });
+        return (Boolean) result_body;
     }
 
     @Override
