@@ -79,4 +79,4 @@ setup_tests
 #run_Test "$1" "$2" "LDLSH-Optimized-mem-test"
 #run_Test "$1" "$2" "LDLSH-mem-test"
 run_Test "$1" "$2" "Traditional-External-mem-test"
-run_Test "$1" "$2" "Traditional-Replicated-mem-test"
+#run_Test "$1" "$2" "Traditional-Replicated-mem-test"
