@@ -1,5 +1,8 @@
 #! /bin/bash
 
+./run-quinta-servers.sh all -k
+rm -rf TESTS* log_*
+
 #./run-test-quinta.sh LDLSH 5 SRR_100I_aa SRR_100I_aa #> log_SRRaa_SRRaa_L.txt 2>&1;
 #./run-test-quinta.sh LDLDH 5 SRR_100I_aa SRR_100000000_Q_ab > log_SRRaa_SRRab_L.txt 2>&1;
 #./run-test-quinta.sh LDLSH 5 SRR_100I_aa SRR_100000000_Q_ac > log_SRRaa_SRRac_L.txt 2>&1;
