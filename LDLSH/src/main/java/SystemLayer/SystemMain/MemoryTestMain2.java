@@ -41,9 +41,10 @@ public class MemoryTestMain2 extends SystemMainImp {
                 dataObject.setValues(line);
                 data.add(dataObject);
                 i++;
-                System.out.println("Loaded: " + i);
+                System.out.print("Loaded: " + i + "\r");
             }
         }
+        System.out.println("Loaded: " + i);
 
         //Execute
         AtomicInteger successCounter = new AtomicInteger();
@@ -96,7 +97,7 @@ public class MemoryTestMain2 extends SystemMainImp {
                         final DataObject<?> elem = dataElement;
                         final Timestamp initialTimeStamp1 = initialTimeStamp;
                         @Override
-                        public void onSuccess(DataObject object) {
+                        public void onSuccess(DataObject<?> object) {
                             //Complete
                             Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
                             int n;
@@ -104,9 +105,16 @@ public class MemoryTestMain2 extends SystemMainImp {
                                 n = successCounter.getAndIncrement();
                             }
                             long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
-                            System.out.println(n + " - query for " + elem.getValues() +
-                                    " returned: " + object.getValues() +
-                                    " execution time: " + totalExecutionTime + " ms");
+
+                            if ( object == null ) {
+                                System.out.println(n + " - query for " + elem.getValues() +
+                                        " returned: null" +
+                                        " execution time: " + totalExecutionTime + " ms");
+                            }else {
+                                System.out.println(n + " - query for " + elem.getValues() +
+                                        " returned: " + object.getValues() +
+                                        " execution time: " + totalExecutionTime + " ms");
+                            }
                         }
 
                         @Override
@@ -119,8 +127,12 @@ public class MemoryTestMain2 extends SystemMainImp {
         }
         //Shutdown
         system.stop();
+        if (successCounter.get() != data.size() )
+            throw new Exception("Not all Inserts were performed. Missing: " + (data.size() - successCounter.get()) );
+
         System.out.println("Done. Please Check memory.");
         scanner.nextLine();
+
         System.exit(0);
 
     }

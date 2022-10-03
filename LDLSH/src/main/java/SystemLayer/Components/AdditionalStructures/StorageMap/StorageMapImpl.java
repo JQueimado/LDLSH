@@ -13,7 +13,7 @@ public abstract class StorageMapImpl implements StorageMap{
     }
 
     @Override
-    public abstract void insert(UniqueIdentifier key, DataObject<?> value) throws Exception;
+    public abstract boolean insert(UniqueIdentifier key, DataObject<?> value) throws Exception;
 
     @Override
     public abstract DataObject<?> query(UniqueIdentifier key) throws Exception;
