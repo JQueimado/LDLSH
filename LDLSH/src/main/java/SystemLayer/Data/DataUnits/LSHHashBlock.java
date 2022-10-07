@@ -8,7 +8,7 @@ import java.util.Arrays;
  *
  * @param lshBlock signature block's data
  */
-public record LSHHashBlock(byte[] lshBlock) implements Comparable<LSHHashBlock>, Serializable {
+public record LSHHashBlock(int[] lshBlock) implements Comparable<LSHHashBlock>, Serializable {
     @Override
     public int compareTo(LSHHashBlock o) {
         return Arrays.compare(lshBlock, o.lshBlock);
