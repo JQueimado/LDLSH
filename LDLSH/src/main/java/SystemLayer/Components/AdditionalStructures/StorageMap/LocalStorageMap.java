@@ -20,8 +20,6 @@ public class LocalStorageMap extends StorageMapImpl{
     @Override
     public boolean insert(UniqueIdentifier key, DataObject<?> value) {
         DataObject<?> rv = map.put(key, value);
-        /* DEBUG */
-        System.out.println(map.size());
         return rv == null;
     }
 
