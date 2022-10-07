@@ -101,18 +101,20 @@ class JavaMinHashNgramsTests {
         //Hash 1
         JavaMinHashNgrams hash = (JavaMinHashNgrams) simulatedState.getLshHashFactory().getNewLSHHash();
         hash.setObject(dataObject1.toByteArray(), 2);
-        int[] signature = hash.getSignature();
+        byte[] signature = hash.getSignature();
+        int[] ints = toIntArray(signature);
 
         //Hash 2
         JavaMinHashNgrams hash2 = (JavaMinHashNgrams) simulatedState.getLshHashFactory().getNewLSHHash();
         hash2.setObject(dataObject2.toByteArray(), 2);
-        int[] signature2 = hash2.getSignature();
+        byte[] signature2 = hash2.getSignature();
+        int[] ints2 = toIntArray(signature2);
 
         //Jaccard similarity
         double error = Double.parseDouble( simulatedState.getConfigurator().getConfig("ERROR") );
         long seed = Long.parseLong( simulatedState.getConfigurator().getConfig("LSH_SEED") );
         MinHash minHash = new MinHash(error, dataObject1.objectByteSize(5),seed);
-        double similarity = minHash.similarity(signature, signature2);
+        double similarity = minHash.similarity(ints, ints2);
 
         Set<Integer> obj1_ngram = JavaMinHashNgrams.create_ngrams(dataObject1.toByteArray(), simulatedState);
         Set<Integer> obj2_ngram = JavaMinHashNgrams.create_ngrams( dataObject2.toByteArray(), simulatedState);
