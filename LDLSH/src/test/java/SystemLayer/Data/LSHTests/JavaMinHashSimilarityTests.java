@@ -215,5 +215,6 @@ public class JavaMinHashSimilarityTests {
             LSHHashBlock block = hash.getBlockAt(i);
             assertArrayEquals(blocks[i].lshBlock(), block.lshBlock());
         }
+        assertEquals( n_blocks, blocks.length );
     }
 }
