@@ -17,7 +17,7 @@ public interface LSHHash extends Serializable, Comparable<LSHHash> {
      * Returns the generated complete signature
      * @return a bite array containing the associated object's signature
      */
-    byte[] getSignature();
+    int[] getSignature();
 
     /**
      * Returns the list of signature blocks

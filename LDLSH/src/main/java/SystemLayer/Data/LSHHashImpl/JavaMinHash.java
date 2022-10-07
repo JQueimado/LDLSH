@@ -68,7 +68,7 @@ public class JavaMinHash extends LSHHashImpl{
      * @param data Input Array.
      * @return Array representation of a signature.
      */
-    protected byte[] getSignature( Set<Integer> data ){
+    protected int[] getSignature( Set<Integer> data ){
         try {
             Configurator configurator = appContext.getConfigurator();
 
@@ -92,7 +92,7 @@ public class JavaMinHash extends LSHHashImpl{
             //Create Signature
             int[] signature = minHash.signature(data);
 
-            return toByteArray(signature);
+            return signature;
 
         } catch (UnknownConfigException e){
             UnknownConfigException.handler(e);

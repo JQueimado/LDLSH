@@ -9,7 +9,7 @@ import java.util.Arrays;
 public abstract class LSHHashImpl implements LSHHash{
 
     public static DataContainer appContext;
-    public byte[] data;
+    public int[] data;
     public LSHHashBlock[] blocks;
 
     /**
@@ -26,7 +26,7 @@ public abstract class LSHHashImpl implements LSHHash{
 
     //Standard Methods
     @Override
-    public byte[] getSignature() {
+    public int[] getSignature() {
         return data;
     }
 
@@ -58,7 +58,7 @@ public abstract class LSHHashImpl implements LSHHash{
      * @param n_blocks number of divisions
      * @return Array of signature blocks
      */
-    public LSHHashBlock[] createBlocks( byte[] signature, int n_blocks ){
+    public LSHHashBlock[] createBlocks( int[] signature, int n_blocks ){
         final LSHHashBlock[] blockArray = new LSHHashBlock[n_blocks]; //Array of blocks to be returned
         LSHHashBlock blockDump; //temporary LSHHashBlock pointer
         int block_count = 0; //block counter
@@ -67,7 +67,7 @@ public abstract class LSHHashImpl implements LSHHash{
         int signature_counter; //Signature position counter
 
         final int block_size = Math.floorDiv(signature_length, n_blocks) + 1; //block size topped
-        byte[] current_block = new byte[block_size]; //temporary block
+        int[] current_block = new int[block_size]; //temporary block
         int block_size_counter=0; //Block position counter
 
         for (signature_counter = 0; signature_counter<signature_length; signature_counter++) {
@@ -78,9 +78,9 @@ public abstract class LSHHashImpl implements LSHHash{
                 blockDump = new LSHHashBlock(current_block); //Create block
 
                 if (block_size > signature_length - signature_counter)
-                    current_block = new byte[signature_length - signature_counter - 1]; //creates smaller array
+                    current_block = new int[signature_length - signature_counter - 1]; //creates smaller array
                 else
-                    current_block = new byte[block_size_counter]; //creates block sized array
+                    current_block = new int[block_size_counter]; //creates block sized array
 
                 block_size_counter = 0;
 
@@ -104,7 +104,7 @@ public abstract class LSHHashImpl implements LSHHash{
     }
 
     private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
-        data = (byte[]) stream.readObject();
+        data = (int[]) stream.readObject();
         blocks = (LSHHashBlock[]) stream.readObject();
     }
 
