@@ -12,10 +12,11 @@ import com.google.common.collect.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.SortedSet;
 
 public class GuavaInMemoryMultiMap extends MultiMapImpl{
 
-    private final SetMultimap<LSHHashBlock, MultiMapValue> multiMap;
+    private final SortedSetMultimap<LSHHashBlock, MultiMapValue> multiMap;
 
     //Constructors
     public GuavaInMemoryMultiMap(int hash_position, int total_hash_blocks, DataContainer appContext){
@@ -26,7 +27,7 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
 
     public GuavaInMemoryMultiMap(DataContainer appContext){
         super(appContext);
-        this.multiMap = HashMultimap.create();
+        this.multiMap = TreeMultimap.create();
     }
 
     @Override
@@ -53,9 +54,18 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
 
     @Override
     public ErasureBlock complete( LSHHash lshHash , UniqueIdentifier uniqueIdentifier) throws InvalidMapValueTypeException {
-        Collection<MultiMapValue> multiMapValues = multiMap.get(lshHash.getBlockAt(hash_position));
+        SortedSet<MultiMapValue> multiMapValuesSet = multiMap.get(lshHash.getBlockAt(hash_position));
+        MultiMapValue[] multiMapValuesArray = multiMapValuesSet.toArray(new MultiMapValue[0]);
 
-        for( MultiMapValue rawMultiMapValue: multiMapValues ){
+        ModelMultimapValue comparisonAgent = new ModelMultimapValue(lshHash, uniqueIdentifier, null);
+
+        int low = 0;
+        int high = multiMapValuesArray.length - 1;
+
+        while( high - low > 1 ){
+            int pivot = (low + high)/2;
+
+            MultiMapValue rawMultiMapValue = multiMapValuesArray[pivot];
             ModelMultimapValue multiMapValue;
 
             try{
@@ -64,8 +74,13 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
                 throw new InvalidMapValueTypeException( "Multimap returned a non completable map value" );
             }
 
-            if( uniqueIdentifier.compareTo( multiMapValue.uniqueIdentifier() ) == 0 ){
+            int compare = comparisonAgent.compareTo(multiMapValue);
+            if( compare == 0 )
                 return multiMapValue.erasureCode();
+            else if (compare < 0) {
+                high = pivot - 1;
+            }else{
+                low = pivot + 1;
             }
         }
         return null;

@@ -3,6 +3,7 @@ package SystemLayer.Data.DataUnits;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
@@ -33,4 +34,10 @@ public record ModelMultimapValue(LSHHash lshHash,
         return uniqueIdentifier.hashCode();
     }
 
+    @Override
+    public int compareTo(@NotNull Object o) {
+        if( ! (o instanceof ModelMultimapValue) )
+            return -1;
+        return this.uniqueIdentifier.compareTo(((ModelMultimapValue) o).uniqueIdentifier);
+    }
 }

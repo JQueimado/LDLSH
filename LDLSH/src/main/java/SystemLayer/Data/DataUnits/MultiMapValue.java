@@ -7,4 +7,4 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import java.io.Serializable;
 
 //Multimap value Class
-public interface MultiMapValue extends Serializable{}
+public interface MultiMapValue extends Serializable, Comparable{}
