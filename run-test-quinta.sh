@@ -99,6 +99,9 @@ run_Test(){
 			kill_process "$SERVER"
 		done
 	done
+
+	tar -czvf "$RESULTSFOLDER.tar.gz" "$RESULTSFOLDER"
+	rm -r "$RESULTSFOLDER"
 	#Move results
 	#mkdir "TESTS/${RESULTSFOLDER}"
 	#mv "${DIR}/${RESULTSFOLDER}" "TESTS/."
