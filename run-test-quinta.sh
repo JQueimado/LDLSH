@@ -66,7 +66,7 @@ run_Test(){
 	#test configs
 	RESULTSFOLDER="TESTS/TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
 	
-	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
+	mkdir "${RESULTSFOLDER}"
 	
 	for TEST in $TESTS
 	do
