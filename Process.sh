@@ -4,8 +4,8 @@ then
     exit 1
 fi
 
-DATASETS="Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing/data_sets"
-PROCESSOR="Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing/PostProcess/dataProcessor.py"
+DATASETS="/home/joao/Tese/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing/data_sets"
+PROCESSOR="/home/joao/Tese/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing/PostProcess/dataProcessor.py"
 TESTFILE=$1
 TESTFOLDER=$(dirname "$TESTFILE")
 #TESTFOLDER="/"
