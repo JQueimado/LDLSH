@@ -6,6 +6,7 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
+import SystemLayer.Data.LSHHashImpl.JavaMinHashNgrams;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
 import info.debatty.java.lsh.MinHash;
@@ -35,30 +36,31 @@ public class JavaMinHashSimilarityTests {
         configurator.setConfig("ERROR", "0.1");
         configurator.setConfig("VECTOR_DIMENSIONS", "5");
         configurator.setConfig("LSH_SEED", "11111");
-        configurator.setConfig("LSH_HASH", "JAVA_MINHASH");
+        configurator.setConfig("LSH_HASH", "JAVA_MINHASH_NGRAMS");
+        configurator.setConfig("NGRAMS_LEVEL", "3");
 
         //Vectors
         String data_object_type = "STRING";
         DataObjectFactory dataObjectFactory = simulatedState.getDataObjectFactory();
-        dataObjects = new StringDataObject[5];
+        dataObjects = new StringDataObject[4];
 
         dataObjects[0] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
-        dataObjects[0].setValues("12345");
+        dataObjects[0].setValues("==1ADDD?2,2+2,AEDEAD>:ACFE+A?AACFEEC@9E3C?*CDD9B9?D=<**0??4D?B@;))=.==@C@CA)=.)=;)7?@AA@@2.>@;;>A;>>");
 
         //Jaccard Distance to 0: 0.2
         dataObjects[1] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
-        dataObjects[1].setValues("12355");
+        dataObjects[1].setValues("+=1ADDD;:222A:EE93CEEF3++3<9CCC<EC>EDFCC?C*BBDD>@DEIDBDD<?B/8/8=B@##################################");
 
         //Jaccard Distance to 0: 0.0
         dataObjects[2] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
-        dataObjects[2].setValues("12345");
+        dataObjects[2].setValues("1=;+A=D=DD?:++222AF+AF9AEE)?9:*11):D):?)889?A#######################################################");
 
         //Jaccard Distance to 0: 0.8
         dataObjects[3] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
-        dataObjects[3].setValues("55555");
+        dataObjects[3].setValues("1::ADD@D?)+222AEE?C22:):C?D?):*0:*???BD899B;AAAADCAA=C;A)=@37?)7?###################################");
 
-        dataObjects[4] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
-        dataObjects[4].setValues("54321");
+        //dataObjects[4] = (StringDataObject) dataObjectFactory.getNewDataObject( data_object_type );
+        //dataObjects[4].setValues("54321");
     }
 
     /**
@@ -66,14 +68,15 @@ public class JavaMinHashSimilarityTests {
      * This test only displays the values since LSH is a probabilistic algorithm and results are not accurate.
      * @param dataObject1 data object 1
      * @param dataObject2 data object 2
-     * @param expected_similarity hand calculated similarity
      */
-    void similarityTest(DataObject<String> dataObject1, DataObject<String> dataObject2, double expected_similarity ){
-        JavaMinHash hash = new JavaMinHash(dataObject1, 2, simulatedState);
+    void similarityTest(DataObject<String> dataObject1, DataObject<String> dataObject2 ) throws Exception{
+        LSHHash hash = simulatedState.getLshHashFactory().getNewLSHHash();
+        hash.setObject(dataObject1.toByteArray(), 2);
         byte[] signature = hash.getSignature();
         int[] ints = toIntArray(signature);
 
-        JavaMinHash hash2 = new JavaMinHash(dataObject2, 2, simulatedState);
+        LSHHash hash2 = simulatedState.getLshHashFactory().getNewLSHHash();
+        hash2.setObject(dataObject2.toByteArray(), 2);
         byte[] signature2 = hash2.getSignature();
         int[] ints2 = toIntArray(signature2);
 
@@ -81,46 +84,50 @@ public class JavaMinHashSimilarityTests {
         long seed = Long.parseLong( simulatedState.getConfigurator().getConfig("LSH_SEED") );
 
         MinHash minHash = new MinHash(error, dataObject1.objectByteSize(5),seed);
-        double similarity = minHash.similarity(ints, ints2);
-        double jaccard_similarity = MinHash.jaccardIndex(
-                toIntSet( dataObject1.toByteArray() ),
-                toIntSet( dataObject2.toByteArray() )
-        );
+        double hash_similarity = minHash.similarity(ints, ints2);
+
+        Set<Integer> dataObject1Ngrams = JavaMinHashNgrams.create_ngrams(dataObject1.toByteArray(), simulatedState);
+        Set<Integer> dataObject2Ngrams = JavaMinHashNgrams.create_ngrams(dataObject2.toByteArray(), simulatedState);
+        double object_distance = 1 - MinHash.jaccardIndex( dataObject1Ngrams, dataObject2Ngrams );
+
         System.out.printf(
                 """
                 Similarity test between "%s" and "%s":
-                \t-Expected Similarity: %f
-                \t-Actual Similarity: %f
-                \t-Jaccard Similarity: %f
+                \t-Object Similarity: %f
+                \t-Hash Similarity: %f
                 """,
                 dataObject1.getValues(),
                 dataObject2.getValues(),
-                expected_similarity,
-                similarity,
-                jaccard_similarity
+                object_distance,
+                hash_similarity
         );
     }
 
     //Similarity tests
     @Test
-    void getValuesSimilarity_01() {
-        similarityTest(dataObjects[0], dataObjects[1], 0.8 );
+    void getValuesSimilarity_00() throws Exception {
+        similarityTest(dataObjects[0], dataObjects[0] );
     }
 
     @Test
-    void getValuesSimilarity_02() {
-        similarityTest(dataObjects[0], dataObjects[2], 1);
+    void getValuesSimilarity_01() throws Exception {
+        similarityTest(dataObjects[0], dataObjects[1] );
     }
 
     @Test
-    void getValuesSimilarity_03() {
-        similarityTest(dataObjects[0], dataObjects[3], 0.2);
+    void getValuesSimilarity_02() throws Exception {
+        similarityTest(dataObjects[0], dataObjects[2]);
     }
 
     @Test
-    void getValuesSimilarity_04() {
-        similarityTest(dataObjects[0], dataObjects[4], 0.2);
+    void getValuesSimilarity_03() throws Exception {
+        similarityTest(dataObjects[0], dataObjects[3]);
     }
+
+    //@Test
+    //void getValuesSimilarity_04() {
+    //    similarityTest(dataObjects[0], dataObjects[4], 0.2);
+    //}
 
     //Auxiliary methods
 
@@ -167,7 +174,7 @@ public class JavaMinHashSimilarityTests {
         hash1.setObject(dataObjects[0].toByteArray(), 2);
 
         LSHHash hash2 = simulatedState.getLshHashFactory().getNewLSHHash();
-        hash2.setObject(dataObjects[2].toByteArray(), 2);
+        hash2.setObject(dataObjects[0].toByteArray(), 2);
 
         assertArrayEquals(hash1.getSignature(), hash2.getSignature());
         hash1.setObject(dataObjects[1].toByteArray(), 2);
