@@ -18,7 +18,7 @@ def createNgram( s : str, l : int ):
 
 def jcDistance( a : str, b : str, l : int ):
     if( type(b) == float ):
-        return np.nan
+        return 1
     a = createNgram(a, l)
     b = createNgram(b, l)
     return 1 - float(len(a.intersection(b)))/len(a.union(b))
@@ -29,9 +29,7 @@ def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
     testfiles.sort()
 
     for file in testfiles:
-        fileName = file.split(".")[0].split("/")[-1]
-        print(fileName)
-
+        print(file)
         # INSERT
         if "_i_" in file:
             df = pd.read_csv(file, sep=' ', header=None)
@@ -63,6 +61,7 @@ def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
             df = df.drop("result", axis=1)
             df.columns = ["value", "result"]
 
+        fileName = os.path.basename(file)
         if resultdf.empty:
             resultdf = df.rename(columns={ 'result' : fileName })
             #resultdf = resultdf.set_index('value')
@@ -71,11 +70,10 @@ def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
             #resultdf = pd.merge(resultdf, df, on='value')
             resultdf = resultdf.rename(columns={ 'result' : fileName })
 
-    print(resultdf)
-
     dirName : str = os.path.dirname(testfiles[0])
     
     resultdf = resultdf.set_index('value')
+    print(resultdf)
     resultdf.to_csv( dirName+"/accuracy.results.csv" )
     
     stats = resultdf.agg(["min", "max", "median", "std", "mean", "skew"])
@@ -83,24 +81,6 @@ def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
     print(stats)
     stats.to_csv( dirName+"/accuracy.stats.csv")
 
-
-def accuracyQueryProcessor( testfname : str , ngramLevel : int ):
-    #Read Dataset
-    dsdf = pd.read_csv(testfname, sep=' ', header=None)
-    dsdf.columns = ['query', 'sep', 'result']
-    dsdf = dsdf.drop(columns=['sep'])
-
-    dsdf['jaccard distance'] = dsdf.apply( lambda row : jcDistance(row['query'], row['result'], ngramLevel), axis=1 )
-    dsdf.head()
-
-    dsdf.to_csv( testfname + ".acc.results.csv" )
-
-    #print( "avg: " + str( dsdf['jaccard distance'].mean() ))
-    stats = dsdf.agg({
-        'jaccard distance': ["min", "max", "median", "std", "mean", "skew"]
-    })
-
-    stats.to_csv(testfname + ".acc.stats.csv")
 
 #LatencyProcessor:
 # testfname: str -> filename
@@ -111,14 +91,14 @@ def latencyProcessor( testfiles : list):
     testfiles.sort()
 
     for file in testfiles:
-        fileName = file.split(".")[0].split("/")[-1]
-        print(fileName)
+        print(file)
 
         df = pd.read_csv(file, sep=" ", header=None)
         df = df.drop([0,1,3,4,6], axis=1)
         df.columns = ['value', 'time']
         df = df.sort_values(by='value')
 
+        fileName = os.path.basename(file)
         if resultdf.empty:
             resultdf = df.rename(columns={ 'time' : fileName })
             #resultdf = resultdf.set_index('value')
@@ -127,11 +107,10 @@ def latencyProcessor( testfiles : list):
             #resultdf = pd.merge(resultdf, df, on='value')
             resultdf = resultdf.rename(columns={ 'time' : fileName })
 
-    print(resultdf)
     dirName : str = os.path.dirname(testfiles[0])
-    print(dirName)
     
     resultdf = resultdf.set_index('value')
+    print(resultdf)
     resultdf.to_csv( dirName+"/latency.results.csv" )
     
     stats = resultdf.agg(["min", "max", "median", "std", "mean", "skew"])
