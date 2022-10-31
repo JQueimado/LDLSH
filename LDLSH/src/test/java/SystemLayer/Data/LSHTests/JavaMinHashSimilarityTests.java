@@ -84,7 +84,7 @@ public class JavaMinHashSimilarityTests {
         long seed = Long.parseLong( simulatedState.getConfigurator().getConfig("LSH_SEED") );
 
         MinHash minHash = new MinHash(error, dataObject1.objectByteSize(5),seed);
-        double hash_similarity = minHash.similarity(ints, ints2);
+        double hash_distance = 1 - minHash.similarity(ints, ints2);
 
         Set<Integer> dataObject1Ngrams = JavaMinHashNgrams.create_ngrams(dataObject1.toByteArray(), simulatedState);
         Set<Integer> dataObject2Ngrams = JavaMinHashNgrams.create_ngrams(dataObject2.toByteArray(), simulatedState);
@@ -99,7 +99,7 @@ public class JavaMinHashSimilarityTests {
                 dataObject1.getValues(),
                 dataObject2.getValues(),
                 object_distance,
-                hash_similarity
+                hash_distance
         );
     }
 
