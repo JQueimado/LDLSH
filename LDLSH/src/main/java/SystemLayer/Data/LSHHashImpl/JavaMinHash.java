@@ -19,6 +19,36 @@ public class JavaMinHash extends LSHHashImpl{
     public static final String ERROR = "ERROR";
     public static final String LSH_SEED = "LSH_SEED";
 
+    // Auxiliary methods
+    /**
+     * Transforms an object into a set of integers (required to calculate signatures)
+     * @param object Array required
+     * @return Set of integers
+     */
+    public static Set<Integer> toIntSet( byte[] object ){
+        Set<Integer> values = new HashSet<>();
+        int i;
+        int j = object.length;
+        for (i = 0; i<j; i++ ){
+            int value = object[i];
+            values.add( value );
+        }
+        return values;
+    }
+
+    /**
+     * Transforms a Array of integers into an Array of bytes
+     * @param ints Input int Array
+     * @return Resulting Array of bytes
+     */
+    public static byte[] toByteArray(int[] ints ){
+        ByteBuffer byteBuffer = ByteBuffer.allocate(ints.length * 4);
+        IntBuffer intBuffer = byteBuffer.asIntBuffer();
+        intBuffer.put(ints);
+        return byteBuffer.array();
+    }
+
+    //Objects
     public JavaMinHash(DataContainer dataContainer){
         super(dataContainer);
     }
@@ -32,35 +62,6 @@ public class JavaMinHash extends LSHHashImpl{
     public void setObject( byte[] object, int n_blocks ){
        this.data = getSignature( toIntSet( object ) );
        this.blocks = createBlocks(this.data, n_blocks);
-    }
-
-    // Auxiliary methods
-    /**
-     * Transforms a byte array into a set of integers (required to calculate signatures)
-     * @param bytes Array required
-     * @return Set of integers
-     */
-    private Set<Integer> toIntSet( byte[] bytes ){
-        Set<Integer> values = new HashSet<>();
-        int i;
-        int j = bytes.length;
-        for (i = 0; i<j; i++ ){
-            int value = bytes[i];
-            values.add( value );
-        }
-        return values;
-    }
-
-    /**
-     * Transforms a Array of integers into an Array of bytes
-     * @param ints Input int Array
-     * @return Resulting Array of bytes
-     */
-    private byte[] toByteArray(int[] ints ){
-        ByteBuffer byteBuffer = ByteBuffer.allocate(ints.length * 4);
-        IntBuffer intBuffer = byteBuffer.asIntBuffer();
-        intBuffer.put(ints);
-        return byteBuffer.array();
     }
 
     /**
