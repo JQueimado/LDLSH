@@ -14,7 +14,6 @@ def createNgram( s : str, l : int ):
         r.add(ng)
     return r
 
-
 def jcDistance( a : str, b : str, l : int ):
     if( type(b) == float ):
         return 1
@@ -46,7 +45,7 @@ def accuracyInsertProcessor( testfname : str , datasetfname : str ):
     dsdf.to_csv( testfname + ".acc.results.csv")
 
     stats = dsdf.agg({
-        'eval': ["min", "max", "median", "skew", "mean"]
+        'eval': ["min", "max", "median", "std", "mean", "skew"]
     })
 
     stats.to_csv(testfname + ".acc.stats.csv")
@@ -64,7 +63,7 @@ def accuracyQueryProcessor( testfname : str , ngramLevel : int ):
 
     #print( "avg: " + str( dsdf['jaccard distance'].mean() ))
     stats = dsdf.agg({
-        'jaccard distance': ["min", "max", "median", "skew", "mean"]
+        'jaccard distance': ["min", "max", "median", "std", "mean", "skew"]
     })
 
     stats.to_csv(testfname + ".acc.stats.csv")
@@ -79,7 +78,7 @@ def latencyProcessor( testfname : str ):
     df.to_csv( testfname + ".lat.results.csv" )
 
     stats = df.agg({
-        'time': ["min", "max", "median", "skew", "mean"]
+        'time': ["min", "max", "median", "std", "mean", "skew"]
     })
 
     stats.to_csv(testfname + ".lat.stats.csv")
@@ -97,8 +96,8 @@ def throughputProcessor( files, dir ):
 
     df.to_csv( dir + "/throughput.results.csv" )
     stats = df.agg({
-        'total time': ["min", "max", "median", "skew", "mean"],
-        'throughput': ["min", "max", "median", "skew", "mean"]
+        'total time': ["min", "max", "median", "std", "mean", "skew"],
+        'throughput': ["min", "max", "median", "std", "mean", "skew"]
     })
     stats.to_csv(dir + "/throughput.stats.csv")
 
