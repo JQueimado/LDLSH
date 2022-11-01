@@ -10,12 +10,16 @@ import SystemLayer.Data.LSHHashImpl.JavaMinHashNgrams;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
 import info.debatty.java.lsh.MinHash;
+import io.netty.buffer.ByteBuf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
@@ -137,14 +141,12 @@ public class JavaMinHashSimilarityTests {
      * @return resulting array
      */
     private int[] toIntArray( byte[] array ){
-        int[] values = new int[array.length];
-        int i;
-        int j = array.length;
-        for (i = 0; i<j; i++ ){
-            int value = array[i];
-            values[i] = value;
-        }
-        return values;
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(array).order(ByteOrder.BIG_ENDIAN);
+        IntBuffer intBuffer = byteBuffer.asIntBuffer();
+        int[] intArray = new int[intBuffer.remaining()];
+        intBuffer.get(intArray);
+        return intArray;
     }
 
     /**
