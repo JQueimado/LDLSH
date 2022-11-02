@@ -141,7 +141,6 @@ public class JavaMinHashSimilarityTests {
      * @return resulting array
      */
     private int[] toIntArray( byte[] array ){
-
         ByteBuffer byteBuffer = ByteBuffer.wrap(array).order(ByteOrder.BIG_ENDIAN);
         IntBuffer intBuffer = byteBuffer.asIntBuffer();
         int[] intArray = new int[intBuffer.remaining()];
