@@ -10,7 +10,7 @@ levels = [4,3,2,1]
 #Accuracy Aux
 def createNgram( s : str, l : int ):
     r = set()
-    c = len(s) -l -1
+    c = len(s) -l +1
     for i in range(c):
         ng = s[i:i+l]
         r.add(ng)
