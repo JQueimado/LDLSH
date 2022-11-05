@@ -9,8 +9,10 @@ import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.JavaMinHashNgrams;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
+import info.debatty.java.lsh.LSHMinHash;
 import info.debatty.java.lsh.MinHash;
 import io.netty.buffer.ByteBuf;
+import jdk.jfr.Threshold;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
@@ -126,6 +128,15 @@ public class JavaMinHashSimilarityTests {
     @Test
     void getValuesSimilarity_03() throws Exception {
         similarityTest(dataObjects[0], dataObjects[3]);
+    }
+
+    @Test
+    void temp_test() throws Exception {
+        int s = 3;
+        int n = 100;
+        double threshold = 0.95;
+        int r = (int) Math.ceil(Math.log(1.0 / s) / Math.log(threshold)) + 1;
+        System.out.println( r * s );
     }
 
     //@Test
