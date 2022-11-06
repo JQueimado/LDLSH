@@ -6,17 +6,15 @@ import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import info.debatty.java.lsh.MinHash;
 
-import javax.naming.ConfigurationException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class JavaMinHash extends LSHHashImpl{
 
     //constants
-    public static final String ERROR = "ERROR";
+    public static final String THRESHOLD = "THRESHOLD";
     public static final String LSH_SEED = "LSH_SEED";
 
     // Auxiliary methods
@@ -74,11 +72,11 @@ public class JavaMinHash extends LSHHashImpl{
             Configurator configurator = appContext.getConfigurator();
 
             //Get Accuracy
-            String accuracy_string = configurator.getConfig(JavaMinHash.ERROR);
-            double accuracy_error;
+            String accuracy_string = configurator.getConfig(JavaMinHash.THRESHOLD);
+            double threshold;
             if (accuracy_string.isBlank())
-                throw new UnknownConfigException(ERROR, accuracy_string);
-            accuracy_error = Double.parseDouble(accuracy_string);
+                throw new UnknownConfigException(THRESHOLD, accuracy_string);
+            threshold = Double.parseDouble(accuracy_string);
 
             //Get Seed
             String seed_string = configurator.getConfig(LSH_SEED);
@@ -88,7 +86,10 @@ public class JavaMinHash extends LSHHashImpl{
             seed = Long.parseLong(seed_string);
 
             //Setup Encoder
-            MinHash minHash = new MinHash(accuracy_error, data.size(), seed);
+            int s = appContext.getNumberOfBands();
+            int signature_size = ( (int) Math.ceil(Math.log(1.0 / s) / Math.log(threshold)) + 1 ) * s;
+
+            MinHash minHash = new MinHash(signature_size, data.size(), seed);
 
             //Create Signature
             int[] signature = minHash.signature(data);
