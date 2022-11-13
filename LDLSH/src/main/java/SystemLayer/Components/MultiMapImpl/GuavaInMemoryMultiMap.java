@@ -53,7 +53,10 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
     }
 
     @Override
-    public ErasureBlock complete( LSHHash lshHash , UniqueIdentifier uniqueIdentifier) throws InvalidMapValueTypeException {
+    public ErasureBlock complete(
+            LSHHash lshHash ,
+            UniqueIdentifier uniqueIdentifier)
+    throws InvalidMapValueTypeException {
         SortedSet<MultiMapValue> multiMapValuesSet = multiMap.get(lshHash.getBlockAt(hash_position));
         MultiMapValue[] multiMapValuesArray = multiMapValuesSet.toArray(new MultiMapValue[0]);
 
@@ -61,9 +64,9 @@ public class GuavaInMemoryMultiMap extends MultiMapImpl{
 
         int low = 0;
         int high = multiMapValuesArray.length - 1;
-
-        while( high - low > 1 ){
-            int pivot = (low + high)/2;
+        int pivot;
+        while( high >= low ){
+            pivot = (low + high)/2;
 
             MultiMapValue rawMultiMapValue = multiMapValuesArray[pivot];
             ModelMultimapValue multiMapValue;
