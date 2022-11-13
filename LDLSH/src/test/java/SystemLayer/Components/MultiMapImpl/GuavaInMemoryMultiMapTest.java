@@ -13,10 +13,13 @@ import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -172,6 +175,44 @@ class GuavaInMemoryMultiMapTest {
     }
 
     @Test
-    void query() {
+    void query() throws Exception {
+        MultiMap multiMap = multimapFactory.getNewMultiMap();
+        multiMap.setHashBlockPosition(0);
+        multiMap.setTotalBlocks(1);
+
+        //Insert
+        for( int i = 0; i<100; i++ ){
+            ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
+                    hashes.get(i),
+                    uniqueIdentifiers.get(i),
+                    erasureCodes.get(i).getBlockAt(0)
+            );
+
+            multiMap.insert(hashes.get(i), modelMultimapValue);
+        }
+
+        Random random = new Random();
+        int subject = random.nextInt(0,100);
+        LSHHash hash = hashes.get(subject);
+        UniqueIdentifier uid = uniqueIdentifiers.get(subject);
+        ErasureCodes erasureCode = erasureCodes.get(subject);
+
+        ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
+                hashes.get(subject),
+                uniqueIdentifiers.get(subject),
+                erasureCodes.get(subject).getBlockAt(0)
+        );
+
+
+        MultiMapValue[] multiMapValues = multiMap.query(hash.getBlockAt(0));
+        assertNotEquals(0, multiMapValues.length);
+
+        for ( MultiMapValue mapValue : multiMapValues ){
+            if ( mapValue.equals( modelMultimapValue ) ){
+                assertEquals( modelMultimapValue, mapValue );
+                return;
+            }
+        }
+        assert false;
     }
 }
