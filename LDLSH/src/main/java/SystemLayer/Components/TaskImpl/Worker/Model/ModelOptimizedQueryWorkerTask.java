@@ -13,6 +13,9 @@ import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.*;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import java.util.*;
 
 public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
@@ -21,6 +24,14 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
         super(queryRequest, appContext);
         if( queryRequest.getType() != Message.types.QUERY_REQUEST )
             throw new Exception("Invalid Message type for QueryTask");
+    }
+
+    private int[] signatureToIntArray( byte[] signature ){
+        ByteBuffer byteBuffer = ByteBuffer.wrap(signature).order(ByteOrder.BIG_ENDIAN);
+        IntBuffer intBuffer = byteBuffer.asIntBuffer();
+        int[] intArray = new int[intBuffer.remaining()];
+        intBuffer.get(intArray);
+        return intArray;
     }
 
     @Override
@@ -76,8 +87,8 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
         for( UniqueIdentifier currentUid: objectMapping.keySet() ){
             LSHHash currentHash = objectMapping.get(currentUid).lshHash();
             double currentDistance = appContext.getDistanceMeasurer().getDistance(
-                    currentHash.getSignature(),
-                    query_hash.getSignature()
+                    signatureToIntArray( currentHash.getSignature() ),
+                    signatureToIntArray( query_hash.getSignature() )
             );
 
             if( distance == -1 || currentDistance < distance ){

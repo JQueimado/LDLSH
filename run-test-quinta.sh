@@ -64,9 +64,9 @@ run_Test(){
 	QUERYFILE="${DATASETS}/$4"
 
 	#test configs
-	RESULTSFOLDER="TESTS/TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
+	RESULTSFOLDER="TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
 	
-	ssh $CLIENT "cd ${DIR}; mkdir ${RESULTSFOLDER}"
+	mkdir "TESTS/${RESULTSFOLDER}"
 	
 	for TEST in $TESTS
 	do
@@ -79,7 +79,7 @@ run_Test(){
 
 		#Insert
 		echo "$2: Runing $TEST Inserts..."
-		run_test_client_jar "$CLIENT" "$CONFIGFILE" "i" "$INSERTFILE" "$RESULTSFOLDER" "$TEST"
+		run_test_client_jar "$CLIENT" "$CONFIGFILE" "i" "$INSERTFILE" "TESTS/$RESULTSFOLDER" "$TEST"
 
 		#Test
 		for IT in $(seq "$ITERATIONS")
@@ -87,7 +87,7 @@ run_Test(){
 			#Query
 			sleep 1
 			echo "$2: Runing $TEST test ${IT} out of ${ITERATIONS}..."
-			run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "$RESULTSFOLDER" "$TEST"
+			run_test_client_jar "$CLIENT" "$CONFIGFILE" "q" "$QUERYFILE" "TESTS/$RESULTSFOLDER" "$TEST"
 		done
 
 		kill_process "$CLIENT"
@@ -99,6 +99,9 @@ run_Test(){
 			kill_process "$SERVER"
 		done
 	done
+
+	tar -czvf "$RESULTSFOLDER.tar.gz" -C "./TESTS/" "$RESULTSFOLDER"
+	rm -r "TESTS/$RESULTSFOLDER"
 	#Move results
 	#mkdir "TESTS/${RESULTSFOLDER}"
 	#mv "${DIR}/${RESULTSFOLDER}" "TESTS/."
