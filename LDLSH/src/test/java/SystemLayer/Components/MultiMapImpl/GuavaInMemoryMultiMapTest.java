@@ -1,5 +1,6 @@
 package SystemLayer.Components.MultiMapImpl;
 
+import Factories.ComponentFactories.MultimapFactory;
 import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Containers.Configurator.Configurator;
@@ -7,24 +8,29 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.SimplePartitionErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
-import SystemLayer.Data.UniqueIndentifierImpl.Sha256UniqueIdentifier;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GuavaInMemoryMultiMapTest {
 
     DataContainer simulatedState;
-    List<DataObject> objects;
+    MultimapFactory multimapFactory;
+
+    List<DataObject<String>> objects;
     List<LSHHash> hashes;
     List<UniqueIdentifier> uniqueIdentifiers;
     List<ErasureCodes> erasureCodes;
@@ -34,10 +40,16 @@ class GuavaInMemoryMultiMapTest {
         //State
         simulatedState = new DataContainer("");
         Configurator configurator = simulatedState.getConfigurator();
-        configurator.setConfig("THRESHOLD", "0.9");
+        configurator.setConfig("UNIQUE_IDENTIFIER", "SHA256");
+        configurator.setConfig("ERASURE_CODES",     "SIMPLE_PARTITION");
+        configurator.setConfig("THRESHOLD",         "0.50");
         configurator.setConfig("VECTOR_DIMENSIONS", "5");
-        configurator.setConfig("LSH_SEED", "11111");
-        configurator.setConfig("N_BANDS", "1");
+        configurator.setConfig("LSH_HASH",          "JAVA_MINHASH");
+        configurator.setConfig("LSH_SEED",          "11111");
+        configurator.setConfig("MULTIMAP",          "GUAVA_MEMORY_MULTIMAP");
+        configurator.setConfig("N_BANDS",           "1");
+
+        multimapFactory = new MultimapFactory(simulatedState);
 
         //Objects
         objects = new ArrayList<>();
@@ -45,26 +57,46 @@ class GuavaInMemoryMultiMapTest {
         uniqueIdentifiers = new ArrayList<>();
         erasureCodes = new ArrayList<>();
 
-        DataObject object;
+        Random random = new Random();
+        DataObject<String> object;
         LSHHash hash;
         ErasureCodes erasureCode;
         UniqueIdentifier uniqueIdentifier;
 
-        //Object 0
-        object = new StringDataObject("12345");
-        hash = new JavaMinHash(object, 1, simulatedState);
-        erasureCode = new SimplePartitionErasureCodes(simulatedState);
-        uniqueIdentifier = new Sha256UniqueIdentifier(simulatedState);
-        objects.add(object);
-        hashes.add(hash);
-        erasureCodes.add(erasureCode);
-        uniqueIdentifiers.add(uniqueIdentifier);
+        int subjects = 100;
+        for (int i = 0; i<subjects; i++){
+            //Object
+            object = new StringDataObject();
+            StringBuilder stringBuilder = new StringBuilder();
+            for(int j = 0; j<100; j++){
+                stringBuilder.append(random.nextInt(0, 9));
+            }
+            object.setValues( stringBuilder.toString() );
+            objects.add(object);
+
+            //Hash
+            hash = simulatedState.getLshHashFactory().getNewLSHHash();
+            hash.setObject( object.toByteArray(), 1 );
+            hashes.add(hash);
+
+            //Erasure Codes
+            erasureCode = simulatedState.getErasureCodesFactory().getNewErasureCodes();
+            erasureCode.encodeDataObject( object.toByteArray(), 1 );
+            erasureCodes.add( erasureCode );
+
+            //UID
+            uniqueIdentifier = simulatedState.getUniqueIdentifierFactory().getNewUniqueIdentifier();
+            uniqueIdentifier.setObject( object.toByteArray() );
+            uniqueIdentifiers.add( uniqueIdentifier );
+        }
 
     }
 
     @Test
     void testGetBlock() throws Exception {
-        MultiMap multiMap = new GuavaInMemoryMultiMap(0, 1, simulatedState);
+        MultiMap multiMap = multimapFactory.getNewMultiMap();
+        multiMap.setHashBlockPosition(0);
+        multiMap.setTotalBlocks(1);
         int position = 0;
 
         ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
@@ -86,7 +118,9 @@ class GuavaInMemoryMultiMapTest {
 
     @Test
     void insertQueryTest() throws Exception {
-        MultiMap multiMap = new GuavaInMemoryMultiMap(0,1, simulatedState);
+        MultiMap multiMap = multimapFactory.getNewMultiMap();
+        multiMap.setHashBlockPosition(0);
+        multiMap.setTotalBlocks(1);
         int position = 0;
 
         ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
@@ -110,10 +144,75 @@ class GuavaInMemoryMultiMapTest {
     }
 
     @Test
-    void complete() {
+    void complete() throws Exception {
+        MultiMap multiMap = multimapFactory.getNewMultiMap();
+        multiMap.setHashBlockPosition(0);
+        multiMap.setTotalBlocks(1);
+
+        //Insert
+        for( int i = 0; i<100; i++ ){
+            ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
+                    hashes.get(i),
+                    uniqueIdentifiers.get(i),
+                    erasureCodes.get(i).getBlockAt(0)
+            );
+
+            multiMap.insert(hashes.get(i), modelMultimapValue);
+        }
+
+        Random random = new Random();
+        int subject = random.nextInt(0,100);
+
+        LSHHash hash = hashes.get(subject);
+        UniqueIdentifier uid = uniqueIdentifiers.get(subject);
+        ErasureCodes erasureCode = erasureCodes.get(subject);
+
+        ErasureCodesImpl.ErasureBlock erasureBlock =  multiMap.complete(hash, uid);
+        ErasureCodes erasureCodesResult = simulatedState.getErasureCodesFactory().getNewErasureCodes();
+        erasureCodesResult.addBlockAt(erasureBlock);
+
+        assertEquals( erasureCode, erasureCodesResult );
     }
 
     @Test
-    void query() {
+    void query() throws Exception {
+        MultiMap multiMap = multimapFactory.getNewMultiMap();
+        multiMap.setHashBlockPosition(0);
+        multiMap.setTotalBlocks(1);
+
+        //Insert
+        for( int i = 0; i<100; i++ ){
+            ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
+                    hashes.get(i),
+                    uniqueIdentifiers.get(i),
+                    erasureCodes.get(i).getBlockAt(0)
+            );
+
+            multiMap.insert(hashes.get(i), modelMultimapValue);
+        }
+
+        Random random = new Random();
+        int subject = random.nextInt(0,100);
+        LSHHash hash = hashes.get(subject);
+        UniqueIdentifier uid = uniqueIdentifiers.get(subject);
+        ErasureCodes erasureCode = erasureCodes.get(subject);
+
+        ModelMultimapValue modelMultimapValue = new ModelMultimapValue(
+                hashes.get(subject),
+                uniqueIdentifiers.get(subject),
+                erasureCodes.get(subject).getBlockAt(0)
+        );
+
+
+        MultiMapValue[] multiMapValues = multiMap.query(hash.getBlockAt(0));
+        assertNotEquals(0, multiMapValues.length);
+
+        for ( MultiMapValue mapValue : multiMapValues ){
+            if ( mapValue.equals( modelMultimapValue ) ){
+                assertEquals( modelMultimapValue, mapValue );
+                return;
+            }
+        }
+        assert false;
     }
 }
