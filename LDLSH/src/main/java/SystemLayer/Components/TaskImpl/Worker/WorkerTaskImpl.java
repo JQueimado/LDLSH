@@ -14,7 +14,15 @@ public abstract class WorkerTaskImpl implements WorkerTask{
         this.appContext = appContext;
     }
 
+    protected int[] objectsToIntArray( byte[] object ){
+        int[] intArray = new int[object.length];
+        for( int i = 0; i<object.length; i++ ){
+            intArray[i] = object[i];
+        }
+        return intArray;
+    }
+
     @Override
-    public abstract DataObject call() throws Exception;
+    public abstract DataObject<?> call() throws Exception;
 
 }

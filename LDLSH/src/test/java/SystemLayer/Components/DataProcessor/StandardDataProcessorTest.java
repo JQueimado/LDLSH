@@ -28,7 +28,7 @@ class StandardDataProcessorTest {
         simulatedState.getConfigurator().setConfig("OBJECT_TYPE",           "STRING");
         //LSH
         simulatedState.getConfigurator().setConfig("LSH_HASH",              "JAVA_MINHASH");
-        simulatedState.getConfigurator().setConfig("ERROR",                 ".1");
+        simulatedState.getConfigurator().setConfig("THRESHOLD",             ".9");
         simulatedState.getConfigurator().setConfig("LSH_SEED",              "1234");
         //Erasure codes
         simulatedState.getConfigurator().setConfig("ERASURE_CODES",         "SIMPLE_PARTITION");

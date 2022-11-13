@@ -54,6 +54,8 @@ public abstract class LSHHashImpl implements LSHHash{
     // Auxiliary
     /**
      * Divides a given signature int a set of signature blocks
+     * Since the original signature values are of type int, the data is split in accordance t the original array length
+     * to avoid splitting data items in half
      * @param signature given signature
      * @param n_blocks number of divisions
      * @return Array of signature blocks
@@ -63,24 +65,24 @@ public abstract class LSHHashImpl implements LSHHash{
         LSHHashBlock blockDump; //temporary LSHHashBlock pointer
         int block_count = 0; //block counter
 
-        final int signature_length = signature.length; //Signature size
+        final int signature_length = signature.length/4; //Signature size
         int signature_counter; //Signature position counter
 
         final int block_size = Math.floorDiv(signature_length, n_blocks) + 1; //block size topped
-        byte[] current_block = new byte[block_size]; //temporary block
+        byte[] current_block = new byte[block_size*4]; //temporary block
         int block_size_counter=0; //Block position counter
 
         for (signature_counter = 0; signature_counter<signature_length; signature_counter++) {
-            current_block[block_size_counter]= signature[signature_counter]; //Assign value
+            System.arraycopy(signature, signature_counter*4, current_block, block_size_counter*4, 4);
             block_size_counter++;
 
             if (block_size_counter >= block_size) {
                 blockDump = new LSHHashBlock(current_block); //Create block
 
-                if (block_size > signature_length - signature_counter)
-                    current_block = new byte[signature_length - signature_counter - 1]; //creates smaller array
+                if ( block_size > signature_length - signature_counter)
+                    current_block = new byte[(signature_length - signature_counter - 1)*4]; //creates smaller array
                 else
-                    current_block = new byte[block_size_counter]; //creates block sized array
+                    current_block = new byte[block_size*4]; //creates block sized array
 
                 block_size_counter = 0;
 
