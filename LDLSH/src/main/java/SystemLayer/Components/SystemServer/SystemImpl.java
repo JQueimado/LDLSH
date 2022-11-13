@@ -44,22 +44,19 @@ public class SystemImpl implements SystemServer {
             return;
         }
 
+        MultimapFactory multimapFactory = new MultimapFactory(context); //Create factory
+
+        String bands_string = "";
+        int bands = 0;
+        try {
+            bands_string = configurator.getConfig(nBands_config);
+            bands = Integer.parseInt(bands_string);
+        } catch (Exception e) {
+            UnknownConfigException.handler(new UnknownConfigException(nBands_config, bands_string));
+        }
+
         switch (nodeType){
             case MULTIMAP_SERVER -> {
-                //-MultiMaps
-                MultimapFactory multimapFactory = new MultimapFactory(context); //Create factory
-                String multimapConfig = configurator.getConfig("MULTIMAP"); //Get multimap Config
-
-                //Get Bands
-                String bands_string = "";
-                int bands = 0;
-                try {
-                    bands_string = configurator.getConfig(nBands_config);
-                    bands = Integer.parseInt(bands_string);
-                }catch (Exception e){
-                    UnknownConfigException.handler( new UnknownConfigException(nBands_config, bands_string));
-                }
-
                 //Get Map position
                 String multiMapPosition_value = "";
                 int multiMapPosition;
@@ -75,7 +72,7 @@ public class SystemImpl implements SystemServer {
 
                 List<MultiMap> multiMaps = new ArrayList<>();
 
-                MultiMap current = multimapFactory.getNewMultiMap(multimapConfig); //get new Multimap
+                MultiMap current = multimapFactory.getNewMultiMap(); //get new Multimap
                 current.setHashBlockPosition(multiMapPosition);
                 current.setTotalBlocks(bands);
 
@@ -84,31 +81,14 @@ public class SystemImpl implements SystemServer {
             }
 
             case CLIENT_WORKER -> {
-                //-MultiMaps
-                MultimapFactory multimapFactory = new MultimapFactory(context); //Create factory
-                String multimapConfig = configurator.getConfig("MULTIMAP"); //Get multimap Config
-
-                //Get Bands
-                if ( !multimapConfig.isEmpty() && ( multimapConfig.compareTo("NONE") != 0) ) {
-                    String bands_string = "";
-                    int bands = 0;
-                    try {
-                        bands_string = configurator.getConfig(nBands_config);
-                        bands = Integer.parseInt(bands_string);
-                    } catch (Exception e) {
-                        UnknownConfigException.handler(new UnknownConfigException(nBands_config, bands_string));
-                    }
-
-
-                    List<MultiMap> multiMaps = new ArrayList<>();
-                    for (int i = 0; i < bands; i++) {
-                        MultiMap current = multimapFactory.getNewMultiMap(multimapConfig);
-                        current.setHashBlockPosition(i);
-                        current.setTotalBlocks(bands);
-                        multiMaps.add( current );
-                    }
-                    context.setMultiMaps(multiMaps);
+                List<MultiMap> multiMaps = new ArrayList<>();
+                for (int i = 0; i < bands; i++) {
+                    MultiMap current = multimapFactory.getNewMultiMap();
+                    current.setHashBlockPosition(i);
+                    current.setTotalBlocks(bands);
+                    multiMaps.add( current );
                 }
+                context.setMultiMaps(multiMaps);
             }
         }
 

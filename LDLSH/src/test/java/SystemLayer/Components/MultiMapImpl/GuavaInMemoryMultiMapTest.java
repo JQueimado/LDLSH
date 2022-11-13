@@ -1,5 +1,6 @@
 package SystemLayer.Components.MultiMapImpl;
 
+import Factories.ComponentFactories.MultimapFactory;
 import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Containers.Configurator.Configurator;
@@ -24,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class GuavaInMemoryMultiMapTest {
 
     DataContainer simulatedState;
+    MultimapFactory multimapFactory;
+
     List<DataObject> objects;
     List<LSHHash> hashes;
     List<UniqueIdentifier> uniqueIdentifiers;
@@ -37,7 +40,10 @@ class GuavaInMemoryMultiMapTest {
         configurator.setConfig("THRESHOLD", "0.9");
         configurator.setConfig("VECTOR_DIMENSIONS", "5");
         configurator.setConfig("LSH_SEED", "11111");
+        configurator.setConfig("MULTIMAP", "GUAVA_MEMORY_MULTIMAP");
         configurator.setConfig("N_BANDS", "1");
+
+        multimapFactory = new MultimapFactory(simulatedState);
 
         //Objects
         objects = new ArrayList<>();
@@ -64,7 +70,9 @@ class GuavaInMemoryMultiMapTest {
 
     @Test
     void testGetBlock() throws Exception {
-        MultiMap multiMap = new GuavaInMemoryMultiMap(0, 1, simulatedState);
+        MultiMap multiMap = multimapFactory.getNewMultiMap();
+        multiMap.setHashBlockPosition(0);
+        multiMap.setTotalBlocks(1);
         int position = 0;
 
         ModelMultimapValue modelMultimapValue = new ModelMultimapValue(

@@ -9,6 +9,9 @@ import SystemLayer.Containers.DataContainer;
 
 
 public class MultimapFactory implements Factory {
+
+    private final String config_name = "MULTIMAP";
+
     private enum configurations {
         NONE,
         GUAVA_MEMORY_MULTIMAP,
@@ -16,13 +19,17 @@ public class MultimapFactory implements Factory {
         SEMI_PERSISTENT_MULTIMAP
     }
 
-    private DataContainer appContext;
+    private final DataContainer appContext;
 
     public MultimapFactory( DataContainer appContext ){
         this.appContext = appContext;
     }
 
-    public MultiMap getNewMultiMap(String config) throws Exception {
+    public MultiMap getNewMultiMap(){
+        return getNewMultiMap( appContext.getConfigurator().getConfig(config_name) );
+    }
+
+    public MultiMap getNewMultiMap(String config){
         configurations configuration = configurations.valueOf(config);
         switch ( configuration ){
 
