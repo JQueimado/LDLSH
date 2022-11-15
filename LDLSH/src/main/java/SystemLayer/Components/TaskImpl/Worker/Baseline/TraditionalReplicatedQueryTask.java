@@ -54,8 +54,8 @@ public class TraditionalReplicatedQueryTask extends WorkerTaskImpl {
                 byte[] candidate = objectMultimapValue.object();
 
                 double cDistance = appContext.getDistanceMeasurer().getDistance(
-                        objectsToIntArray( queryObject.toByteArray() ),
-                        objectsToIntArray( candidate ) );
+                        queryObject.toByteArray(),
+                        candidate );
 
                 if( result == null || cDistance < mDistance ){
                     result = candidate;

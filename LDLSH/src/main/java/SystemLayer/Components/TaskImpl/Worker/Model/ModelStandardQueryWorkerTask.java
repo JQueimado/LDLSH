@@ -115,8 +115,8 @@ public class ModelStandardQueryWorkerTask extends WorkerTaskImpl {
         for( DataObject<?> potentialCandidate : potentialCandidates ){
 
             double c_distance = appContext.getDistanceMeasurer().getDistance(
-                    objectsToIntArray( potentialCandidate.toByteArray() ),
-                    objectsToIntArray( queryObject.toByteArray() ) );
+                    potentialCandidate.toByteArray() ,
+                    queryObject.toByteArray() );
 
             if( c_distance < distance || distance == -1 ){
                 nearestNeighbour = potentialCandidate;

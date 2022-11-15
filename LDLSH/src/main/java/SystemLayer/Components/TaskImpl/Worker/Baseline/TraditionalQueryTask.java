@@ -77,8 +77,8 @@ public class TraditionalQueryTask extends WorkerTaskImpl {
             double mDistance = -1;
             for(DataObject<?> candidate : candidates){
                 double distance = appContext.getDistanceMeasurer().getDistance(
-                        objectsToIntArray( queryObject.toByteArray() ),
-                        objectsToIntArray( candidate.toByteArray() )
+                        queryObject.toByteArray() ,
+                        candidate.toByteArray()
                 );
 
                 if( distance < mDistance || bestCandidate == null ){

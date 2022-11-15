@@ -87,8 +87,8 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
         for( UniqueIdentifier currentUid: objectMapping.keySet() ){
             LSHHash currentHash = objectMapping.get(currentUid).lshHash();
             double currentDistance = appContext.getDistanceMeasurer().getDistance(
-                    signatureToIntArray( currentHash.getSignature() ),
-                    signatureToIntArray( query_hash.getSignature() )
+                    currentHash.getSignature(),
+                    query_hash.getSignature()
             );
 
             if( distance == -1 || currentDistance < distance ){
