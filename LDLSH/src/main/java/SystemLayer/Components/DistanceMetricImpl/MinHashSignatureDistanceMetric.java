@@ -36,6 +36,6 @@ public class MinHashSignatureDistanceMetric extends DistanceMetricImpl {
             }
         }
 
-        return sim / sig1.length;
+        return 1 - ( sim / sig1.length );
     }
 }
