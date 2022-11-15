@@ -11,7 +11,7 @@ import Factories.DataFactories.LSHHashFactory;
 import Factories.DataFactories.UniqueIdentifierFactory;
 import SystemLayer.Components.NetworkLayer.CommunicationLayer;
 import SystemLayer.Components.DataProcessor.DataProcessor;
-import SystemLayer.Components.DistanceMeasurerImpl.DistanceMeasurer;
+import SystemLayer.Components.DistanceMetricImpl.DistanceMetric;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.Configurator.Configurator;
 import SystemLayer.SystemExceptions.UnknownConfigException;
@@ -44,7 +44,7 @@ public class DataContainer {
     private final Configurator configurator;
     private List<MultiMap> multiMaps;
     private ListeningExecutorService executorService;
-    private DistanceMeasurer distanceMeasurer = null;
+    private DistanceMetric distanceMeasurer = null;
     private DataProcessor dataProcessor = null;
     private CommunicationLayer communicationLayer = null;
     private ExecutorService callbackExecutor = null;
@@ -156,9 +156,9 @@ public class DataContainer {
     }
 
     //Distance Measurer
-    public DistanceMeasurer getDistanceMeasurer(  ){
+    public DistanceMetric getDistanceMeasurer(  ){
         if(distanceMeasurer == null){
-            DistanceMeasurerFactory distanceMeasurerFactory = new DistanceMeasurerFactory();
+            DistanceMeasurerFactory distanceMeasurerFactory = new DistanceMeasurerFactory(this);
             distanceMeasurer = distanceMeasurerFactory.getNewDistanceMeasurer(
                     configurator.getConfig("DISTANCE_METRIC")
             );
