@@ -26,14 +26,6 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
             throw new Exception("Invalid Message type for QueryTask");
     }
 
-    private int[] signatureToIntArray( byte[] signature ){
-        ByteBuffer byteBuffer = ByteBuffer.wrap(signature).order(ByteOrder.BIG_ENDIAN);
-        IntBuffer intBuffer = byteBuffer.asIntBuffer();
-        int[] intArray = new int[intBuffer.remaining()];
-        intBuffer.get(intArray);
-        return intArray;
-    }
-
     @Override
     public DataObject<?> call() throws Exception {
 

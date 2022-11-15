@@ -1,21 +1,22 @@
 package Factories.ComponentFactories;
 
-import Factories.Factory;
 import Factories.FactoryImpl;
 import SystemLayer.Components.DistanceMetricImpl.DistanceMetric;
 import SystemLayer.Components.DistanceMetricImpl.JaccardDistanceMetric;
+import SystemLayer.Components.DistanceMetricImpl.MinHashSignatureDistanceMetric;
 import SystemLayer.Components.DistanceMetricImpl.NgramJaccardDistanceMetric;
 import SystemLayer.Containers.DataContainer;
 
-public class DistanceMeasurerFactory extends FactoryImpl {
+public class DistanceMetricFactory extends FactoryImpl {
 
     private enum configurations {
         NONE,
         JACCARD,
-        NGRAM_JACCARD
+        NGRAM_JACCARD,
+        MINHASH_SIGNATURE
     }
 
-    public DistanceMeasurerFactory(DataContainer appContext){
+    public DistanceMetricFactory(DataContainer appContext){
         super(appContext);
     }
 
@@ -31,6 +32,10 @@ public class DistanceMeasurerFactory extends FactoryImpl {
 
             case NGRAM_JACCARD -> {
                 return new NgramJaccardDistanceMetric(appContext);
+            }
+
+            case MINHASH_SIGNATURE -> {
+                return new MinHashSignatureDistanceMetric(appContext);
             }
 
             default ->{

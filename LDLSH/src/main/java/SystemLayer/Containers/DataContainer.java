@@ -2,7 +2,7 @@ package SystemLayer.Containers;
 
 import Factories.ComponentFactories.CommunicationLayerFactory;
 import Factories.ComponentFactories.DataProcessorFactory;
-import Factories.ComponentFactories.DistanceMeasurerFactory;
+import Factories.ComponentFactories.DistanceMetricFactory;
 import Factories.ComponentFactories.MultimapTaskFactory;
 import Factories.ComponentFactories.WorkerTaskFactory;
 import Factories.DataFactories.DataObjectFactory;
@@ -158,8 +158,8 @@ public class DataContainer {
     //Distance Measurer
     public DistanceMetric getDistanceMeasurer(  ){
         if(distanceMeasurer == null){
-            DistanceMeasurerFactory distanceMeasurerFactory = new DistanceMeasurerFactory(this);
-            distanceMeasurer = distanceMeasurerFactory.getNewDistanceMeasurer(
+            DistanceMetricFactory distanceMetricFactory = new DistanceMetricFactory(this);
+            distanceMeasurer = distanceMetricFactory.getNewDistanceMeasurer(
                     configurator.getConfig("DISTANCE_METRIC")
             );
         }
