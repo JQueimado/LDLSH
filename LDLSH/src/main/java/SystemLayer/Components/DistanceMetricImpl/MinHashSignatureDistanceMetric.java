@@ -11,31 +11,35 @@ public class MinHashSignatureDistanceMetric extends DistanceMetricImpl {
         super(context);
     }
 
-    private int[] signatureToIntArray( byte[] signature ){
-        ByteBuffer byteBuffer = ByteBuffer.wrap(signature).order(ByteOrder.BIG_ENDIAN);
-        IntBuffer intBuffer = byteBuffer.asIntBuffer();
-        int[] intArray = new int[intBuffer.remaining()];
-        intBuffer.get(intArray);
-        return intArray;
-    }
-
     @Override
     public double getDistance(byte[] object_a, byte[] object_b) {
-        int[] sig1 = signatureToIntArray(object_a);
-        int[] sig2 = signatureToIntArray(object_b);
 
         //Adapted form the info.debatty.java.lsh.MinHash hash similarity implementation;
-        if (sig1.length != sig2.length) {
+        if (object_a.length != object_b.length) {
             return -1; //Null value
         }
 
+        int sigSize = object_a.length/4;
+
         double sim = 0;
-        for (int i = 0; i < sig1.length; i++) {
-            if (sig1[i] == sig2[i]) {
-                sim += 1;
-            }
+        for (int i = 0; i < object_a.length; i+=4) {
+
+            //if all 4 bytes are the same then the int value for those bytes is the same
+            if( object_a[i] != object_b[i] )
+                continue;
+
+            if( object_a[i+1] != object_b[i+1] )
+                continue;
+
+            if( object_a[i+2] != object_b[i+2] )
+                continue;
+
+            if( object_a[i+3] != object_b[i+3] )
+                continue;
+
+            sim += 1;
         }
 
-        return 1 - ( sim / sig1.length );
+        return 1 - ( sim / sigSize );
     }
 }
