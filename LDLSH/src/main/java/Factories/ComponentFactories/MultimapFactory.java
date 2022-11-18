@@ -1,10 +1,7 @@
 package Factories.ComponentFactories;
 
 import Factories.Factory;
-import SystemLayer.Components.MultiMapImpl.GuavaInMemoryMultiMap;
-import SystemLayer.Components.MultiMapImpl.MultiMap;
-import SystemLayer.Components.MultiMapImpl.RemoteMultimap;
-import SystemLayer.Components.MultiMapImpl.SemiPersistentMultiMap;
+import SystemLayer.Components.MultiMapImpl.*;
 import SystemLayer.Containers.DataContainer;
 
 
@@ -14,7 +11,8 @@ public class MultimapFactory implements Factory {
 
     private enum configurations {
         NONE,
-        GUAVA_MEMORY_MULTIMAP,
+        GUAVA_MEMORY_SORTED_MULTIMAP,
+        GUAVA_MEMORY_STANDARD_MULTIMAP,
         REMOTE_MULTIMAP,
         SEMI_PERSISTENT_MULTIMAP
     }
@@ -33,8 +31,12 @@ public class MultimapFactory implements Factory {
         configurations configuration = configurations.valueOf(config);
         switch ( configuration ){
 
-            case GUAVA_MEMORY_MULTIMAP -> {
-                return new GuavaInMemoryMultiMap(appContext);
+            case GUAVA_MEMORY_SORTED_MULTIMAP -> {
+                return new GuavaInMemorySortedMultiMap(appContext);
+            }
+
+            case GUAVA_MEMORY_STANDARD_MULTIMAP -> {
+                return new GuavaInMemoryStandardMultiMap(appContext);
             }
 
             case REMOTE_MULTIMAP -> {
