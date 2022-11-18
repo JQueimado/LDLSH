@@ -14,18 +14,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.SortedSet;
 
-public class GuavaInMemoryMultiMap extends MultiMapImpl{
+public class GuavaInMemorySortedMultiMap extends MultiMapImpl{
 
     private final SortedSetMultimap<LSHHashBlock, MultiMapValue> multiMap;
 
     //Constructors
-    public GuavaInMemoryMultiMap(int hash_position, int total_hash_blocks, DataContainer appContext){
+    public GuavaInMemorySortedMultiMap(int hash_position, int total_hash_blocks, DataContainer appContext){
         this(appContext);
         setHashBlockPosition(hash_position);
         setTotalBlocks(total_hash_blocks);
     }
 
-    public GuavaInMemoryMultiMap(DataContainer appContext){
+    public GuavaInMemorySortedMultiMap(DataContainer appContext){
         super(appContext);
         this.multiMap = TreeMultimap.create();
     }
