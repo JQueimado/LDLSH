@@ -39,7 +39,7 @@ public class LocalLSHTests {
         configurator.setConfig("VECTOR_DIMENSIONS", "5");
         configurator.setConfig("LSH_SEED", "11111");
         configurator.setConfig("LSH_HASH", "JAVA_MINHASH");
-        configurator.setConfig("MULTIMAP", "GUAVA_MEMORY_MULTIMAP");
+        configurator.setConfig("MULTIMAP", "GUAVA_MEMORY_STANDARD_MULTIMAP");
         configurator.setConfig("N_BANDS", "2");
 
         //Data objects
