@@ -4,13 +4,14 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Arrays;
+import java.util.Objects;
 
 public abstract class LSHHashImpl implements LSHHash{
 
     public static DataContainer appContext;
     public byte[] data;
-    public LSHHashBlock[] blocks;
 
     /**
      * Global LSHHashImpl constructor
@@ -32,12 +33,12 @@ public abstract class LSHHashImpl implements LSHHash{
 
     @Override
     public LSHHashBlock[] getBlocks() {
-        return blocks;
+        return createBlocks(data, appContext.getNumberOfBands());
     }
 
     @Override
     public LSHHashBlock getBlockAt(int position) {
-        return blocks[position];
+        return createBlocks(data, appContext.getNumberOfBands())[position];
     }
 
     @Override
@@ -47,6 +48,8 @@ public abstract class LSHHashImpl implements LSHHash{
 
     @Override
     public boolean equals(Object obj) {
+        if(!Objects.equals(obj.getClass(), LSHHashImpl.class))
+            return false;
         LSHHashImpl temp = (LSHHashImpl) obj;
         return this.compareTo(temp) == 0;
     }
@@ -100,14 +103,14 @@ public abstract class LSHHashImpl implements LSHHash{
     }
 
     //Serialization
+    @Serial
     private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
         stream.writeObject(data);
-        stream.writeObject(blocks);
     }
 
+    @Serial
     private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
         data = (byte[]) stream.readObject();
-        blocks = (LSHHashBlock[]) stream.readObject();
     }
 
 }
