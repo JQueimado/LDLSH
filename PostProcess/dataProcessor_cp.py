@@ -120,7 +120,9 @@ def latencyProcessor( testfiles : list):
 
 #ThroughputProcessor:
 # testfname: [] -> list of files to process
-def throughputProcessor( files, dir ):
+def throughputProcessor( files : list, dir : str ):
+
+    files.sort()
 
     df = pd.DataFrame({'total time':[], 'throughput':[]})
 
