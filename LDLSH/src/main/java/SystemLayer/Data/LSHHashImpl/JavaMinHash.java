@@ -51,14 +51,15 @@ public class JavaMinHash extends LSHHashImpl{
         super(dataContainer);
     }
 
-    public JavaMinHash(DataObject<?> object, int n_blocks, DataContainer dataContainer){
+    public JavaMinHash(DataObject object, int n_blocks, DataContainer dataContainer){
         super(dataContainer);
         setObject(object.toByteArray(), n_blocks);
     }
 
     @Override
     public void setObject( byte[] object, int n_blocks ){
-       this.data = getSignature( toIntSet( object ) );
+       byte[] data = getSignature( toIntSet( object ) );
+       this.blocks = createBlocks( data, n_blocks);
     }
 
     /**

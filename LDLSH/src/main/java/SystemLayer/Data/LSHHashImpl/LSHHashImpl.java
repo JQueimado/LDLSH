@@ -3,15 +3,14 @@ package SystemLayer.Data.LSHHashImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
 
-import java.io.IOException;
-import java.io.Serial;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Objects;
 
 public abstract class LSHHashImpl implements LSHHash{
 
     public static DataContainer appContext;
-    public byte[] data;
+    public LSHHashBlock[] blocks;
 
     /**
      * Global LSHHashImpl constructor
@@ -28,17 +27,29 @@ public abstract class LSHHashImpl implements LSHHash{
     //Standard Methods
     @Override
     public byte[] getSignature() {
-        return data;
+        int size = 0;
+        for( LSHHashBlock hashBlock : blocks ){
+            size += hashBlock.lshBlock().length;
+        }
+
+        byte[] result = new byte[size];
+        int counter = 0;
+        for( LSHHashBlock hashBlock : blocks ){
+            System.arraycopy(hashBlock.lshBlock(), 0,result,counter,hashBlock.lshBlock().length);
+            counter += hashBlock.lshBlock().length;
+        }
+
+        return result;
     }
 
     @Override
     public LSHHashBlock[] getBlocks() {
-        return createBlocks(data, appContext.getNumberOfBands());
+        return blocks;
     }
 
     @Override
     public LSHHashBlock getBlockAt(int position) {
-        return createBlocks(data, appContext.getNumberOfBands())[position];
+        return blocks[position];
     }
 
     @Override
@@ -48,8 +59,6 @@ public abstract class LSHHashImpl implements LSHHash{
 
     @Override
     public boolean equals(Object obj) {
-        if(!Objects.equals(obj.getClass(), LSHHashImpl.class))
-            return false;
         LSHHashImpl temp = (LSHHashImpl) obj;
         return this.compareTo(temp) == 0;
     }
@@ -103,14 +112,12 @@ public abstract class LSHHashImpl implements LSHHash{
     }
 
     //Serialization
-    @Serial
     private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
-        stream.writeObject(data);
+        stream.writeObject(blocks);
     }
 
-    @Serial
     private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
-        data = (byte[]) stream.readObject();
+        blocks = (LSHHashBlock[]) stream.readObject();
     }
 
 }
