@@ -30,6 +30,6 @@ public interface LSHHash extends Serializable, Comparable<LSHHash> {
      * @param position pretended block's position
      * @return pretended block
      */
-    LSHHashBlock getBlockAt(int position );
+    LSHHashBlock getBlockAt(int position);
 
 }

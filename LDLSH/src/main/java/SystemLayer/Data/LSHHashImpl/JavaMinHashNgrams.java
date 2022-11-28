@@ -14,8 +14,8 @@ public class JavaMinHashNgrams extends JavaMinHash{
     public void setObject( byte[] object, int n_blocks ){
         try {
             //Calculate ngram vector
-            this.data = getSignature(NgramProcessor.create_ngrams(object, appContext));
-            this.blocks = createBlocks(this.data, n_blocks);
+            byte[] data = getSignature(NgramProcessor.create_ngrams(object, appContext));
+            this.blocks = createBlocks(data, n_blocks);
         }catch (UnknownConfigException e){
             UnknownConfigException.handler(e);
         }

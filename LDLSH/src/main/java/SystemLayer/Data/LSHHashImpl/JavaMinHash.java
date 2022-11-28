@@ -58,8 +58,8 @@ public class JavaMinHash extends LSHHashImpl{
 
     @Override
     public void setObject( byte[] object, int n_blocks ){
-       this.data = getSignature( toIntSet( object ) );
-       this.blocks = createBlocks(this.data, n_blocks);
+       byte[] data = getSignature( toIntSet( object ) );
+       this.blocks = createBlocks( data, n_blocks);
     }
 
     /**

@@ -44,13 +44,13 @@ public class NgramProcessor {
         int c = data.length - Level + 1;
         for( int i = 0; i<c; i++){
             //Convert into Integer
-            byte[] bytes = new byte[Level];
-            System.arraycopy(data, i, bytes,0, Level);
+            //byte[] bytes = new byte[Level];
+            //System.arraycopy(data, i, bytes,0, Level);
 
             //Copy bytes to int
             int int_value = 0;
             for(int j = 0; j<Level; j++){
-                int_value = (int_value << 8) + (bytes[j] & 0xFF);
+                int_value = (int_value << 8) + (data[i+j] & 0xFF);
             }
 
             result.add(int_value);

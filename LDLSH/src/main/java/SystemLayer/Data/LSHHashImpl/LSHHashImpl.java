@@ -3,13 +3,13 @@ package SystemLayer.Data.LSHHashImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public abstract class LSHHashImpl implements LSHHash{
 
     public static DataContainer appContext;
-    public byte[] data;
     public LSHHashBlock[] blocks;
 
     /**
@@ -27,7 +27,19 @@ public abstract class LSHHashImpl implements LSHHash{
     //Standard Methods
     @Override
     public byte[] getSignature() {
-        return data;
+        int size = 0;
+        for( LSHHashBlock hashBlock : blocks ){
+            size += hashBlock.lshBlock().length;
+        }
+
+        byte[] result = new byte[size];
+        int counter = 0;
+        for( LSHHashBlock hashBlock : blocks ){
+            System.arraycopy(hashBlock.lshBlock(), 0,result,counter,hashBlock.lshBlock().length);
+            counter += hashBlock.lshBlock().length;
+        }
+
+        return result;
     }
 
     @Override
@@ -101,12 +113,10 @@ public abstract class LSHHashImpl implements LSHHash{
 
     //Serialization
     private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
-        stream.writeObject(data);
         stream.writeObject(blocks);
     }
 
     private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
-        data = (byte[]) stream.readObject();
         blocks = (LSHHashBlock[]) stream.readObject();
     }
 
