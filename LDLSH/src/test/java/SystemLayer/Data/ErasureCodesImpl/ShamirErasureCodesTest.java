@@ -36,7 +36,7 @@ class ShamirErasureCodesTest {
         appContext.getConfigurator().setConfig("ERASURE_FAULTS", "%d".formatted(t));
 
         //Data config
-        String value = "This is a string to be processed char by char";
+        String value = "1=;+A=D=DD?:++222AF+AF9AEE)?9:*11):D):?)889?A#######################################################";
         string_data = (StringDataObject) appContext.getDataObjectFactory().getNewDataObject();
         string_data.setValues(value);
         appContext.getConfigurator().setConfig("VECTOR_SIZE", "%d".formatted(value.length()));
