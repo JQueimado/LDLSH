@@ -34,7 +34,7 @@ public class ReedSolomonErasureCodesTests {
         appContext.getConfigurator().setConfig("ERASURE_FAULTS", "%d".formatted(t));
 
         //Data config
-        String value = "This is a string to be processed char by char";
+        String value = "1=;+A=D=DD?:++222AF+AF9AEE)?9:*11):D):?)889?A#######################################################";
         string_data = (StringDataObject) appContext.getDataObjectFactory().getNewDataObject();
         string_data.setValues(value);
         appContext.getConfigurator().setConfig("VECTOR_SIZE", "%d".formatted(value.length()));
@@ -107,7 +107,7 @@ public class ReedSolomonErasureCodesTests {
         //printBlocks(codes.getErasureBlocks());
 
         //Decode
-        DataObject<String> result_object = appContext.getDataObjectFactory().getNewDataObject();
+        DataObject<String> result_object = (StringDataObject) appContext.getDataObjectFactory().getNewDataObject();
         BackblazeReedSolomonErasureCodes codes2 =
                 (BackblazeReedSolomonErasureCodes) appContext.getErasureCodesFactory().getNewErasureCodes();
 
@@ -134,9 +134,6 @@ public class ReedSolomonErasureCodesTests {
         codes1.encodeDataObject( string_data.toByteArray(), n);
 
         ErasureBlock[] blocks = codes1.getErasureBlocks();
-        //Display resulting Blocks
-        //System.out.println("Encoded blocks");
-        //printBlocks(blocks);
 
         BackblazeReedSolomonErasureCodes codes2 = new BackblazeReedSolomonErasureCodes(appContext);
         //Randomly selects t rows to be removed
@@ -145,16 +142,9 @@ public class ReedSolomonErasureCodesTests {
         for( int c=0; c<t; c++ ){
             missing_rows.add( random.nextInt(n) );
         }
-        //System.out.println("Removed rows");
-        //System.out.println(missing_rows);
 
         //Copies some values
         copyAllButSome(codes2, blocks, missing_rows);
-
-        //Display codes2 status
-        //System.out.println("blocks for decoding");
-        ErasureBlock[] blocks2 = codes2.getErasureBlocks();
-        //printBlocks(blocks2);
 
         //Decodes
         DataObject<String> result_object = new StringDataObject();
@@ -178,9 +168,6 @@ public class ReedSolomonErasureCodesTests {
         codes1.encodeDataObject( string_data.toByteArray(), n);
 
         ErasureBlock[] blocks = codes1.getErasureBlocks();
-        //Display resulting Blocks
-        //System.out.println("Encoded blocks");
-        //printBlocks(blocks);
 
         BackblazeReedSolomonErasureCodes codes2;
         List<Integer> toRemove;
@@ -189,11 +176,11 @@ public class ReedSolomonErasureCodesTests {
             //Pick to remove
             toRemove = new ArrayList<>();
             toRemove.add(c); //Picks c
-            //System.out.printf("Remove code at: %d\n", c);
+
             //Remove and Decode
             codes2 = new BackblazeReedSolomonErasureCodes(appContext);
             copyAllButSome(codes2, blocks, toRemove); //Copies all but c
-            //printBlocks(codes2.getErasureBlocks()); //Shows resulting codes
+
             result_object = new StringDataObject();
             byte[] tempData = codes2.decodeDataObject(); //Decode
             result_object.setByteArray(tempData);

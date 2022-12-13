@@ -55,6 +55,13 @@
             <version>1.0</version>
             <type>jar</type>
         </dependency>
+
+        <dependency>
+            <groupId>com.codahale</groupId>
+            <artifactId>shamir</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+
     </dependencies>
 
     <properties>

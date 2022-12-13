@@ -64,7 +64,7 @@ class SecreteShareDataProcessorTest {
 
         //Object
         Random random = new Random();
-        byte[] rng_data = new byte[256];
+        byte[] rng_data = new byte[100];
         random.nextBytes(rng_data);
         DataObject<String> testObject = (StringDataObject) simulatedState.getDataObjectFactory().getNewDataObject();
         testObject.setByteArray(rng_data);
