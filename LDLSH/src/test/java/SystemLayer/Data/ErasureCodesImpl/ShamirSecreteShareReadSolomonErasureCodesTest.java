@@ -29,8 +29,12 @@ class ShamirSecreteShareReadSolomonErasureCodesTest {
         //Context
         appContext = new DataContainer("");
         appContext.getConfigurator().setConfig("OBJECT_TYPE", "STRING");
-        appContext.getConfigurator().setConfig("ERASURE_CODES", "REED_SOLOMON_SHAMIR");
         appContext.getConfigurator().setConfig("UNIQUE_IDENTIFIER", "SHA256");
+
+        appContext.getConfigurator().setConfig("ERASURE_CODES", "REED_SOLOMON_SHAMIR");
+        appContext.getConfigurator().setConfig("IV_SEED", "abcdefghijklmnop");
+        appContext.getConfigurator().setConfig("CIPHER_ALGORITHM",  "AES" );
+        appContext.getConfigurator().setConfig("CIPHER_CONFIG",     "AES/CBC/PKCS5PADDING" );
 
         appContext.getConfigurator().setConfig("N_BANDS", "%d".formatted(n));
         appContext.getConfigurator().setConfig("ERASURE_FAULTS", "%d".formatted(t));

@@ -13,6 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +36,46 @@ public class ShamirSecreteShareReadSolomonErasureCodes extends BackblazeReedSolo
     protected static KeyGenerator keyGenerator;
     protected static String algorithm = "";
 
-    protected static void setupEncoders( DataContainer appContext ) throws UnknownConfigException {
-        if (encoder != null)
+    private static void setCipher( DataContainer appContext ) throws UnknownConfigException {
+        //IV config set check
+        String iv_seed = "";
+        try{
+            iv_seed = appContext.getConfigurator().getConfig( IV ); //Get seed from config
+            if( iv_seed.length() != iv_size )
+                throw new IllegalArgumentException();
+
+            /*
+            SecureRandom secureRandom = new SecureRandom( iv_seed.getBytes(StandardCharsets.UTF_8) ); //Create an PRNG
+            //iv = new byte[iv_size]; //init array
+            secureRandom.nextBytes(iv); //set array with de PRNG values
+            */
+
+            iv = iv_seed.getBytes(StandardCharsets.UTF_8);
+
+        }catch (IllegalArgumentException e){
+            throw new UnknownConfigException( IV, iv_seed );
+        }
+
+        //KeyGenerator config set check
+        try {
+            algorithm = appContext.getConfigurator().getConfig(ALGORITHM); //get config value
+            keyGenerator = KeyGenerator.getInstance(algorithm); //create a Random key generator
+        } catch ( NoSuchAlgorithmException e ){
+            throw new UnknownConfigException( ALGORITHM, algorithm );
+        }
+
+        //Cipher config set check
+        String algorithm = "";
+        try {
+            algorithm = appContext.getConfigurator().getConfig( CIPHER_ALGORITHM ); //get cipher config
+            cipher = Cipher.getInstance(algorithm); //create cipher object
+        }catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalArgumentException e){
+            throw new UnknownConfigException( CIPHER_ALGORITHM, algorithm );
+        }
+    }
+
+    private static void setSecreteShare( DataContainer appContext ) throws UnknownConfigException {
+        if (secreteShareEncoder != null)
             return;
 
         n = appContext.getNumberOfBands();
@@ -61,6 +100,11 @@ public class ShamirSecreteShareReadSolomonErasureCodes extends BackblazeReedSolo
 
         k = n- t;
         secreteShareEncoder = new Scheme( new SecureRandom(seed.getBytes(StandardCharsets.UTF_8)), n, k);
+    }
+
+    protected static void setupEncoders( DataContainer appContext ) throws UnknownConfigException {
+       setCipher(appContext);
+       setSecreteShare(appContext);
     }
 
     /**
