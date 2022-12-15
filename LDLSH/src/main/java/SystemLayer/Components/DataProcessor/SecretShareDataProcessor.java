@@ -64,6 +64,8 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
         try {
             algorithm = appContext.getConfigurator().getConfig(ALGORITHM); //get config value
             keyGenerator = KeyGenerator.getInstance(algorithm); //create a Random key generator
+            SecureRandom secureRandom = new SecureRandom();
+            keyGenerator.init(key_size*8, secureRandom); //Key size must be in bits
         } catch ( NoSuchAlgorithmException e ){
             throw new UnknownConfigException( ALGORITHM, algorithm );
         }
@@ -156,8 +158,6 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
      * Creates a random AES key using a KeyGenerator
      */
     private SecretKey createAESKey() {
-        SecureRandom secureRandom = new SecureRandom();
-        keyGenerator.init(key_size*8, secureRandom); //Key size must be in bits
         return keyGenerator.generateKey();
     }
 

@@ -60,6 +60,8 @@ public class ShamirSecreteShareReadSolomonErasureCodes extends BackblazeReedSolo
         try {
             algorithm = appContext.getConfigurator().getConfig(ALGORITHM); //get config value
             keyGenerator = KeyGenerator.getInstance(algorithm); //create a Random key generator
+            SecureRandom secureRandom = new SecureRandom();
+            keyGenerator.init(key_size*8, secureRandom);
         } catch ( NoSuchAlgorithmException e ){
             throw new UnknownConfigException( ALGORITHM, algorithm );
         }
@@ -112,10 +114,6 @@ public class ShamirSecreteShareReadSolomonErasureCodes extends BackblazeReedSolo
      * @return random key
      */
     protected static SecretKey createKey(){
-        if (keyGenerator == null){
-            SecureRandom secureRandom = new SecureRandom();
-            keyGenerator.init(key_size*8, secureRandom);
-        }
         return keyGenerator.generateKey();
     }
 
