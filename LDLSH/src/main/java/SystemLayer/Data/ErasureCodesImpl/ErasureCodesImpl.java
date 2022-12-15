@@ -5,8 +5,12 @@ import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import org.jetbrains.annotations.NotNull;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.io.IOException;
 import java.io.Serial;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 
 public abstract class ErasureCodesImpl implements ErasureCodes{
 
@@ -31,7 +35,7 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     public abstract void encodeDataObject(byte[] object, int n_blocks) throws Exception ;
 
     @Override
-    public abstract byte[] decodeDataObject() throws IncompleteBlockException;
+    public abstract byte[] decodeDataObject() throws IncompleteBlockException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException;
 
     //Standard methods
     @Override

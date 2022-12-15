@@ -3,7 +3,11 @@ package SystemLayer.Data.ErasureCodesImpl;
 import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.io.Serializable;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 
 public interface ErasureCodes extends Serializable, Comparable<ErasureCodes> {
     /**
@@ -19,7 +23,7 @@ public interface ErasureCodes extends Serializable, Comparable<ErasureCodes> {
      * @throws IncompleteBlockException thrown when the number of store erasure codes is not
      * sufficient to generate the data object.
      */
-    byte[] decodeDataObject() throws IncompleteBlockException;
+    byte[] decodeDataObject() throws IncompleteBlockException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException;
 
     /**
      * Adds an Erasure block to its predefined position

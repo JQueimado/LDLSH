@@ -106,9 +106,14 @@ public class SecretShareDataProcessor extends DataProcessorImpl{
     }
 
     @Override
-    public DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier )
-            throws CorruptDataException, IncompleteBlockException {
-
+    public DataObject<?> postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier )
+            throws CorruptDataException,
+            IncompleteBlockException,
+            InvalidAlgorithmParameterException,
+            IllegalBlockSizeException,
+            BadPaddingException,
+            InvalidKeyException
+    {
         byte[] rcv_data = erasureCodes.decodeDataObject();
 
         //validate

@@ -11,6 +11,11 @@ import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.CorruptDataException;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+
 public class StandardDataProcessor extends DataProcessorImpl{
 
     public StandardDataProcessor(DataContainer appContext) {
@@ -37,7 +42,7 @@ public class StandardDataProcessor extends DataProcessorImpl{
 
     @Override
     public DataObject postProcess( ErasureCodes erasureCodes, UniqueIdentifier uniqueIdentifier )
-            throws CorruptDataException, IncompleteBlockException {
+            throws CorruptDataException, IncompleteBlockException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         DataObject dataObject = appContext.getDataObjectFactory().getNewDataObject();
         dataObject.setByteArray( erasureCodes.decodeDataObject() );

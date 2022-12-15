@@ -23,6 +23,9 @@ public class ShamirErasureCodes extends ErasureCodesImpl{
     private static Scheme encoder = null;
 
     public static void setupEncoder( DataContainer appContext ) throws UnknownConfigException {
+        if (encoder != null)
+            return;
+
         n = appContext.getNumberOfBands();
 
         String t_value = "";
@@ -54,8 +57,7 @@ public class ShamirErasureCodes extends ErasureCodesImpl{
      */
     public ShamirErasureCodes(DataContainer appContext) throws UnknownConfigException {
         super(appContext);
-        if ( encoder == null)
-            setupEncoder(appContext);
+        setupEncoder(appContext);
     }
 
     @Override
