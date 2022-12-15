@@ -48,7 +48,7 @@ public class ErasureBlockImpl implements ErasureBlock {
 
     @Override
     public boolean equals(Object obj) {
-        if (!Objects.equals(obj.getClass(), ErasureBlock.class))
+        if (obj.getClass() != ErasureBlockImpl.class)
             return false;
         return this.compareTo((ErasureBlock) obj) == 0;
     }
