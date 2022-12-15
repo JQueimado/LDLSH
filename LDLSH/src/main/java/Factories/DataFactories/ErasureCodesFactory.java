@@ -42,7 +42,7 @@ public class ErasureCodesFactory extends FactoryImpl {
                 }
 
                 case REED_SOLOMON_SHAMIR -> {
-                    return new SecretShareReadSolomonErasureCodes(appContext);
+                    return new ShamirSecreteShareReadSolomonErasureCodes(appContext);
                 }
 
                 case SIMPLE_PARTITION -> {

@@ -5,7 +5,6 @@ import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.Data.DataUnits.ErasureBlockImpl;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import SystemLayer.SystemExceptions.UnknownConfigException;
-import com.backblaze.erasure.ReedSolomon;
 import com.codahale.shamir.Scheme;
 
 import javax.crypto.*;
@@ -18,7 +17,7 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SecretShareReadSolomonErasureCodes extends BackblazeReedSolomonErasureCodes {
+public class ShamirSecreteShareReadSolomonErasureCodes extends BackblazeReedSolomonErasureCodes {
 
     /**Class**/
     protected static final String random_seed_config_name ="SEED";
@@ -105,7 +104,7 @@ public class SecretShareReadSolomonErasureCodes extends BackblazeReedSolomonEras
     }
 
     /**Object**/
-    public SecretShareReadSolomonErasureCodes(DataContainer appContext) throws UnknownConfigException {
+    public ShamirSecreteShareReadSolomonErasureCodes(DataContainer appContext) throws UnknownConfigException {
         super(appContext);
         setupEncoders(appContext);
     }
