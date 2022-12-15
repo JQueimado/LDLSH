@@ -3,7 +3,7 @@ package SystemLayer.Data.ErasureCodesImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
-import org.junit.Assert;
+import SystemLayer.Data.DataUnits.ErasureBlock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +55,7 @@ class ShamirErasureCodesTest {
 
         //decode
         ErasureCodes erasureCodes1 = appContext.getErasureCodesFactory().getNewErasureCodes();
-        for(ErasureCodesImpl.ErasureBlock block : erasureCodes.getErasureBlocks()){
+        for(ErasureBlock block : erasureCodes.getErasureBlocks()){
             erasureCodes1.addBlockAt(block);
         }
         byte[] data = erasureCodes1.decodeDataObject();
@@ -74,7 +74,7 @@ class ShamirErasureCodesTest {
         ErasureCodes codes1 = appContext.getErasureCodesFactory().getNewErasureCodes();
         codes1.encodeDataObject( string_data.toByteArray(), n);
 
-        ErasureCodesImpl.ErasureBlock[] blocks = codes1.getErasureBlocks();
+        ErasureBlock[] blocks = codes1.getErasureBlocks();
 
         ErasureCodes codes2 = appContext.getErasureCodesFactory().getNewErasureCodes();
         //Randomly selects t rows to be removed
@@ -107,7 +107,7 @@ class ShamirErasureCodesTest {
         ErasureCodes codes1 = appContext.getErasureCodesFactory().getNewErasureCodes();
         codes1.encodeDataObject( string_data.toByteArray(), n);
 
-        ErasureCodesImpl.ErasureBlock[] blocks = codes1.getErasureBlocks();
+        ErasureBlock[] blocks = codes1.getErasureBlocks();
 
         ErasureCodes codes2;
         List<Integer> toRemove;
@@ -133,7 +133,7 @@ class ShamirErasureCodesTest {
     //Aux
     private void copyAllButSome(
             ErasureCodes dest,
-            ErasureCodesImpl.ErasureBlock[] src,
+            ErasureBlock[] src,
             List<Integer> some
     ) {
         for( int c = 0; c<n; c++ ){

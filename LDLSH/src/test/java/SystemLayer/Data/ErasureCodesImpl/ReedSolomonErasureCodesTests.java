@@ -3,7 +3,7 @@ package SystemLayer.Data.ErasureCodesImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

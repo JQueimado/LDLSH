@@ -5,7 +5,7 @@ import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.NetworkLayer.MessageImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataUnits.MultiMapValue;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
@@ -15,7 +15,6 @@ import io.netty.util.concurrent.Promise;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class RemoteMultimap extends MultiMapImpl{
 

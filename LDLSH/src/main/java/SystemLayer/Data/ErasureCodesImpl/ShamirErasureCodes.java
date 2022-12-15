@@ -1,6 +1,8 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataUnits.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlockImpl;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.codahale.shamir.Scheme;
@@ -62,7 +64,7 @@ public class ShamirErasureCodes extends ErasureCodesImpl{
 
         erasureBlocks = new ErasureBlock[n];
         for(Integer i : codes.keySet()){
-            erasureBlocks[i-1] = new ErasureBlock(codes.get(i), i-1);
+            erasureBlocks[i-1] = new ErasureBlockImpl(codes.get(i), i-1);
         }
         number_of_blocks = n_blocks;
         total_blocks = n;
@@ -76,7 +78,7 @@ public class ShamirErasureCodes extends ErasureCodesImpl{
         Map<Integer, byte[]> codes = new HashMap<>();
         for( ErasureBlock block : erasureBlocks ){
             if( block != null )
-                codes.put( block.position()+1, block.block_data() );
+                codes.put( block.getPosition()+1, block.getBlock() );
         }
         return encoder.join(codes);
     }

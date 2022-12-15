@@ -1,14 +1,12 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.LSHHashImpl.LSHHashImpl;
+import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Arrays;
 
 public abstract class ErasureCodesImpl implements ErasureCodes{
 
@@ -38,9 +36,9 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
     //Standard methods
     @Override
     public void addBlockAt(ErasureBlock erasureBlock) {
-        if( erasureBlocks[erasureBlock.position()] == null )
+        if( erasureBlocks[erasureBlock.getPosition()] == null )
             number_of_blocks++;
-        erasureBlocks[erasureBlock.position()] = erasureBlock;
+        erasureBlocks[erasureBlock.getPosition()] = erasureBlock;
     }
 
     @Override
@@ -133,28 +131,6 @@ public abstract class ErasureCodesImpl implements ErasureCodes{
         erasureBlocks = (ErasureBlock[]) stream.readObject();
         number_of_blocks = stream.readInt();
         total_blocks = stream.readInt();
-    }
-
-    //Subclasses
-    /**
-     * Object representing a single Erasure code
-     * @param block_data erasure code's data
-     * @param position erasure code's position
-     */
-    public record ErasureBlock( byte[] block_data, int position ) implements Comparable<ErasureBlock>, Serializable {
-        @Override
-        public int compareTo(ErasureBlock o) {
-            if ( position != o.position )
-                return -1;
-            return Arrays.compare(block_data, o.block_data);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if( obj.getClass() != ErasureBlock.class )
-                return false;
-            return this.compareTo( (ErasureBlock) obj ) == 0 ;
-        }
     }
 
 }

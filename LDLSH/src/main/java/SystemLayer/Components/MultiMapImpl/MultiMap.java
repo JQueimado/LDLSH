@@ -1,5 +1,6 @@
 package SystemLayer.Components.MultiMapImpl;
 
+import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.DataUnits.LSHHashBlock;

@@ -1,6 +1,8 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataUnits.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlockImpl;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.backblaze.erasure.ReedSolomon;
@@ -92,12 +94,12 @@ public class BackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
         int c = 0;
         //Copy data
         for( byte[] block : shards ){
-            erasureBlocks[c] = new ErasureBlock(block, c);
+            erasureBlocks[c] = new ErasureBlockImpl(block, c);
             isPresent[c] = true;
             c++;
         }
         number_of_blocks = n_blocks;
-        block_size = erasureBlocks[0].block_data().length;
+        block_size = erasureBlocks[0].getBlock().length;
     }
 
     @Override
@@ -115,7 +117,7 @@ public class BackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
             if( current == null ){
                 matrix[c] = new byte[block_size];
             }else {
-                matrix[c] = current.block_data();
+                matrix[c] = current.getBlock();
             }
         }
 
@@ -128,11 +130,11 @@ public class BackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
     @Override
     public void addBlockAt(ErasureBlock erasureBlock) {
-        int pos = erasureBlock.position();
+        int pos = erasureBlock.getPosition();
         if( !isPresent[pos] )
             number_of_blocks++;
         if( block_size ==-1 )
-            block_size = erasureBlock.block_data().length;
+            block_size = erasureBlock.getBlock().length;
         erasureBlocks[pos] = erasureBlock;
         isPresent[pos] = true;
     }
