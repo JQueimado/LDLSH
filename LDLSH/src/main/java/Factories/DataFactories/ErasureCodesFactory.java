@@ -2,10 +2,7 @@ package Factories.DataFactories;
 
 import Factories.FactoryImpl;
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.ErasureCodesImpl.BackblazeReedSolomonErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.ShamirErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.SimplePartitionErasureCodes;
+import SystemLayer.Data.ErasureCodesImpl.*;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 
 public class ErasureCodesFactory extends FactoryImpl {
@@ -16,6 +13,7 @@ public class ErasureCodesFactory extends FactoryImpl {
         NONE,
         REED_SOLOMON,
         SHAMIR,
+        REED_SOLOMON_SHAMIR,
         SIMPLE_PARTITION
     }
 
@@ -41,6 +39,10 @@ public class ErasureCodesFactory extends FactoryImpl {
 
                 case SHAMIR -> {
                     return new ShamirErasureCodes(appContext);
+                }
+
+                case REED_SOLOMON_SHAMIR -> {
+                    return new SecretShareReadSolomonErasureCodes(appContext);
                 }
 
                 case SIMPLE_PARTITION -> {
