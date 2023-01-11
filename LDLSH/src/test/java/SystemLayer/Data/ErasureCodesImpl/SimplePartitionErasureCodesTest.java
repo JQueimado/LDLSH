@@ -1,7 +1,8 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlockImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,10 +25,10 @@ class SimplePartitionErasureCodesTest {
         byte[] test_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
         ErasureBlock[] expected_data = new ErasureBlock[]{
-                new ErasureBlock( new byte[]{0,4,8,12}, 0 ),
-                new ErasureBlock( new byte[]{1,5,9,13}, 1 ),
-                new ErasureBlock( new byte[]{2,6,10,14}, 2 ),
-                new ErasureBlock( new byte[]{3,7,11,15}, 3 )
+                new ErasureBlockImpl( new byte[]{0,4,8,12}, 0 ),
+                new ErasureBlockImpl( new byte[]{1,5,9,13}, 1 ),
+                new ErasureBlockImpl( new byte[]{2,6,10,14}, 2 ),
+                new ErasureBlockImpl( new byte[]{3,7,11,15}, 3 )
         };
 
         simulatedState.getConfigurator().setConfig("VECTOR_SIZE", "%d".formatted(test_data.length));
@@ -46,10 +47,10 @@ class SimplePartitionErasureCodesTest {
         byte[] test_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13};
 
         ErasureBlock[] expected_data = new ErasureBlock[]{
-                new ErasureBlock( new byte[]{2,4,8,12}, 0 ),
-                new ErasureBlock( new byte[]{1,5,9,13}, 1 ),
-                new ErasureBlock( new byte[]{2,6,10,0}, 2 ),
-                new ErasureBlock( new byte[]{3,7,11,0}, 3 )
+                new ErasureBlockImpl( new byte[]{2,4,8,12}, 0 ),
+                new ErasureBlockImpl( new byte[]{1,5,9,13}, 1 ),
+                new ErasureBlockImpl( new byte[]{2,6,10,0}, 2 ),
+                new ErasureBlockImpl( new byte[]{3,7,11,0}, 3 )
         };
 
         ErasureCodes erasureCodes = simulatedState.getErasureCodesFactory().getNewErasureCodes();
@@ -64,10 +65,10 @@ class SimplePartitionErasureCodesTest {
     @Test
     void decodeDataObject() throws Exception {
         ErasureBlock[] test_data = new ErasureBlock[]{
-                new ErasureBlock( new byte[]{0,4,8,12}, 0 ),
-                new ErasureBlock( new byte[]{1,5,9,13}, 1 ),
-                new ErasureBlock( new byte[]{2,6,10,14}, 2 ),
-                new ErasureBlock( new byte[]{3,7,11,15}, 3 )
+                new ErasureBlockImpl( new byte[]{0,4,8,12}, 0 ),
+                new ErasureBlockImpl( new byte[]{1,5,9,13}, 1 ),
+                new ErasureBlockImpl( new byte[]{2,6,10,14}, 2 ),
+                new ErasureBlockImpl( new byte[]{3,7,11,15}, 3 )
         };
 
         byte[] expected_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
@@ -85,10 +86,10 @@ class SimplePartitionErasureCodesTest {
     @Test
     void decodeDataObjectPaddingTest() throws Exception {
         ErasureBlock[] test_data = new ErasureBlock[]{
-                new ErasureBlock( new byte[]{2,4,8,12}, 0 ),
-                new ErasureBlock( new byte[]{1,5,9,13}, 1 ),
-                new ErasureBlock( new byte[]{2,6,10,0}, 2 ),
-                new ErasureBlock( new byte[]{3,7,11,0}, 3 )
+                new ErasureBlockImpl( new byte[]{2,4,8,12}, 0 ),
+                new ErasureBlockImpl( new byte[]{1,5,9,13}, 1 ),
+                new ErasureBlockImpl( new byte[]{2,6,10,0}, 2 ),
+                new ErasureBlockImpl( new byte[]{3,7,11,0}, 3 )
         };
 
         byte[] expected_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13};

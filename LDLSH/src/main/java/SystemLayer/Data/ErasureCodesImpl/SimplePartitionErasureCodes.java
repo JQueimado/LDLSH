@@ -1,8 +1,9 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataUnits.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlockImpl;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
-import io.netty.buffer.ByteBuf;
 
 public class SimplePartitionErasureCodes extends ErasureCodesImpl {
 
@@ -23,7 +24,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         //Create Blocks
         for( int i = 0; i<n_blocks; i++ ){
             byte[] block = new byte[block_length];
-            ErasureBlock erasureBlock = new ErasureBlock( block, i );
+            ErasureBlock erasureBlock = new ErasureBlockImpl( block, i );
             erasureBlocks[i] = erasureBlock;
         }
 
@@ -31,7 +32,7 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         int c=0;
         for (int i=0; i<block_length; i++){
             for (ErasureBlock erasureBlock : erasureBlocks) {
-                erasureBlock.block_data()[i] = object[c];
+                erasureBlock.getBlock()[i] = object[c];
                 c++;
             }
         }
@@ -43,14 +44,14 @@ public class SimplePartitionErasureCodes extends ErasureCodesImpl {
         if(number_of_blocks < super.total_blocks)
             throw new IncompleteBlockException();
 
-        int block_size = erasureBlocks[0].block_data().length; //All blocks have the same length
+        int block_size = erasureBlocks[0].getBlock().length; //All blocks have the same length
         int data_size = erasureBlocks.length * block_size;
         byte[] data = new byte[ data_size ];
 
         int c=0;
         for(int i=0; i<block_size; i++){
             for (ErasureBlock erasureBlock : erasureBlocks){
-                data[c] = erasureBlock.block_data()[i];
+                data[c] = erasureBlock.getBlock()[i];
                 c++;
             }
         }

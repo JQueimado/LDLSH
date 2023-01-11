@@ -5,17 +5,14 @@ import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Components.TaskImpl.Worker.WorkerTaskImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
+import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.*;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.*;
 
 public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
@@ -103,7 +100,7 @@ public class ModelOptimizedQueryWorkerTask extends WorkerTaskImpl {
             //Complete
             for( MultiMap multiMap: multiMaps ){ //Go to all multiMaps and retrieve the intended erasure block
                 try {
-                    ErasureCodesImpl.ErasureBlock block = multiMap.complete(bestCandidateLSH, bestCandidateUID);
+                    ErasureBlock block = multiMap.complete(bestCandidateLSH, bestCandidateUID);
                     bestCandidateErasureCodes.addBlockAt(block);
                 }catch (Exception e){
                     //continue;

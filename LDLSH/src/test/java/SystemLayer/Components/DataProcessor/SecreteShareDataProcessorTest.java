@@ -4,8 +4,9 @@ import SystemLayer.Components.DataProcessor.DataProcessor.ProcessedData;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
+import SystemLayer.Data.DataUnits.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlockImpl;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 import SystemLayer.SystemExceptions.CorruptDataException;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,9 +41,9 @@ class SecreteShareDataProcessorTest {
         simulatedState.getConfigurator().setConfig("CIPHER_CONFIG",     "AES/CBC/PKCS5PADDING" );
     }
 
-    private DataObject createRandomDataObject(int size){
+    private DataObject<?> createRandomDataObject(int size){
         simulatedState.getConfigurator().setConfig(DataContainer.dataSize_config, "%d".formatted(size));
-        DataObject dataObject = simulatedState.getDataObjectFactory().getNewDataObject();
+        DataObject<?> dataObject = simulatedState.getDataObjectFactory().getNewDataObject();
         Random random = new Random();
         byte[] data = new byte[size];
         random.nextBytes(data);
@@ -95,9 +96,9 @@ class SecreteShareDataProcessorTest {
         //Alter code
         Random random = new Random();
         int corrupt_block_position = random.nextInt( simulatedState.getNumberOfBands() - 2 );
-        byte[] corrupt_block_data = new byte[ erasureCodes.getBlockAt(0).block_data().length ];
+        byte[] corrupt_block_data = new byte[ erasureCodes.getBlockAt(0).getBlock().length ];
         random.nextBytes(corrupt_block_data);
-        erasureCodes.addBlockAt( new ErasureCodesImpl.ErasureBlock( corrupt_block_data, corrupt_block_position ) );
+        erasureCodes.addBlockAt( new ErasureBlockImpl( corrupt_block_data, corrupt_block_position ) );
 
         assertThrows( CorruptDataException.class, ()->{
             simulatedState.getDataProcessor().postProcess(erasureCodes, uniqueIdentifier);

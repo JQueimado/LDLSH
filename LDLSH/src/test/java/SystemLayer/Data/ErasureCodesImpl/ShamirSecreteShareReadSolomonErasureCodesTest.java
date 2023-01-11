@@ -7,11 +7,13 @@ import SystemLayer.Data.DataUnits.ErasureBlock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ReedSolomonErasureCodesTests {
+class ShamirSecreteShareReadSolomonErasureCodesTest {
 
     private int n, k, t;
     private StringDataObject string_data;
@@ -27,8 +29,12 @@ public class ReedSolomonErasureCodesTests {
         //Context
         appContext = new DataContainer("");
         appContext.getConfigurator().setConfig("OBJECT_TYPE", "STRING");
-        appContext.getConfigurator().setConfig("ERASURE_CODES", "REED_SOLOMON");
         appContext.getConfigurator().setConfig("UNIQUE_IDENTIFIER", "SHA256");
+
+        appContext.getConfigurator().setConfig("ERASURE_CODES", "REED_SOLOMON_SHAMIR");
+        appContext.getConfigurator().setConfig("IV_SEED", "abcdefghijklmnop");
+        appContext.getConfigurator().setConfig("CIPHER_ALGORITHM",  "AES" );
+        appContext.getConfigurator().setConfig("CIPHER_CONFIG",     "AES/CBC/PKCS5PADDING" );
 
         appContext.getConfigurator().setConfig("N_BANDS", "%d".formatted(n));
         appContext.getConfigurator().setConfig("ERASURE_FAULTS", "%d".formatted(t));
@@ -45,81 +51,20 @@ public class ReedSolomonErasureCodesTests {
         );
     }
 
-    /**
-     * Tests the sharding function by comparing its result to a handmade one
-     */
     @Test
-    public void shardingTest() throws Exception {
-        BackblazeReedSolomonErasureCodes.setupEncoder( appContext );
-
-        byte[] test_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-
-        byte[][] expected_data = new byte[][]{
-                new byte[]{1,5,9,13},
-                new byte[]{2,6,10,14},
-                new byte[]{3,7,11,15},
-                new byte[]{4,8,12,16},
-                new byte[]{0,0,0,0},
-                new byte[]{0,0,0,0}
-        };
-
-        byte[][] sharded_data = BackblazeReedSolomonErasureCodes.byteArrayToShards(test_data);
-
-        for(int i=0; i<n; i++){
-            assertArrayEquals(expected_data[i], sharded_data[i]);
-        }
-    }
-
-    /**
-     * Tests the reverse sharding by comparing its result to a handmade one
-     */
-    @Test
-    public void reverseSharding() throws Exception{
-        BackblazeReedSolomonErasureCodes.setupEncoder( appContext );
-
-        byte[][] test_data = new byte[][]{
-                new byte[]{1,5,9,13},
-                new byte[]{2,6,10,14},
-                new byte[]{3,7,11,15},
-                new byte[]{4,8,12,16},
-                new byte[]{0,0,0,0},
-                new byte[]{0,0,0,0}
-        };
-
-        byte[] expected_data = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-
-        byte[] result_data = BackblazeReedSolomonErasureCodes.shardsToByteArray(test_data, expected_data.length);
-
-        assertArrayEquals(expected_data, result_data);
-    }
-
-    /**
-     * Test the encoding and decoding process by encoding a data object, display the result and decode said result into
-     * a new data object in order to compare the original object to the resulting object.
-     * @throws Exception
-     */
-    @Test
-    public void encodeDecodeCompleteTest() throws Exception {
+    void encodeDecodeComplete() throws Exception {
         //Encode
-        BackblazeReedSolomonErasureCodes codes =
-                (BackblazeReedSolomonErasureCodes) appContext.getErasureCodesFactory().getNewErasureCodes();
-        codes.encodeDataObject( string_data.toByteArray(), n);
-        //printBlocks(codes.getErasureBlocks());
+        ErasureCodes erasureCodes = appContext.getErasureCodesFactory().getNewErasureCodes();
+        erasureCodes.encodeDataObject(string_data.toByteArray(), appContext.getNumberOfBands());
 
-        //Decode
-        DataObject<String> result_object = (StringDataObject) appContext.getDataObjectFactory().getNewDataObject();
-        BackblazeReedSolomonErasureCodes codes2 =
-                (BackblazeReedSolomonErasureCodes) appContext.getErasureCodesFactory().getNewErasureCodes();
-
-        for(ErasureBlock block: codes.getErasureBlocks()){
-            codes2.addBlockAt(block);
+        //decode
+        ErasureCodes erasureCodes1 = appContext.getErasureCodesFactory().getNewErasureCodes();
+        for(ErasureBlock block : erasureCodes.getErasureBlocks()){
+            erasureCodes1.addBlockAt(block);
         }
+        byte[] data = erasureCodes1.decodeDataObject();
+        assertArrayEquals(string_data.toByteArray(), data);
 
-        byte[] tempData = codes2.decodeDataObject();
-        result_object.setByteArray(tempData);
-
-        //Assertions
-        assertEquals(string_data.getValues(), result_object.getValues() );
     }
 
     /**
@@ -130,12 +75,12 @@ public class ReedSolomonErasureCodesTests {
     @Test
     public void randomPopMaxTest() throws Exception{
         //Encode
-        BackblazeReedSolomonErasureCodes codes1 = new BackblazeReedSolomonErasureCodes(appContext);
+        ErasureCodes codes1 = appContext.getErasureCodesFactory().getNewErasureCodes();
         codes1.encodeDataObject( string_data.toByteArray(), n);
 
         ErasureBlock[] blocks = codes1.getErasureBlocks();
 
-        BackblazeReedSolomonErasureCodes codes2 = new BackblazeReedSolomonErasureCodes(appContext);
+        ErasureCodes codes2 = appContext.getErasureCodesFactory().getNewErasureCodes();
         //Randomly selects t rows to be removed
         Random random = new Random();
         List<Integer> missing_rows = new ArrayList<>();
@@ -163,13 +108,12 @@ public class ReedSolomonErasureCodesTests {
     @Test
     public void PopAllEach() throws Exception{
         //Encode
-        BackblazeReedSolomonErasureCodes codes1 =
-                (BackblazeReedSolomonErasureCodes) appContext.getErasureCodesFactory().getNewErasureCodes();
+        ErasureCodes codes1 = appContext.getErasureCodesFactory().getNewErasureCodes();
         codes1.encodeDataObject( string_data.toByteArray(), n);
 
         ErasureBlock[] blocks = codes1.getErasureBlocks();
 
-        BackblazeReedSolomonErasureCodes codes2;
+        ErasureCodes codes2;
         List<Integer> toRemove;
         DataObject<String> result_object;
         for(int c = 0; c < n; c++){
@@ -178,7 +122,7 @@ public class ReedSolomonErasureCodesTests {
             toRemove.add(c); //Picks c
 
             //Remove and Decode
-            codes2 = new BackblazeReedSolomonErasureCodes(appContext);
+            codes2 = appContext.getErasureCodesFactory().getNewErasureCodes();
             copyAllButSome(codes2, blocks, toRemove); //Copies all but c
 
             result_object = new StringDataObject();
@@ -190,17 +134,9 @@ public class ReedSolomonErasureCodesTests {
         }
     }
 
-    //Auxiliary methods
-    /*
-    private void printBlocks(ErasureBlock[] blocks){
-        for( ErasureBlock row: blocks )
-            if (row != null)
-                System.out.println( row.position() + ":" + Arrays.toString(row.block_data()) );
-    }
-    */
-
+    //Aux
     private void copyAllButSome(
-            BackblazeReedSolomonErasureCodes dest,
+            ErasureCodes dest,
             ErasureBlock[] src,
             List<Integer> some
     ) {

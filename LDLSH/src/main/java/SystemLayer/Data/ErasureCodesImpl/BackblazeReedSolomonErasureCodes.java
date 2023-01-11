@@ -1,22 +1,29 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataUnits.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlockImpl;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 import com.backblaze.erasure.ReedSolomon;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 
 public class BackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
     //Cada erasure code block contem um bloco de chave e um blocco de dados
 
-    private static final String fault_config_name = "ERASURE_FAULTS";
+    protected static final String fault_config_name = "ERASURE_FAULTS";
 
     //Encoders
-    private static int n; //Total blocks
-    private static int k; //Data blocks
-    private static int t; //Parity blocks
+    protected static int n; //Total blocks
+    protected static int k; //Data blocks
+    protected static int t; //Parity blocks
 
-    private static ReedSolomon encoder = null;
+    protected static ReedSolomon encoder = null;
 
     public static void setupEncoder( DataContainer appContext ) throws UnknownConfigException {
         n = appContext.getNumberOfBands();
@@ -79,29 +86,41 @@ public class BackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
         }
     }
 
-    @Override
-    public void encodeDataObject(byte[] object, int n_blocks) throws Exception {
+    /**
+     * Creates a set of codes and calculates their parity
+     * @param object data to encode
+     * @param k number of data blocks
+     * @return matrix of erasure codes
+     */
+    protected byte[][] createCodes( byte[] object, int k ) throws Exception{
         //Padding
         object = addPadding(object, k);
 
         byte[][] shards = byteArrayToShards(object);
         encoder.encodeParity(shards, 0, shards[0].length);
+        return shards;
+    }
+
+    @Override
+    public void encodeDataObject(byte[] object, int n_blocks) throws Exception {
+
+        byte[][] shards = createCodes(object,k); //Create blocks and encode parity
 
         //Blocks
         erasureBlocks = new ErasureBlock[n];
         int c = 0;
         //Copy data
         for( byte[] block : shards ){
-            erasureBlocks[c] = new ErasureBlock(block, c);
+            erasureBlocks[c] = new ErasureBlockImpl(block, c);
             isPresent[c] = true;
             c++;
         }
         number_of_blocks = n_blocks;
-        block_size = erasureBlocks[0].block_data().length;
+        block_size = erasureBlocks[0].getBlock().length;
     }
 
     @Override
-    public byte[] decodeDataObject() throws IncompleteBlockException {
+    public byte[] decodeDataObject() throws IncompleteBlockException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         if( number_of_blocks < n-t ){
             throw new IncompleteBlockException();
@@ -115,7 +134,7 @@ public class BackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
             if( current == null ){
                 matrix[c] = new byte[block_size];
             }else {
-                matrix[c] = current.block_data();
+                matrix[c] = current.getBlock();
             }
         }
 
@@ -128,11 +147,11 @@ public class BackblazeReedSolomonErasureCodes extends ErasureCodesImpl{
 
     @Override
     public void addBlockAt(ErasureBlock erasureBlock) {
-        int pos = erasureBlock.position();
+        int pos = erasureBlock.getPosition();
         if( !isPresent[pos] )
             number_of_blocks++;
         if( block_size ==-1 )
-            block_size = erasureBlock.block_data().length;
+            block_size = erasureBlock.getBlock().length;
         erasureBlocks[pos] = erasureBlock;
         isPresent[pos] = true;
     }

@@ -1,6 +1,7 @@
 package SystemLayer.Components.MultiMapImpl;
 
 import Factories.ComponentFactories.MultimapFactory;
+import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
 import SystemLayer.Containers.Configurator.Configurator;
@@ -8,13 +9,10 @@ import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataObjectsImpl.DataObject;
 import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.ErasureCodesImpl.ErasureCodes;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl;
 import SystemLayer.Data.LSHHashImpl.JavaMinHash;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -164,7 +162,7 @@ class GuavaInMemorySortedMultiMapTest {
         UniqueIdentifier uid = uniqueIdentifiers.get(subject);
         ErasureCodes erasureCode = erasureCodes.get(subject);
 
-        ErasureCodesImpl.ErasureBlock erasureBlock =  multiMap.complete(hash, uid);
+        ErasureBlock erasureBlock =  multiMap.complete(hash, uid);
         ErasureCodes erasureCodesResult = simulatedState.getErasureCodesFactory().getNewErasureCodes();
         erasureCodesResult.addBlockAt(erasureBlock);
 

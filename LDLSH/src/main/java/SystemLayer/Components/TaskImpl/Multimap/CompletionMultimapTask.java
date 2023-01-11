@@ -4,6 +4,7 @@ import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.NetworkLayer.MessageImpl;
 import SystemLayer.Components.MultiMapImpl.MultiMap;
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
 

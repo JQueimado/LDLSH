@@ -3,7 +3,7 @@ package SystemLayer.Components.MultiMapImpl;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.Data.DataUnits.ModelMultimapValue;
 import SystemLayer.Data.DataUnits.MultiMapValue;
-import SystemLayer.Data.ErasureCodesImpl.ErasureCodesImpl.ErasureBlock;
+import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.Data.LSHHashImpl.LSHHash;
 import SystemLayer.Data.DataUnits.LSHHashBlock;
 import SystemLayer.Data.UniqueIndentifierImpl.UniqueIdentifier;
