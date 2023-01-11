@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SystemImpl implements SystemServer {
 
-    private enum NodeTypes { MULTIMAP_SERVER, CLIENT_WORKER }
+    private enum NodeTypes { MULTIMAP_SERVER, CLIENT_WORKER, OTHER }
 
     private static final String nBands_config = "N_BANDS";
     private static final String nodeType_config = "NODE_TYPE";
@@ -46,17 +46,19 @@ public class SystemImpl implements SystemServer {
 
         MultimapFactory multimapFactory = new MultimapFactory(context); //Create factory
 
-        String bands_string = "";
-        int bands = 0;
-        try {
-            bands_string = configurator.getConfig(nBands_config);
-            bands = Integer.parseInt(bands_string);
-        } catch (Exception e) {
-            UnknownConfigException.handler(new UnknownConfigException(nBands_config, bands_string));
-        }
-
         switch (nodeType){
+
             case MULTIMAP_SERVER -> {
+
+                String bands_string = "";
+                int bands = 0;
+                try {
+                    bands_string = configurator.getConfig(nBands_config);
+                    bands = Integer.parseInt(bands_string);
+                } catch (Exception e) {
+                    UnknownConfigException.handler(new UnknownConfigException(nBands_config, bands_string));
+                }
+
                 //Get Map position
                 String multiMapPosition_value = "";
                 int multiMapPosition;
@@ -81,6 +83,16 @@ public class SystemImpl implements SystemServer {
             }
 
             case CLIENT_WORKER -> {
+
+                String bands_string = "";
+                int bands = 0;
+                try {
+                    bands_string = configurator.getConfig(nBands_config);
+                    bands = Integer.parseInt(bands_string);
+                } catch (Exception e) {
+                    UnknownConfigException.handler(new UnknownConfigException(nBands_config, bands_string));
+                }
+
                 List<MultiMap> multiMaps = new ArrayList<>();
                 for (int i = 0; i < bands; i++) {
                     MultiMap current = multimapFactory.getNewMultiMap();
@@ -90,6 +102,7 @@ public class SystemImpl implements SystemServer {
                 }
                 context.setMultiMaps(multiMaps);
             }
+
         }
 
         //-Communication
