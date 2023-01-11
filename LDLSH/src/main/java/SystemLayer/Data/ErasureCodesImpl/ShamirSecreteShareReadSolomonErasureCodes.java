@@ -1,6 +1,7 @@
 package SystemLayer.Data.ErasureCodesImpl;
 
 import SystemLayer.Containers.DataContainer;
+import SystemLayer.Data.DataObjectsImpl.StringDataObject;
 import SystemLayer.Data.DataUnits.ErasureBlock;
 import SystemLayer.Data.DataUnits.ErasureBlockImpl;
 import SystemLayer.SystemExceptions.IncompleteBlockException;
@@ -32,8 +33,8 @@ public class ShamirSecreteShareReadSolomonErasureCodes extends BackblazeReedSolo
     protected static Scheme secreteShareEncoder = null;
 
     protected static byte[] iv;
-    protected static Cipher cipher;
-    protected static KeyGenerator keyGenerator;
+    protected static Cipher cipher = null;
+    protected static KeyGenerator keyGenerator = null;
     protected static String algorithm = "";
 
     private static void setCipher( DataContainer appContext ) throws UnknownConfigException {
@@ -61,12 +62,12 @@ public class ShamirSecreteShareReadSolomonErasureCodes extends BackblazeReedSolo
         }
 
         //Cipher config set check
-        String algorithm = "";
+        String alg_config = "";
         try {
-            algorithm = appContext.getConfigurator().getConfig( CIPHER_ALGORITHM ); //get cipher config
-            cipher = Cipher.getInstance(algorithm); //create cipher object
+            alg_config = appContext.getConfigurator().getConfig( CIPHER_ALGORITHM ); //get cipher config
+            cipher = Cipher.getInstance(alg_config); //create cipher object
         }catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalArgumentException e){
-            throw new UnknownConfigException( CIPHER_ALGORITHM, algorithm );
+            throw new UnknownConfigException( CIPHER_ALGORITHM, alg_config );
         }
     }
 
@@ -99,8 +100,10 @@ public class ShamirSecreteShareReadSolomonErasureCodes extends BackblazeReedSolo
     }
 
     protected static void setupEncoders( DataContainer appContext ) throws UnknownConfigException {
-       setCipher(appContext);
-       setSecreteShare(appContext);
+        if (cipher == null || keyGenerator == null)
+            setCipher(appContext);
+        if( secreteShareEncoder == null)
+            setSecreteShare(appContext);
     }
 
     /**
