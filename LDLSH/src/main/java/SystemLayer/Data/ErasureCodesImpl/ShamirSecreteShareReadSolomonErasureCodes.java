@@ -44,12 +44,6 @@ public class ShamirSecreteShareReadSolomonErasureCodes extends BackblazeReedSolo
             if( iv_seed.length() != iv_size )
                 throw new IllegalArgumentException();
 
-            /*
-            SecureRandom secureRandom = new SecureRandom( iv_seed.getBytes(StandardCharsets.UTF_8) ); //Create an PRNG
-            //iv = new byte[iv_size]; //init array
-            secureRandom.nextBytes(iv); //set array with de PRNG values
-            */
-
             iv = iv_seed.getBytes(StandardCharsets.UTF_8);
 
         }catch (IllegalArgumentException e){
