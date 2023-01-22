@@ -1,7 +1,9 @@
+from fileinput import filename
 import sys
 import os
 import pandas as pd
 import numpy as np
+import threading as thr
 
 levels = [4,3,2,1]
 
@@ -21,75 +23,111 @@ def jcDistance( a : str, b : str, l : int ):
     b = createNgram(b, l)
     return 1 - float(len(a.intersection(b)))/len(a.union(b))
 
-def accuracyInsertProcessor( testfname : str , datasetfname : str ):
-    #Read Dataset
-    dsdf = pd.read_csv(datasetfname, sep=' ', header=None)
-    dsdf.columns = ['dastasetValue']
+def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
+    resultdf : pd.DataFrame = pd.DataFrame()
 
-    #Read Results
-    tfdf = pd.read_csv(testfname, sep=' ', header=None)
-    tfdf = tfdf.drop(0, axis=1)
-    tfdf.columns = ['insertedValue']
+    testfiles.sort()
 
-    dsdf = dsdf.sort_values(by=['dastasetValue'])
-    dsdf = dsdf.reset_index(drop=True)
+    for file in testfiles:
+        print(file)
+        # INSERT
+        if "_i_" in file:
+            df = pd.read_csv(file, sep=' ', header=None)
+            df = df.drop(0, axis=1)
+            df.columns = ['result']
+            df = df.sort_values(by=['result'])
+            df = df.reset_index(drop=True)
 
-    tfdf = tfdf.sort_values(by=['insertedValue'])
-    tfdf = tfdf.reset_index(drop=True)
+            dsdf = pd.read_csv(datasetfname, sep=' ', header=None)
+            dsdf.columns = ['value']
+            dsdf = dsdf.sort_values(by=['value'])
+            dsdf = dsdf.reset_index(drop=True)
 
-    dsdf['insertedValue'] = tfdf['insertedValue']
+            df['value'] = dsdf['value']
 
-    dsdf['eval'] = np.where(dsdf['dastasetValue'] == dsdf['insertedValue'], True, False)
-    dsdf.head()
+            df['eval'] = np.where(df['value'] == df['result'], True, False)
+            df.head()
 
-    dsdf.to_csv( testfname + ".acc.results.csv")
+            df = df.drop("value", axis=1)
+            df.columns = ["value", "result"]
 
-    stats = dsdf.agg({
-        'eval': ["min", "max", "median", "std", "mean", "skew"]
-    })
+        elif "_q_" in file:
+            df = pd.read_csv(file, sep=' ', header=None)
+            df = df.drop(1, axis=1)
+            df.columns = ['value', 'result']
 
-    stats.to_csv(testfname + ".acc.stats.csv")
+            df['jaccard distance'] = df.apply( lambda row : jcDistance(row['value'], row['result'], ngramLevel), axis=1 )
+            df.head()
+            df = df.drop("result", axis=1)
+            df.columns = ["value", "result"]
 
-def accuracyQueryProcessor( testfname : str , ngramLevel : int ):
-    #Read Dataset
-    dsdf = pd.read_csv(testfname, sep=' ', header=None)
-    dsdf.columns = ['query', 'sep', 'result']
-    dsdf = dsdf.drop(columns=['sep'])
+        fileName = os.path.basename(file)
+        if resultdf.empty:
+            resultdf = df.rename(columns={ 'result' : fileName })
+            #resultdf = resultdf.set_index('value')
+        else:
+            resultdf = pd.merge(resultdf, df, on='value', how="outer" )
+            #resultdf = pd.merge(resultdf, df, on='value')
+            resultdf = resultdf.rename(columns={ 'result' : fileName })
 
-    dsdf['jaccard distance'] = dsdf.apply( lambda row : jcDistance(row['query'], row['result'], ngramLevel), axis=1 )
-    dsdf.head()
+    dirName : str = os.path.dirname(testfiles[0])
+    
+    resultdf = resultdf.set_index('value')
+    print(resultdf)
+    resultdf.to_csv( dirName+"/accuracy.results.csv" )
+    
+    stats = resultdf.agg(["min", "max", "median", "std", "mean", "skew"])
+    
+    print(stats)
+    stats.to_csv( dirName+"/accuracy.stats.csv")
 
-    dsdf.to_csv( testfname + ".acc.results.csv" )
-
-    #print( "avg: " + str( dsdf['jaccard distance'].mean() ))
-    stats = dsdf.agg({
-        'jaccard distance': ["min", "max", "median", "std", "mean", "skew"]
-    })
-
-    stats.to_csv(testfname + ".acc.stats.csv")
 
 #LatencyProcessor:
 # testfname: str -> filename
-def latencyProcessor( testfname : str ):
-    df = pd.read_csv(testfname, sep=" ", header=None)
-    df = df.drop([0,1,3,4,6], axis=1)
-    df.columns = ["val", "time"]
+def latencyProcessor( testfiles : list):
 
-    df.to_csv( testfname + ".lat.results.csv" )
+    resultdf : pd.DataFrame = pd.DataFrame()
 
-    stats = df.agg({
-        'time': ["min", "max", "median", "std", "mean", "skew"]
-    })
+    testfiles.sort()
 
-    stats.to_csv(testfname + ".lat.stats.csv")
+    for file in testfiles:
+        print(file)
+
+        df = pd.read_csv(file, sep=" ", header=None)
+        df = df.drop([0,1,3,4,6], axis=1)
+        df.columns = ['value', 'time']
+        df = df.iloc[50:]
+
+        fileName = os.path.basename(file)
+        if resultdf.empty:
+            resultdf = df.rename(columns={ 'time' : fileName })
+            #resultdf = resultdf.set_index('value')
+        else:
+            resultdf = pd.merge(resultdf, df, on='value', how="outer" )
+            #resultdf = pd.merge(resultdf, df, on='value')
+            resultdf = resultdf.rename(columns={ 'time' : fileName })
+
+    dirName : str = os.path.dirname(testfiles[0])
+    
+    resultdf = resultdf.set_index('value')
+    print(resultdf)
+    resultdf.to_csv( dirName+"/latency.results.csv" )
+    
+    stats = resultdf.agg(["min", "max", "median", "std", "mean", "skew"])
+    
+    print(stats)
+    stats.to_csv( dirName+"/latency.stats.csv")
 
 #ThroughputProcessor:
 # testfname: [] -> list of files to process
-def throughputProcessor( files, dir ):
+def throughputProcessor( files : list, dir : str ):
+
+    files.sort()
 
     df = pd.DataFrame({'total time':[], 'throughput':[]})
 
     for file in files:
+        print(file)
         temp_df = pd.read_csv(file, sep=" ", header=None)
         temp_df = temp_df.drop([0,2], axis=1)
         df.loc[len(df.index)] = [ temp_df[1][0], temp_df[1][1] ]
@@ -119,8 +157,23 @@ if __name__ == "__main__":
 
     test_contents = os.listdir(test)
 
+    accuracyFiles = []
+    latencyFiles = []
     throughputFiles = []
 
+    #Dataset file
+    insert_dataset = datasetFolder + test_data[1].split("-")[1]
+
+    #Ngram level
+    test_n = int( test_data[0].split("-")[-1] )
+    level = 0
+    
+    if( test_n < 6 ):
+        level = levels[0]
+    else:
+        level = levels[test_n - 6]
+
+    #Sort Files
     for file in test_contents:
         if( (not file.endswith(".txt")) ):
             continue
@@ -135,27 +188,27 @@ if __name__ == "__main__":
         file = test + "/" + file
 
         if( test_type == "accuracy" ):
-            test_op = test_split[2]
-            
-            if( test_op == "i" ):
-                insert_dataset = datasetFolder + test_data[1].split("-")[1]
-                accuracyInsertProcessor(file, insert_dataset)
-
-            elif( test_op == "q" ):
-                test_n = int( test_data[0].split("-")[-1] )
-                level = 0
-                
-                if( test_n < 6 ):
-                    level = levels[0]
-                else:
-                    level = levels[test_n - 6]
-                
-                accuracyQueryProcessor(file, level)
+            accuracyFiles.append(file)
 
         elif( test_type == "latency" ):
-            latencyProcessor( file )
+            latencyFiles.append(file)
         
         elif( test_type == "throughput" ):
             throughputFiles.append(file)
 
-    throughputProcessor( throughputFiles, test )
+    #Process files 
+    #accuracyProcessor( accuracyFiles, insert_dataset, level )
+    accuracy_thread = thr.Thread( target=accuracyProcessor, args=(accuracyFiles, insert_dataset, level) )
+    accuracy_thread.start()
+
+    #latencyProcessor(latencyFiles)
+    latency_thread = thr.Thread( target=latencyProcessor, args=(latencyFiles,) )
+    latency_thread.start()
+    
+    #throughputProcessor( throughputFiles, test )
+    throughput_thread = thr.Thread( target=throughputProcessor, args=(throughputFiles, test) )
+    throughput_thread.start()
+
+    accuracy_thread.join()
+    latency_thread.join()
+    throughput_thread.join()
