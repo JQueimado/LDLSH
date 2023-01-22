@@ -96,7 +96,7 @@ def latencyProcessor( testfiles : list):
         df = pd.read_csv(file, sep=" ", header=None)
         df = df.drop([0,1,3,4,6], axis=1)
         df.columns = ['value', 'time']
-        df = df.sort_values(by='value')
+        df = df.iloc[50:]
 
         fileName = os.path.basename(file)
         if resultdf.empty:
