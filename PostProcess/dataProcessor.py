@@ -87,6 +87,9 @@ def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
 def latencyProcessor( testfiles : list):
 
     resultdf : pd.DataFrame = pd.DataFrame()
+    meandf : pd.DataFrame = pd.DataFrame(columns=["file","mean"])
+    stddf : pd.DataFrame = pd.DataFrame(columns=["file","std"])
+    mediandf : pd.DataFrame = pd.DataFrame(columns=["file","median"])
 
     testfiles.sort()
 
@@ -98,7 +101,7 @@ def latencyProcessor( testfiles : list):
         df.columns = ['value', 'time']
         df = df.iloc[50:]
 
-        fileName = os.path.basename(file)
+        fileName = os.path.splitext( os.path.basename(file) )[0]
         if resultdf.empty:
             resultdf = df.rename(columns={ 'time' : fileName })
             #resultdf = resultdf.set_index('value')
@@ -106,14 +109,32 @@ def latencyProcessor( testfiles : list):
             resultdf = pd.merge(resultdf, df, on='value', how="outer" )
             #resultdf = pd.merge(resultdf, df, on='value')
             resultdf = resultdf.rename(columns={ 'time' : fileName })
+            
+            meandf.loc[len(meandf.index)] = [fileName, df["time"].mean()]
+            stddf.loc[len(stddf.index)] = [fileName, df["time"].std()]
+            mediandf.loc[len(mediandf.index)] = [fileName, df["time"].median()]
 
     dirName : str = os.path.dirname(testfiles[0])
     
+    #results file
     resultdf = resultdf.set_index('value')
     print(resultdf)
     resultdf.to_csv( dirName+"/latency.results.csv" )
     
-    stats = resultdf.agg(["min", "max", "median", "std", "mean", "skew"])
+    #mean file
+    print(meandf)
+    meandf.to_csv( dirName+"/latency.mean.csv", header=False, index=False )
+
+    #deviation file
+    print(stddf)
+    stddf.to_csv( dirName+"/latency.std.csv", header=False, index=False  )
+
+    #median file
+    print(mediandf)
+    mediandf.to_csv( dirName+"/latency.mean.csv", header=False, index=False )
+
+    #extra stats file
+    stats = resultdf.agg(["min", "max", "skew"])
     
     print(stats)
     stats.to_csv( dirName+"/latency.stats.csv")

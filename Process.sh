@@ -5,7 +5,7 @@ then
 fi
 
 DATASETS="/media/sf_Data/data_sets"
-PROCESSOR="/home/joao/Tese/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing/PostProcess/dataProcessor_cp.py"
+PROCESSOR="/home/joao/Tese/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing/PostProcess/dataProcessor.py"
 for TESTFILE in "$@"
 do
     TESTFOLDER=$(dirname "$TESTFILE")
