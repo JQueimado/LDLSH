@@ -25,6 +25,10 @@ def jcDistance( a : str, b : str, l : int ):
 
 def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
     resultdf : pd.DataFrame = pd.DataFrame()
+    meandf : pd.DataFrame = pd.DataFrame(columns=["file","mean"])
+    stddf : pd.DataFrame = pd.DataFrame(columns=["file","std"])
+    mediandf : pd.DataFrame = pd.DataFrame(columns=["file","median"])
+
 
     testfiles.sort()
 
@@ -70,6 +74,10 @@ def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
             #resultdf = pd.merge(resultdf, df, on='value')
             resultdf = resultdf.rename(columns={ 'result' : fileName })
 
+        meandf.loc[len(meandf.index)] = [fileName, df["result"].mean()]
+        stddf.loc[len(stddf.index)] = [fileName, df["result"].std()]
+        mediandf.loc[len(mediandf.index)] = [fileName, df["result"].median()]
+
     dirName : str = os.path.dirname(testfiles[0])
     
     resultdf = resultdf.set_index('value')
@@ -81,6 +89,17 @@ def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
     print(stats)
     stats.to_csv( dirName+"/accuracy.stats.csv")
 
+    #mean file
+    print(meandf)
+    meandf.to_csv( dirName+"/accuracy.mean.csv", header=False, index=False )
+
+    #deviation file
+    print(stddf)
+    stddf.to_csv( dirName+"/accuracy.std.csv", header=False, index=False  )
+
+    #median file
+    print(mediandf)
+    mediandf.to_csv( dirName+"/accuracy.mean.csv", header=False, index=False )
 
 #LatencyProcessor:
 # testfname: str -> filename
@@ -110,9 +129,9 @@ def latencyProcessor( testfiles : list):
             #resultdf = pd.merge(resultdf, df, on='value')
             resultdf = resultdf.rename(columns={ 'time' : fileName })
             
-            meandf.loc[len(meandf.index)] = [fileName, df["time"].mean()]
-            stddf.loc[len(stddf.index)] = [fileName, df["time"].std()]
-            mediandf.loc[len(mediandf.index)] = [fileName, df["time"].median()]
+        meandf.loc[len(meandf.index)] = [fileName, df["time"].mean()]
+        stddf.loc[len(stddf.index)] = [fileName, df["time"].std()]
+        mediandf.loc[len(mediandf.index)] = [fileName, df["time"].median()]
 
     dirName : str = os.path.dirname(testfiles[0])
     
@@ -134,7 +153,7 @@ def latencyProcessor( testfiles : list):
     mediandf.to_csv( dirName+"/latency.mean.csv", header=False, index=False )
 
     #extra stats file
-    stats = resultdf.agg(["min", "max", "skew"])
+    stats = resultdf.agg(["min", "max", "median", "std", "mean", "skew"])
     
     print(stats)
     stats.to_csv( dirName+"/latency.stats.csv")
