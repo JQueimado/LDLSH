@@ -99,7 +99,7 @@ def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
 
     #median file
     print(mediandf)
-    mediandf.to_csv( dirName+"/accuracy.mean.csv", header=False, index=False )
+    mediandf.to_csv( dirName+"/accuracy.median.csv", header=False, index=False )
 
 #LatencyProcessor:
 # testfname: str -> filename
