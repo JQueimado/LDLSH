@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,21 +46,21 @@ public class LatencyTestMain extends SystemMainImp{
                 for (DataObject<String> dataElement : data) {
                     //System.out.println("adding:"+ dataElement.getValues());
                     //Execute instruction
-                    Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
+                    long initialTimeStamp = System.nanoTime();
                     ListenableFuture<DataObject<?>> result = system.insert(dataElement);
                     Futures.addCallback(result, new FutureCallback<>() {
                         final DataObject<?> elem = dataElement;
-                        final Timestamp initialTimeStamp1 = initialTimeStamp;
+                        final long initialTimeStamp1 = initialTimeStamp;
 
                         @Override
                         public void onSuccess(DataObject object) {
                             //Complete
-                            Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                            long finalTimestamp = System.nanoTime();
                             synchronized (successCounter) {
                                 successCounter.getAndIncrement();
                             }
-                            long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
-                            System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ms");
+                            long totalExecutionTime = finalTimestamp - initialTimeStamp1;
+                            System.out.println("insert for " + elem.getValues() + " execution time: " + totalExecutionTime + " ns");
                         }
 
                         @Override
@@ -77,19 +76,19 @@ public class LatencyTestMain extends SystemMainImp{
                 for (DataObject<?> dataElement : data){
 
                     //Execute Instruction
-                    Timestamp initialTimeStamp = new Timestamp(System.currentTimeMillis());
+                    long initialTimeStamp = System.nanoTime();
                     ListenableFuture<DataObject<?>> result = system.query(dataElement);
                     Futures.addCallback(result, new FutureCallback<>() {
                         final DataObject<?> elem = dataElement;
-                        final Timestamp initialTimeStamp1 = initialTimeStamp;
+                        final long initialTimeStamp1 = initialTimeStamp;
                         @Override
                         public void onSuccess(DataObject object) {
                             //Complete
-                            Timestamp finalTimestamp = new Timestamp(System.currentTimeMillis());
+                            long finalTimestamp = System.nanoTime();
                             synchronized (successCounter) {
                                 successCounter.getAndIncrement();
                             }
-                            long totalExecutionTime = finalTimestamp.getTime() - initialTimeStamp1.getTime();
+                            long totalExecutionTime = finalTimestamp - initialTimeStamp1;
                             System.out.println("query for "+ elem.getValues() +" execution time: "+ totalExecutionTime+" ms");
                         }
 
