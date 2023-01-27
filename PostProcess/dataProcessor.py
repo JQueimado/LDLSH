@@ -29,7 +29,6 @@ def accuracyProcessor( testfiles :list, datasetfname: str, ngramLevel: int ):
     stddf : pd.DataFrame = pd.DataFrame(columns=["file","std"])
     mediandf : pd.DataFrame = pd.DataFrame(columns=["file","median"])
 
-
     testfiles.sort()
 
     for file in testfiles:
@@ -119,6 +118,7 @@ def latencyProcessor( testfiles : list):
         df = df.drop([0,1,3,4,6], axis=1)
         df.columns = ['value', 'time']
         df = df.iloc[50:]
+        df["time"] = df["time"].apply(lambda x : x * 0.000001)
 
         fileName = os.path.splitext( os.path.basename(file) )[0]
         if resultdf.empty:
@@ -150,7 +150,7 @@ def latencyProcessor( testfiles : list):
 
     #median file
     print(mediandf)
-    mediandf.to_csv( dirName+"/latency.mean.csv", header=False, index=False )
+    mediandf.to_csv( dirName+"/latency.median.csv", header=False, index=False )
 
     #extra stats file
     stats = resultdf.agg(["min", "max", "median", "std", "mean", "skew"])
