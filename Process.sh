@@ -4,8 +4,8 @@ then
     exit 1
 fi
 
-DATASETS="/media/sf_Data/data_sets"
-PROCESSOR="/home/joao/Tese/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing/PostProcess/dataProcessor.py"
+DATASETS="/media/sf_Tese/Data/data_sets"
+PROCESSOR="./PostProcess/dataProcessor.py"
 for TESTFILE in "$@"
 do
     TESTFOLDER=$(dirname "$TESTFILE")
