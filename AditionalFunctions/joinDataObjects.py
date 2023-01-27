@@ -1,7 +1,7 @@
 import sys
 
 def main( fname : str ):
-    dfname = fname.split(".")[0] + "_x10"
+    dfname = fname.split(".")[0] + "x10"
     with open(fname, 'r') as rf:
         with open(dfname, "x") as wf:
             c = 0
