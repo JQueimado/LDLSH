@@ -2,7 +2,6 @@ from fileinput import filename
 import sys
 import os
 import pandas as pd
-import numpy as np
 
 def main( testsFolder ):
     #setup context
@@ -35,6 +34,28 @@ def main( testsFolder ):
         queryLatencydf.loc[len(queryLatencydf)] = [testname, mean, mean + std, mean - std]
 
     print(queryLatencydf)
+    queryLatencydf.to_csv( testsFolder+"/TestXLatencyAverage.csv")
+
+    for i, row in queryLatencydf.iterrows():
+        
+        threshold : float = 0.0
+        test : str = row["test"]
+
+        if( test.endswith("test-6") ):
+            queryLatencydf.drop([i], axis=0, inplace=True)
+            continue
+
+        if( test.endswith("test-2") ):
+            threshold = 0.75
+        if( test.endswith("test-3") ):
+            threshold = 0.90
+        if( test.endswith("test-4") ):
+            threshold = 0.95
+        
+        queryLatencydf.at[i,"threshold"] = threshold
+    queryLatencydf.reset_index(drop=True, inplace=True)
+    print(queryLatencydf)
+    queryLatencydf.to_csv(testsFolder+"/ThresholdxLatency.csv")
 
 #__main__#
 if __name__ == "__main__":
