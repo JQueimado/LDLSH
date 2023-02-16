@@ -3,7 +3,7 @@
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
 DATASETS="${DIR}/data_sets"
 CONFIGS="${DIR}/LDLSH/Test_Batery"
-CLIENT="t5"
+CLIENT="t4"
 SERVERS="t6 t7 t8"
 BRANCH="Tests"
 TESTS="accuracy latency throughput"

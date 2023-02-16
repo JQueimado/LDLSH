@@ -16,7 +16,7 @@ REPOSITORY="https://github.com/JQueimado/Large-scale_distributed_similarity_sear
 BASE_DIR="/root/jqueimado"
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
 DIRCONFIG="Throughtput-test"
-HOSTS="t5 t6 t7 t8"
+HOSTS="t4 t6 t7 t8"
 
 run_server_jar(){
 	HOST=$1
