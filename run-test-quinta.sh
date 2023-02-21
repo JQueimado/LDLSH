@@ -64,7 +64,8 @@ run_Test(){
 	QUERYFILE="${DATASETS}/$4"
 
 	#test configs
-	RESULTSFOLDER="TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}"
+	TIMESTAMP=$(date +%s)
+	RESULTSFOLDER="TEST-$2_I-$3_Q-$4_IT-${ITERATIONS}_T-${TIMESTAMP}"
 	
 	mkdir "TESTS/${RESULTSFOLDER}"
 	
