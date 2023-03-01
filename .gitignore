@@ -5,3 +5,4 @@ apache-maven-3.8.6*
 jdk-17.0.4_linux-x64_bin.*
 TEST*
 nb*
+*.csv
