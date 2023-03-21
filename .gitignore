@@ -6,3 +6,5 @@ jdk-17.0.4_linux-x64_bin.*
 TEST*
 nb*
 *.csv
+*.pdf
+

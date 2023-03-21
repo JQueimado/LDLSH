@@ -84,13 +84,13 @@ set key left top
 set autoscale y
 
 plot 'ThresholdxLatency.csv' index 0 using 4:1:2:3 title "LDLSH" with errorbars ls 2, \
-		'' index 0 using 4:1 title '' with linespoints ls 1, \
+		'' index 0 using 4:1:xtic(1) title '' with linespoints ls 1, \
 		'' index 1 using 4:1:2:3 title "LDLSH-Optimized" with errorbars ls 4, \
-		'' index 1 using 4:1 title '' with linespoints ls 3, \
+		'' index 1 using 4:1:xtic(1) title '' with linespoints ls 3, \
 		'' index 2 using 4:1:2:3 title "Traditional Replicated" with errorbars ls 6, \
-		'' index 2 using 4:1 title '' with linespoints ls 5, \
+		'' index 2 using 4:1:xtic(1) title '' with linespoints ls 5, \
 		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
-		'' index 3 using 4:1 title '' with linespoints ls 7
+		'' index 3 using 4:1:xtic(1) title '' with linespoints ls 7
 		#'' using 2:($3/150):xtic(1) title "P" with linespoints ls 1, \
 		#'' using 2:($6/150):($7/150):($8/150) title "" with errorbars ls 4, \
 		#'' using 2:($6/150):xtic(1) title "A" with linespoints ls 3, \
