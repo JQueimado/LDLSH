@@ -54,8 +54,10 @@ def main( testsFolder ):
         
         queryLatencydf.at[i,"threshold"] = threshold
     queryLatencydf.reset_index(drop=True, inplace=True)
+
+    queryLatencydf.drop("test", axis=1, inplace=True)
     print(queryLatencydf)
-    queryLatencydf.to_csv(testsFolder+"/ThresholdxLatency.csv")
+    queryLatencydf.to_csv(testsFolder+"/ThresholdxLatency.csv", index=None, header=None, sep="\t")
 
 #__main__#
 if __name__ == "__main__":
