@@ -15,6 +15,16 @@ def main( testsFolder ):
     queryAccuracydf = pd.DataFrame(columns=["test","mean"])
     queryThroughputdf = pd.DataFrame(columns=["test", "mean", "meanplus", "meanminus"])
 
+    datasetName = renameDataset( testsFolder )
+
+    latencyTestResults = "/TestLatencyAverage_"+datasetName+".csv"
+    accuracyTestResults = "/TestAccuracyAverage_"+datasetName+".csv"
+    throughputTestResults = "/TestThroughputyAverage_"+datasetName+".csv"
+    
+    thresholdLatencyTestResults = "/ThresholdxLatency_"+datasetName+".csv"
+    thresholdAccuracyTestResults = "/ThresholdxAccuracy_"+datasetName+".csv"
+    thresholdThroughputTestResults = "/ThresholdxThroughput_"+datasetName+".csv"
+
     for test in tests:
         test = testsFolder + test
         #check dir
@@ -51,31 +61,31 @@ def main( testsFolder ):
         queryThroughputdf.loc[len(queryAccuracydf)] = [testname, mean, mean+std, mean-std]
 
     print("Latency:\n",queryLatencydf)
-    queryLatencydf.to_csv( testsFolder+"/TestLatencyAverage.csv")
+    queryLatencydf.to_csv( testsFolder + latencyTestResults)
 
     print("Accuracy:\n",queryAccuracydf)
-    queryAccuracydf.to_csv( testsFolder+"/TestAccuracyAverage.csv" )
+    queryAccuracydf.to_csv( testsFolder + accuracyTestResults )
 
     print("Throughput:\n", queryThroughputdf)
-    queryThroughputdf.to_csv( testsFolder+"/TestThroughputAverage.csv" )
+    queryThroughputdf.to_csv( testsFolder + throughputTestResults )
 
     #Latency with threshold
     queryLatencyThresholddf = addThreshold(queryLatencydf)
     print("Latency with Threshold:\n",queryLatencyThresholddf)
-    queryLatencyThresholddf.to_csv(testsFolder+"/ThresholdxLatency.csv", index=None, header=None, sep="\t")
-    splitModels( testsFolder+"/ThresholdxLatency.csv" ) 
+    queryLatencyThresholddf.to_csv(testsFolder + thresholdLatencyTestResults, index=None, header=None, sep="\t")
+    splitModels( testsFolder + thresholdLatencyTestResults ) 
 
     #Accuracy with threshold
     queryAccuracyThresholddf = addThreshold( queryAccuracydf )
     print("Accuracy with Threshold\n", queryAccuracyThresholddf)
-    queryAccuracyThresholddf.to_csv(testsFolder+"/ThresholdxAccuracy.csv", index=None, header=None, sep="\t")
-    splitModels( testsFolder+"/ThresholdxAccuracy.csv" )
+    queryAccuracyThresholddf.to_csv(testsFolder + thresholdAccuracyTestResults, index=None, header=None, sep="\t")
+    splitModels( testsFolder + thresholdAccuracyTestResults )
 
     #Througput with threshold
     queryThroughputThresholddf = addThreshold(queryThroughputdf)
     print("Threshold with througput\n", queryThroughputThresholddf)
-    queryThroughputThresholddf.to_csv(testsFolder+"/ThresholdxThrughput.csv", index=None, header=None, sep="\t")
-    splitModels( testsFolder+"/ThresholdxThrughput.csv" )
+    queryThroughputThresholddf.to_csv(testsFolder + thresholdThroughputTestResults, index=None, header=None, sep="\t")
+    splitModels( testsFolder + thresholdThroughputTestResults )
 
 #Chages the Testnames to their respective Thresholds
 def addThreshold( df: pd.DataFrame ) -> pd.DataFrame:
@@ -112,6 +122,35 @@ def splitModels( fname : str ):
 
     with open( fname, "w") as f:
         f.writelines( lines )
+
+def renameDataset( testfolder : str ) -> str :
+
+    if(testfolder.endswith("/")):
+        testfolder = testfolder[:-1]
+
+    c = os.path.basename(testfolder)
+    print(c)
+
+    if( c == "I-SRR10000shufaa_Q-SRR10000shufaa_IT-10" ):
+        return "10a-10a"
+    elif ( c == "I-SRR10000shufaa_Q-SRR10000shufab_IT-10"):
+        return "10a-10b"
+    elif ( c == "I-SRR10000shufaa_Q-SRR10000shufac_IT-10" ):
+        return "10a-10c"
+    
+    elif ( c == "I-SRR100000shufaa_Q-SRR100000shufaa_IT-10" ):
+        return "100a-100a"
+    elif ( c == "I-SRR100000shufaa_Q-SRR100000shufab_IT-10" ):
+        return "100a-100b"
+    elif ( c == "I-SRR100000shufaa_Q-SRR100000shufac_IT-10" ):
+        return "100a-100c"
+
+    elif ( c == "I-SRR100000shufaax10_Q-SRR100000shufaax10" ):
+        return "10x10a-10x10a"
+    elif ( c == "I-SRR100000shufaax10_Q-SRR100000shufabx10" ):
+        return "10x10a-10x10b"
+    elif ( c == "I-SRR100000shufaax10_Q-SRR100000shufacx10" ):
+        return "10x10a-10x10c"
 
 #__main__#
 if __name__ == "__main__":
