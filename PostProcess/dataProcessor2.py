@@ -21,9 +21,9 @@ def main( testsFolder ):
     accuracyTestResults = "/TestAccuracyAverage_"+datasetName+".csv"
     throughputTestResults = "/TestThroughputyAverage_"+datasetName+".csv"
     
-    thresholdLatencyTestResults = "/ThresholdxLatency_"+datasetName+".csv"
-    thresholdAccuracyTestResults = "/ThresholdxAccuracy_"+datasetName+".csv"
-    thresholdThroughputTestResults = "/ThresholdxThroughput_"+datasetName+".csv"
+    thresholdLatencyTestResults = "/TestThresholdxLatency_"+datasetName+".csv"
+    thresholdAccuracyTestResults = "/TestThresholdxAccuracy_"+datasetName+".csv"
+    thresholdThroughputTestResults = "/TestThresholdxThroughput_"+datasetName+".csv"
 
     for test in tests:
         test = testsFolder + test

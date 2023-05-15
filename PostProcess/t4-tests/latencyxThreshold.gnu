@@ -1,6 +1,6 @@
 #!/usr/bin/gnuplot
 reset
-fontsize = 10
+#set fontsize = 100
 #set term postscript enhanced eps fontsize solid
 
 #set autoscale
@@ -80,7 +80,7 @@ set key right top
 #set linetype cycle 3
 #set linetype cycle 4
 
-set terminal pdf size 18, 10
+set terminal pdf size 18, 10 font ",30"
 
 ## ThresholdxLatency_10a-10a.pdf ##
 set yrange [5:32]
