@@ -20,7 +20,19 @@ def jcDistance( a : str, b : str, l : int ):
     return 1 - float(len(a.intersection(b)))/len(a.union(b))
 
 #Calculates the distance betwen a vector and its best candidate in a given dataset
-def bestDistance( subject : str, data : pd.DataFrame, level: int ) -> float:
+def bestDistance( 
+        subject : str, 
+        data : pd.DataFrame, 
+        level: int, 
+        print_flag : bool = False,
+        row : int = -1, 
+        size: int = -1 
+    ) -> float:
+
+    if(print_flag):
+        pc = (row/size)*100
+        st ="Thread_1: {percent:.2f}%".format(percent=pc)
+        print( st, end='\r')
 
     bestDistance = 1.0
 
@@ -36,8 +48,8 @@ def bestDistance( subject : str, data : pd.DataFrame, level: int ) -> float:
     return bestDistance
 
 #Processess a dataframe
-def processData( query_df : pd.DataFrame, insert_df : pd.DataFrame, ngramLevel : int ) -> pd.DataFrame:
-    query_df["best_distance"] = query_df.apply( lambda row : bestDistance(row['query_values'], insert_df, ngramLevel), axis=1 )
+def processData( query_df : pd.DataFrame, insert_df : pd.DataFrame, ngramLevel : int, flag : bool = False ) -> pd.DataFrame:
+    query_df["best_distance"] = query_df.apply( lambda row : bestDistance( row['query_values'], insert_df, ngramLevel, flag, row.name, query_df.shape[0]), axis=1 )
     query_df.head()
     print("Results:\n",query_df)
     return query_df
@@ -80,7 +92,7 @@ if __name__ == "__main__":
     query_df3 = query_df.iloc[ 3*row_split : , : ]
 
     #distance calculation
-    thread_1 = thr.Thread( target=processData, args=(query_df0, insert_df, ngramLevel))
+    thread_1 = thr.Thread( target=processData, args=(query_df0, insert_df, ngramLevel, True))
     thread_1.start()
     thread_2 = thr.Thread( target=processData, args=(query_df1, insert_df, ngramLevel))
     thread_2.start()
