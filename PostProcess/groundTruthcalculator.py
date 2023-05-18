@@ -51,7 +51,6 @@ def bestDistance(
 def processData( query_df : pd.DataFrame, insert_df : pd.DataFrame, ngramLevel : int, flag : bool = False ) -> pd.DataFrame:
     query_df["best_distance"] = query_df.apply( lambda row : bestDistance( row['query_values'], insert_df, ngramLevel, flag, row.name, query_df.shape[0]), axis=1 )
     query_df.head()
-    print("Results:\n",query_df)
     return query_df
 
 #__main__#
@@ -72,9 +71,10 @@ if __name__ == "__main__":
     resultsFileName += os.path.basename(queryData)
     resultsFileName +="_"
     resultsFileName += str(ngramLevel) 
+    resultsStatsFilename = resultsFileName + "_stats.csv"
     resultsFileName += ".csv"
     resultsFileName = os.path.dirname(insertData) + "/" + resultsFileName
-    print( "will save file in: " + resultsFileName)
+
 
     #insert data
     insert_df = pd.read_csv(insertData, sep=" ", header=None)
@@ -111,6 +111,12 @@ if __name__ == "__main__":
     print(new_query_df)
 
     #Save results
-    query_df.to_csv( resultsFileName )
+    new_query_df.to_csv( resultsFileName )
+
+    stats_df = new_query_df.agg({
+        'best_distance' : ["min", "max", "median", "std", "mean"]
+    })
+
+    stats_df.to_csv( resultsStatsFilename )
 
     pass
