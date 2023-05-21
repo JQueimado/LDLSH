@@ -74,7 +74,7 @@ if __name__ == "__main__":
     resultsStatsFilename = resultsFileName + "_stats.csv"
     resultsFileName += ".csv"
     resultsFileName = os.path.dirname(insertData) + "/" + resultsFileName
-
+    resultsStatsFilename = os.path.dirname(insertData) + "/" + resultsStatsFilename
 
     #insert data
     insert_df = pd.read_csv(insertData, sep=" ", header=None)
@@ -85,29 +85,30 @@ if __name__ == "__main__":
     query_df.columns = ["query_values"]
 
     #Split data set
-    row_split = int((query_df.shape[0])/4)
-    query_df0 = query_df.iloc[ : row_split, : ]
-    query_df1 = query_df.iloc[ row_split : 2*row_split, : ]
-    query_df2 = query_df.iloc[ 2*row_split : 3*row_split, : ]
-    query_df3 = query_df.iloc[ 3*row_split : , : ]
+    split = 8
+    dataFrames = []
+    threads = []
+    row_split = int((query_df.shape[0])/split)
 
-    #distance calculation
-    thread_1 = thr.Thread( target=processData, args=(query_df0, insert_df, ngramLevel, True))
-    thread_1.start()
-    thread_2 = thr.Thread( target=processData, args=(query_df1, insert_df, ngramLevel))
-    thread_2.start()
-    thread_3 = thr.Thread( target=processData, args=(query_df2, insert_df, ngramLevel))
-    thread_3.start()
-    thread_4 = thr.Thread( target=processData, args=(query_df3, insert_df, ngramLevel))
-    thread_4.start()
+    for i in range(split):
+        cdataFrame = query_df.iloc[ i*row_split : (i+1)*row_split, : ]
+        dataFrames.append(cdataFrame)
 
-    thread_1.join()
-    thread_2.join()
-    thread_3.join()
-    thread_4.join()
+        flag = False
+        if(i == 0):
+            flag = True
+        
+        ctherad = thr.Thread( target=processData, args=(cdataFrame, insert_df, ngramLevel, flag) )
+        ctherad.start()
+        threads.append(ctherad)
+
+    #wait
+    for i in range(split):
+        threads[i].join()
+
 
     #Concat data set
-    new_query_df = pd.concat( [query_df0, query_df1, query_df2, query_df3] )
+    new_query_df = pd.concat( dataFrames )
     print(new_query_df)
 
     #Save results
