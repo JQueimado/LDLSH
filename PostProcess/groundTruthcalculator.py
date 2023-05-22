@@ -2,6 +2,9 @@ import os,sys
 import pandas as pd
 import threading as thr
 
+percent = [0,0]
+lock = thr.Lock()
+
 #Creates a set of ngrams for a given vector
 def createNgram( s : str, l : int ):
     r = set()
@@ -23,15 +26,13 @@ def jcDistance( a : str, b : str, l : int ):
 def bestDistance( 
         subject : str, 
         data : pd.DataFrame, 
-        level: int, 
-        print_flag : bool = False,
-        row : int = -1, 
-        size: int = -1 
+        level: int
     ) -> float:
 
-    if(print_flag):
-        pc = (row/size)*100
-        st ="Thread_1: {percent:.2f}%".format(percent=pc)
+    with lock:
+        percent[0] += 1
+        pc = (percent[0]/percent[1])*100
+        st ="Complete: {c}/{t} -> {p:.02f}%".format( c=percent[0], t=percent[1], p=pc)
         print( st, end='\r')
 
     bestDistance = 1.0
@@ -48,8 +49,13 @@ def bestDistance(
     return bestDistance
 
 #Processess a dataframe
-def processData( query_df : pd.DataFrame, insert_df : pd.DataFrame, ngramLevel : int, flag : bool = False ) -> pd.DataFrame:
-    query_df["best_distance"] = query_df.apply( lambda row : bestDistance( row['query_values'], insert_df, ngramLevel, flag, row.name, query_df.shape[0]), axis=1 )
+def processData( 
+        query_df : pd.DataFrame, 
+        insert_df : pd.DataFrame,
+        ngramLevel : int
+    ) -> pd.DataFrame:
+    
+    query_df["best_distance"] = query_df.apply( lambda row : bestDistance( row['query_values'], insert_df, ngramLevel), axis=1 )
     query_df.head()
     return query_df
 
@@ -85,10 +91,12 @@ if __name__ == "__main__":
     query_df.columns = ["query_values"]
 
     #Split data set
-    split = 8
+    split = 16
     dataFrames = []
     threads = []
-    row_split = int((query_df.shape[0])/split)
+    percent = [0, query_df.shape[0]]
+
+    row_split = int(percent[1]/split)
 
     for i in range(split):
         cdataFrame = query_df.iloc[ i*row_split : (i+1)*row_split, : ]
@@ -98,7 +106,7 @@ if __name__ == "__main__":
         if(i == 0):
             flag = True
         
-        ctherad = thr.Thread( target=processData, args=(cdataFrame, insert_df, ngramLevel, flag) )
+        ctherad = thr.Thread( target=processData, args=(cdataFrame, insert_df, ngramLevel) )
         ctherad.start()
         threads.append(ctherad)
 
