@@ -1,4 +1,4 @@
-package SystemLayer.Components.TaskImpl.Multimap.TraditionalTasks;
+package SystemLayer.Components.TaskImpl.Multimap.ExternalIndexServerTasks;
 
 import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.NetworkLayer.MessageImpl;
@@ -15,11 +15,11 @@ import SystemLayer.SystemExceptions.InvalidMessageTypeException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TraditionalQueryMultimapTask extends MultimapTaskImpl {
+public class ExternalIndexQueryServerTask extends MultimapTaskImpl {
 
     private final StorageMap storageMap;
 
-    public TraditionalQueryMultimapTask(Message message, DataContainer appContext) throws Exception {
+    public ExternalIndexQueryServerTask(Message message, DataContainer appContext) throws Exception {
         super(message, appContext);
         storageMap = TraditionalAux.getStorageMap(appContext);
     }
@@ -28,8 +28,8 @@ public class TraditionalQueryMultimapTask extends MultimapTaskImpl {
     public Message call() throws Exception {
 
         //assert type
-        if( message.getType() != Message.types.QUERY_MESSAGE )
-            throw new InvalidMessageTypeException(Message.types.QUERY_MESSAGE, message.getType());
+        if( message.getType() != Message.types.EXTERNAL_INDEX_QUERY )
+            throw new InvalidMessageTypeException(Message.types.EXTERNAL_INDEX_QUERY, message.getType());
 
         //assert body size
         if ( message.getBody().size() != 1 )
