@@ -2,6 +2,8 @@ package SystemLayer.Components.NetworkLayer.NettyCommunicationLayerPackage;
 
 import SystemLayer.Components.NetworkLayer.Message;
 import SystemLayer.Components.NetworkLayer.MessageImpl;
+import SystemLayer.Components.TaskImpl.Multimap.ExternalIndexServerTasks.ExternalIndexInsertServerTask;
+import SystemLayer.Components.TaskImpl.Multimap.ExternalIndexServerTasks.ExternalIndexQueryServerTask;
 import SystemLayer.Components.TaskImpl.Multimap.MultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.QueryMultimapTask;
 import SystemLayer.Containers.DataContainer;
@@ -183,6 +185,70 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     case QUERY_MESSAGE_SINGLE_BLOCK, QUERY_MESSAGE -> {
                         //Query
                         MultimapTask task = appContext.getMultimapTaskFactory().getNewMultimapQueryTask(message);
+                        ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
+                        FutureCallback<Message> responseCallback = new FutureCallback<>() {
+                            @Override
+                            public void onSuccess(Message response) {
+                                response.setTransactionId(messageID);
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response);
+                                    ctx.flush();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                //Create message body
+                                List<Object> responseBody = new ArrayList<>();
+                                responseBody.add("ERROR:Performing operation");
+                                responseBody.add(throwable.getMessage());
+                                Message response = new MessageImpl(Message.types.QUERY_RESPONSE, responseBody);//Create response
+                                response.setTransactionId(messageID); //Assign transaction id
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response);
+                                    ctx.flush();
+                                }
+                            }
+                        };
+                        Futures.addCallback(responseFuture, responseCallback, callBackExecutor);
+                    }
+
+                    //Queries a message through the multi maps.
+                    case EXTERNAL_INDEX_INSERT -> {
+                        //Query
+                        MultimapTask task = new ExternalIndexInsertServerTask(message, appContext);
+                        ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
+                        FutureCallback<Message> responseCallback = new FutureCallback<>() {
+                            @Override
+                            public void onSuccess(Message response) {
+                                response.setTransactionId(messageID);
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response);
+                                    ctx.flush();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                //Create message body
+                                List<Object> responseBody = new ArrayList<>();
+                                responseBody.add("ERROR:Performing operation");
+                                responseBody.add(throwable.getMessage());
+                                Message response = new MessageImpl(Message.types.INSERT_MESSAGE_RESPONSE, responseBody);//Create response
+                                response.setTransactionId(messageID); //Assign transaction id
+                                synchronized (bufferWriteLock) {
+                                    ctx.write(response);
+                                    ctx.flush();
+                                }
+                            }
+                        };
+                        Futures.addCallback(responseFuture, responseCallback, callBackExecutor);
+                    }
+
+                    //Queries a message through the multi maps.
+                    case EXTERNAL_INDEX_QUERY -> {
+                        //Query
+                        MultimapTask task = new ExternalIndexQueryServerTask(message, appContext);
                         ListenableFuture<Message> responseFuture = appContext.getExecutorService().submit(task);
                         FutureCallback<Message> responseCallback = new FutureCallback<>() {
                             @Override
