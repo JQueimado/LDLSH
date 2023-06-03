@@ -19,7 +19,9 @@ public interface Message extends Serializable {
         INSERT_REQUEST,
         INSERT_REQUEST_RESPONSE,
         QUERY_REQUEST,
-        QUERY_REQUEST_RESPONSE
+        QUERY_REQUEST_RESPONSE,
+        EXTERNAL_INDEX_INSERT,
+        EXTERNAL_INDEX_QUERY
     }
 
     /**

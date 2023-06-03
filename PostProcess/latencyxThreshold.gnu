@@ -8,8 +8,10 @@ fontsize = 10
 set xlabel "Similarity Treshold" 
 set ylabel "Average Latency"
 set size ratio 0.65
-set xrange [0.70:1]
-set yrange [0:130]
+set xrange [0.74:0.96]
+set yrange [5:130]
+
+set logscale y 10
 
 set lmargin 0.3
 set rmargin 0.3
@@ -30,7 +32,7 @@ G = "#afd2e4"
 #F = "#CCCCCC"
 
 #set ytics 0.01,0.1,1
-set logscale x	
+#set logscale x 2
 #set logscale y
 #set logscale y2
 #set boxwidth 0.05
@@ -43,17 +45,18 @@ set logscale x
 #set y2tics ("2.5%%" 2.5, "5%%" 5, "7.5%%" 7.5, "10%%" 10, "20%%" 20)
 #set ytics (250, 500, 1000, 1500, 2000, 2500) nomirror
 #set ytics ("0.4" 0.4,"0.5" 0.5, 1,2,4,8,16) nomirror
-set xtics nomirror 
+#set xtics out nomirror
+#set ytics nomirror 
 set grid ytics
 
-set style line 1 lt rgb C lw 10	 pt 9 ps 4 pi -4
-set style line 2 lt rgb C lw 2 pt 9 ps 4 pi -4
-set style line 3 lt rgb D lw 10 pt 7 ps 4 pi -5
-set style line 4 lt rgb D lw 2 pt 7 ps 4 pi -5
-set style line 5 lt rgb F lw 10	 pt 5 ps 3 pi -4
-set style line 6 lt rgb F lw 2 pt 5 ps 3 pi -4
-set style line 7 lt rgb A lw 10	 pt 5 ps 3 pi -4
-set style line 8 lt rgb A lw 2 pt 5 ps 3 pi -4
+set style line 1 lt rgb C lw 2	 pt 9 ps 1 pi -2
+set style line 2 lt rgb C lw 2 pt 9 ps 1 pi -2
+set style line 3 lt rgb D lw 2 pt 7 ps 1 pi -2
+set style line 4 lt rgb D lw 2 pt 7 ps 1 pi -2
+set style line 5 lt rgb F lw 2	 pt 5 ps 1 pi -2
+set style line 6 lt rgb F lw 2 pt 5 ps 1 pi -2
+set style line 7 lt rgb A lw 2	 pt 5 ps 1 pi -2
+set style line 8 lt rgb A lw 2 pt 5 ps 1 pi -2
 
 
 ##set style line 6 lt rgb B lw 1 pt 6 pi -1 ps 1
@@ -69,7 +72,7 @@ set style line 8 lt rgb A lw 2 pt 5 ps 3 pi -4
 #set style line 6 lt rgb A lw 2 pt 6 pi -1 ps 2
 #set style line 12 lt rgb G lw 2 pt 7 ps 2
 
-set key left top 
+set key right top 
 ##set key vertical maxrows 3 left
 #set format y "%.0s"	
 #set format x "%g%%"
@@ -78,27 +81,22 @@ set key left top
 #set linetype cycle 3
 #set linetype cycle 4
 
-#set terminal pdf
-#set out "ThresholdxLatency.pdf"
+set terminal pdf size 18, 10
+set out "ThresholdxLatency.pdf"
 
-set autoscale y
+#set autoscale y
 
-plot 'ThresholdxLatency.csv' index 0 using 4:1:2:3 title "LDLSH" with errorbars ls 2, \
+plot 'ThresholdxLatency.csv' index 0 using 4:1:2:3:xtic(4):ytic(1) title "LDLSH Optimized" with errorbars ls 2, \
 		'' index 0 using 4:1 title '' with linespoints ls 1, \
-		'' index 1 using 4:1:2:3 title "LDLSH-Optimized" with errorbars ls 4, \
+		'' index 1 using 4:1:2:3:xtic(4):ytic(1) title "LDLSH" with errorbars ls 4, \
 		'' index 1 using 4:1 title '' with linespoints ls 3, \
-		'' index 2 using 4:1:2:3 title "Traditional Replicated" with errorbars ls 6, \
+		'' index 2 using 4:1:2:3:xtic(4):ytic(1) title "Traditional Replicated" with errorbars ls 6, \
 		'' index 2 using 4:1 title '' with linespoints ls 5, \
-		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
+		'' index 3 using 4:1:2:3:xtic(4):ytic(1) title "Traditional External" with errorbars ls 8, \
 		'' index 3 using 4:1 title '' with linespoints ls 7
-		#'' using 2:($3/150):xtic(1) title "P" with linespoints ls 1, \
-		#'' using 2:($6/150):($7/150):($8/150) title "" with errorbars ls 4, \
-		#'' using 2:($6/150):xtic(1) title "A" with linespoints ls 3, \
-		#'' using 2:($9/150):($10/150):($11/150) title "" with errorbars ls 6, \
-		#'' using 2:($9/150):xtic(1) title "C" with linespoints ls 5
 
-#set output "latencies_w.ps"
-pause -1
+#set output "ThresholdxLatency.ps"
+#pause -1
 
 #set term postscript
 #set output "latencies_w.ps"

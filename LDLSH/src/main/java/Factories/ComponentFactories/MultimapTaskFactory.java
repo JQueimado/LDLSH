@@ -6,8 +6,8 @@ import SystemLayer.Components.TaskImpl.Multimap.CompletionMultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.InsertMultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.MultimapTask;
 import SystemLayer.Components.TaskImpl.Multimap.QueryMultimapTask;
-import SystemLayer.Components.TaskImpl.Multimap.TraditionalTasks.TraditionalInsertMultimapTask;
-import SystemLayer.Components.TaskImpl.Multimap.TraditionalTasks.TraditionalQueryMultimapTask;
+import SystemLayer.Components.TaskImpl.Multimap.ExternalIndexServerTasks.ExternalIndexInsertServerTask;
+import SystemLayer.Components.TaskImpl.Multimap.ExternalIndexServerTasks.ExternalIndexQueryServerTask;
 import SystemLayer.Containers.DataContainer;
 import SystemLayer.SystemExceptions.UnknownConfigException;
 
@@ -40,7 +40,7 @@ public class MultimapTaskFactory extends FactoryImpl {
             }
 
             case TRADITIONAL -> {
-                return new TraditionalInsertMultimapTask(message, appContext);
+                return new ExternalIndexInsertServerTask(message, appContext);
             }
 
             default -> {
@@ -59,7 +59,7 @@ public class MultimapTaskFactory extends FactoryImpl {
             }
 
             case TRADITIONAL -> {
-                return new TraditionalQueryMultimapTask(message, appContext);
+                return new ExternalIndexQueryServerTask(message, appContext);
             }
 
             default -> {
