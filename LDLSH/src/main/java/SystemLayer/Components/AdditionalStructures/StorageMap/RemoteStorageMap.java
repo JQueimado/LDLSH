@@ -37,7 +37,7 @@ public class RemoteStorageMap extends StorageMapImpl {
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(key);
         messageBody.add(value);
-        Message message = new MessageImpl(Message.types.INSERT_MESSAGE, messageBody);
+        Message message = new MessageImpl(Message.types.EXTERNAL_INDEX_INSERT, messageBody);
 
         Promise<Message> result_future = communicationLayer.send(message, host, port);
         Message result = result_future.get();
@@ -62,7 +62,7 @@ public class RemoteStorageMap extends StorageMapImpl {
     public DataObject<?> query(UniqueIdentifier key) throws Exception {
         List<Object> messageBody = new ArrayList<>();
         messageBody.add(key);
-        Message message = new MessageImpl(Message.types.QUERY_MESSAGE, messageBody );
+        Message message = new MessageImpl(Message.types.EXTERNAL_INDEX_QUERY, messageBody );
 
         Promise<Message> result_future = communicationLayer.send(message, host, port);
         Message result = result_future.get();
