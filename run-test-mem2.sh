@@ -1,7 +1,7 @@
 #!/bin/bash
 #env
 DIR="/root/jqueimado/Large-scale_distributed_similarity_search_with_Locality-Sensitive_Hashing"
-CLIENT="t5"
+CLIENT="t4"
 SERVERS="t6 t7 t8"
 BRANCH="Tests"
 
