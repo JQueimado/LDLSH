@@ -28,23 +28,21 @@ public class MemoryTestMain2 extends SystemMainImp {
         // cmd <file> <lines>
         String op = args[1];
         String fileName = args[2];
-        int lines = Integer.parseInt(args[3]);
 
         //LoadFile
         List<DataObject<String>> data = new ArrayList<>();
         BufferedReader fileBufferReader = new BufferedReader(new FileReader(fileName));
-        int i = 0;
-        while ( i<lines ) {
-            String line = fileBufferReader.readLine();
+
+        System.out.println("Loading data-set");
+
+        String line;
+        while((line = fileBufferReader.readLine()) != null){
             if (!line.isEmpty() || !line.isBlank()) {
                 DataObject<String> dataObject = (DataObject<String>) system.newDataObject();
                 dataObject.setValues(line);
                 data.add(dataObject);
-                i++;
-                System.out.print("Loaded: " + i + "\r");
             }
         }
-        System.out.println("Loaded: " + i);
 
         //Execute
         AtomicInteger successCounter = new AtomicInteger();
