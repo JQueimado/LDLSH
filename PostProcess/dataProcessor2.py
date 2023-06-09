@@ -12,7 +12,7 @@ def main( testsFolder ):
     tests.sort()
 
     queryLatencydf = pd.DataFrame(columns=["test","mean", "meanplus", "meanminus"])
-    queryAccuracydf = pd.DataFrame(columns=["test","mean"])
+    queryAccuracydf = pd.DataFrame(columns=["test","mean", "meanplus", "meanminus"])
     queryThroughputdf = pd.DataFrame(columns=["test", "mean", "meanplus", "meanminus"])
 
     datasetName = renameDataset( testsFolder )
@@ -24,6 +24,8 @@ def main( testsFolder ):
     thresholdLatencyTestResults = "/TestThresholdxLatency_"+datasetName+".csv"
     thresholdAccuracyTestResults = "/TestThresholdxAccuracy_"+datasetName+".csv"
     thresholdThroughputTestResults = "/TestThresholdxThroughput_"+datasetName+".csv"
+
+    acuracyNgramTestResults = "/TestAccuracyxNgram_"+datasetName+".csv"
 
     for test in tests:
         test = testsFolder + test
@@ -49,8 +51,9 @@ def main( testsFolder ):
         currentdf = currentdf.iloc[1:]
         testname = os.path.basename( test[:-1] ).split("_")[0]
         mean = currentdf[1].mean()
+        std = currentdf[1].std()
 
-        queryAccuracydf.loc[len(queryAccuracydf)] = [testname, mean]
+        queryAccuracydf.loc[len(queryAccuracydf)] = [testname, mean, mean+std, mean-std]
 
         #Throughput
         currentdf = pd.read_csv( test + "throughput.stats.csv", header=None )
@@ -73,19 +76,24 @@ def main( testsFolder ):
     queryLatencyThresholddf = addThreshold(queryLatencydf)
     print("Latency with Threshold:\n",queryLatencyThresholddf)
     queryLatencyThresholddf.to_csv(testsFolder + thresholdLatencyTestResults, index=None, header=None, sep="\t")
-    splitModels( testsFolder + thresholdLatencyTestResults ) 
+    splitModels( testsFolder + thresholdLatencyTestResults, 3 ) 
 
     #Accuracy with threshold
+    print(queryAccuracydf)
+    queryAccuracyNgram = acuracyXngram(queryAccuracydf)
+    print("Accuracy with ngrams", queryAccuracyNgram)
     queryAccuracyThresholddf = addThreshold( queryAccuracydf )
     print("Accuracy with Threshold\n", queryAccuracyThresholddf)
     queryAccuracyThresholddf.to_csv(testsFolder + thresholdAccuracyTestResults, index=None, header=None, sep="\t")
-    splitModels( testsFolder + thresholdAccuracyTestResults )
+    queryAccuracyNgram.to_csv(testsFolder + acuracyNgramTestResults, index=None, header=None, sep="\t")
+    splitModels( testsFolder + thresholdAccuracyTestResults, 3 )
+    splitModels( testsFolder + acuracyNgramTestResults, 2)
 
     #Througput with threshold
     queryThroughputThresholddf = addThreshold(queryThroughputdf)
     print("Threshold with througput\n", queryThroughputThresholddf)
     queryThroughputThresholddf.to_csv(testsFolder + thresholdThroughputTestResults, index=None, header=None, sep="\t")
-    splitModels( testsFolder + thresholdThroughputTestResults )
+    splitModels( testsFolder + thresholdThroughputTestResults, 3 )
 
 #Chages the Testnames to their respective Thresholds
 def addThreshold( df: pd.DataFrame ) -> pd.DataFrame:
@@ -112,12 +120,31 @@ def addThreshold( df: pd.DataFrame ) -> pd.DataFrame:
     df.drop("test", axis=1, inplace=True)
     return df
 
+#with a data frame creates another dataframe only with the tests 2 and 6 to compare ngram influence
+def acuracyXngram( df: pd.DataFrame ):
+    
+    new_df = pd.DataFrame( columns=df.columns )
+
+    for i, row in df.iterrows():
+        test : str = row["test"]
+
+        if( test.endswith("test-3") or test.endswith("test-4") ):
+            continue
+            #df.drop([i], axis=0, inplace=True)
+        
+        new_df.loc[i] = row
+
+    new_df.reset_index(drop=True, inplace=True)
+
+    #df.drop("test", axis=1, inplace=True)
+    return new_df
+
 #Splits models for the gnuplot interface
-def splitModels( fname : str ):
+def splitModels( fname :str, i :int ):
     with open( fname, "r" ) as f:
         lines = f.readlines()
 
-    for i in range(2, len(lines), 3):
+    for i in range(i-1, len(lines), i):
         lines[i] = lines[i] + "\n\n"
 
     with open( fname, "w") as f:

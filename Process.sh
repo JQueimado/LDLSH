@@ -4,7 +4,7 @@ then
     exit 1
 fi
 
-DATASETS="/media/sf_Tese/Data/data_sets"
+DATASETS="/media/sf_Data/data_sets"
 PROCESSOR="./PostProcess/dataProcessor.py"
 for TESTFILE in "$@"
 do
