@@ -122,17 +122,23 @@ def addThreshold( df: pd.DataFrame ) -> pd.DataFrame:
 
 #with a data frame creates another dataframe only with the tests 2 and 6 to compare ngram influence
 def acuracyXngram( df: pd.DataFrame ):
-    
-    new_df = pd.DataFrame( columns=df.columns )
+    new_df = pd.DataFrame( columns=[ "index", "test","mean", "meanplus", "meanminus"] )
 
+    index=0
     for i, row in df.iterrows():
         test : str = row["test"]
 
         if( test.endswith("test-3") or test.endswith("test-4") ):
             continue
             #df.drop([i], axis=0, inplace=True)
-        
-        new_df.loc[i] = row
+
+        new_df.loc[len(new_df)] = [index, row["test"], row["mean"], row["meanplus"], row["meanminus"]]
+
+        t=len(new_df)
+        if(t%2 != 0):
+            index+=.5
+        else:
+            index+=1
 
     new_df.reset_index(drop=True, inplace=True)
 
