@@ -101,7 +101,7 @@ set terminal pdf size 18, 10 font ",30"
 
 set xrange [-0.5:5.5]
 
-set ylabel "Average distance between query value and query result accompanied with standard error deviation"
+set ylabel "Average distance between query value and query result\naccompanied with standard error deviation"
 
 set out "TestAccuracyxNgram_10.pdf"
 plot 'TestAccuracyxNgram_10.csv' every 2 using 1:3 title 'Ngram 3' with boxes ls 1,\

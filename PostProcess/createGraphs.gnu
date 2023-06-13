@@ -179,13 +179,29 @@ set yrange [0.96:0.999]
 set ytics ( "0.79" .962,0.97,0.98,0.99)
 
 #set title "Average accuracy in relation to the similarity threshold for data-set 10a-10b"
-set xlabel "Similarity Treshold" 
+# set xlabel "Similarity Treshold" 
+# set ylabel "Average Similarity"
+
+# set key left top 
+
+# set out "TestThresholdxAccuracy_10a-10b.pdf"
+# plot 'TestThresholdxAccuracy_10a-10b.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
+# 		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
+# 		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
+# 		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
+#  		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
+# 		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
+# 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
+# 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
+# 		.962 title 'dataset similarity' ls 9
+
+# set xlabel "Similarity Treshold" 
 set ylabel "Average Similarity"
 
 set key left top 
 
-set out "TestThresholdxAccuracy_10a-10b.pdf"
-plot 'TestThresholdxAccuracy_10a-10b.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
+set out "TestThresholdxAccuracy_10-10.pdf"
+plot 'TestThresholdxAccuracy_10-10.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
 		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
 		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
 		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
