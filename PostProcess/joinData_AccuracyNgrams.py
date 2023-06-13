@@ -14,7 +14,7 @@ def splitModels( fname :str, i :int ):
 
 if __name__ == "__main__":
     argv = sys.argv
-    if( len(argv) != 4 ):
+    if( len(argv) != 5 ):
         exit(1)
 
     #print(argv)
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     data1.drop( ["2_d1","2_d2","3_d1","3_d2","4_d1","4_d2"], axis=1, inplace=True )
 
     data1.to_csv(argv[3], header=None, index=None, sep="\t")
-    splitModels( argv[3], 2 )
+    splitModels( argv[3], int(argv[4]) )
 
     print(data1)
     #print(data2)
