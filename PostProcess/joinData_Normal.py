@@ -35,14 +35,9 @@ if __name__ == "__main__":
     data1.drop( ["0_d1","0_d2","1_d1","1_d2","2_d1","2_d2","3_d1"], axis=1, inplace=True )
 
     index = data1.columns.to_list()
+    index = index[1:] + index[0:1]
 
-    # print(data1)
-    # print(index)
-    # print(index[-1:])
-
-    # index = index[-1:] + index[:-1]
-
-    # exit()
+    data1 = data1.reindex(columns=index)
 
     data1.to_csv(argv[3], header=None, index=None, sep="\t")
     splitModels( argv[3], int(argv[4]) )

@@ -9,7 +9,7 @@
 
 #echo "$FILES"
 
-python3 PostProcess/joinData_AccuracyNgrams.py \
+python3 joinData_AccuracyNgrams.py \
     /media/sf_Data/TESTS-t4/TestResults/TestAccuracyxNgram_10a-10b.csv \
     /media/sf_Data/TESTS-t4/TestResults/TestAccuracyxNgram_10a-10c.csv \
     /media/sf_Data/TESTS-t4/TestResults/TestAccuracyxNgram_10.csv \
@@ -21,14 +21,20 @@ python3 PostProcess/joinData_AccuracyNgrams.py \
 #    /media/sf_Data/TESTS-t4/TestResults/TestAccuracyxNgram_100.csv \
 #    2
 
-python3 PostProcess/joinData_AccuracyNgrams.py \
+python3 joinData_AccuracyNgrams.py \
     /media/sf_Data/TESTS-t4/TestResults/TestAccuracyxNgram_10x10a-10x10b.csv \
     /media/sf_Data/TESTS-t4/TestResults/TestAccuracyxNgram_10x10a-10x10c.csv \
     /media/sf_Data/TESTS-t4/TestResults/TestAccuracyxNgram_10x10.csv \
     2
 
-python3 PostProcess/joinData_Normal.py \
+python3 joinData_Normal.py \
     /media/sf_Data/TESTS-t4/TestResults/TestThresholdxAccuracy_10a-10b.csv \
     /media/sf_Data/TESTS-t4/TestResults/TestThresholdxAccuracy_10a-10c.csv \
     /media/sf_Data/TESTS-t4/TestResults/TestThresholdxAccuracy_10-10.csv \
+    3
+
+python3 joinData_Normal.py \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxAccuracy_10x10a-10x10b.csv \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxAccuracy_10x10a-10x10c.csv \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxAccuracy_10x10-10x10.csv \
     3
