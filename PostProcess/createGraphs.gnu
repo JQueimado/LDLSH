@@ -51,15 +51,15 @@ DS10x10n4 = 0.9138432553377478
 #set ytics nomirror 
 #set grid ytics
 
-set style line 1 lt rgb A lw 2 pt 9 ps 1 pi -2
-set style line 2 lt rgb A lw 2 pt 9 ps 1 pi -2
-set style line 3 lt rgb B lw 2 pt 7 ps 1 pi -2
-set style line 4 lt rgb B lw 2 pt 7 ps 1 pi -2
-set style line 5 lt rgb C lw 2 pt 5 ps 1 pi -2
-set style line 6 lt rgb C lw 2 pt 5 ps 1 pi -2
-set style line 7 lt rgb D lw 2 pt 43 ps 1 pi -2
-set style line 8 lt rgb D lw 2 pt 43 ps 1 pi -2
-set style line 9 lt rgb F lw 4 dt 2
+set style line 1 lt rgb A lw 7 pt 9 ps 3 pi -2
+set style line 2 lt rgb A lw 7 pt 9 ps 3 pi -2
+set style line 3 lt rgb B lw 7 pt 7 ps 3 pi -2
+set style line 4 lt rgb B lw 7 pt 7 ps 3 pi -2
+set style line 5 lt rgb C lw 7 pt 5 ps 3 pi -2
+set style line 6 lt rgb C lw 7 pt 5 ps 3 pi -2
+set style line 7 lt rgb D lw 7 pt 43 ps 3 pi -2
+set style line 8 lt rgb D lw 7 pt 43 ps 3 pi -2
+set style line 9 lt rgb F lw 7 dt 2
 
 ##set style line 6 lt rgb B lw 1 pt 6 pi -1 ps 1
 #set style line 7 lt rgb C lw 4 pt 8 pi -1 ps 1
@@ -74,7 +74,6 @@ set style line 9 lt rgb F lw 4 dt 2
 #set style line 6 lt rgb A lw 2 pt 6 pi -1 ps 2
 #set style line 12 lt rgb G lw 2 pt 7 ps 2
 
-set key right top 
 ##set key vertical maxrows 3 left
 #set format y "%.0s"	
 #set format x "%g%%"
@@ -83,7 +82,9 @@ set key right top
 #set linetype cycle 3
 #set linetype cycle 4
 
-set terminal pdf size 18, 10 font ",30"
+#set size ratio .8
+set terminal pdf color font ",60" size 18, 10
+set size ratio .55 1.2,1
 
 ###############################################################################################################################
 
@@ -118,7 +119,7 @@ plot 'TestThresholdxLatency_10a-10a.csv' index 0 using 4:1:2:3 title "LDLSH Opti
 
 ##set title "Average accuracy in relation to the similarity threshold for data-set 10a-10a"
 #set xlabel "Similarity Treshold" 
-#set ylabel "Average Similarity"
+#set ylabel "Average distance"
 
 #set out "TestThresholdxAccuracy_10a-10a.pdf"
 #plot 'TestThresholdxAccuracy_10a-10a.csv' index 0 using 2:1 title "LDLSH Optimized" with linespoints ls 2, \
@@ -174,13 +175,13 @@ plot 'TestThresholdxLatency_10a-10b.csv' index 0 using 4:1:2:3 title "LDLSH Opti
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ### TestThresholdxAccuracy_10a-10b.pdf ###
-set logscale y 2
-set yrange [0.96:0.999]
-set ytics ( "0.79" .962,0.97,0.98,0.99)
+# set logscale y 2
+# set yrange [0.96:0.999]
+# set ytics ( "0.79" .962,0.97,0.98,0.99)
 
 #set title "Average accuracy in relation to the similarity threshold for data-set 10a-10b"
 # set xlabel "Similarity Treshold" 
-# set ylabel "Average Similarity"
+# set ylabel "Average distance"
 
 # set key left top 
 
@@ -195,10 +196,14 @@ set ytics ( "0.79" .962,0.97,0.98,0.99)
 # 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
 # 		.962 title 'dataset similarity' ls 9
 
-# set xlabel "Similarity Treshold" 
-set ylabel "Average Similarity"
+set logscale y 2
+set yrange [0.96:0.999]
+set ytics ( "0.79" .962,0.97,0.98,0.99,1)
 
-set key left top 
+set xlabel "Similarity Treshold" 
+set ylabel "Average distance"
+
+set key at 0.95,0.98
 
 set out "TestThresholdxAccuracy_10-10.pdf"
 plot 'TestThresholdxAccuracy_10-10.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
@@ -209,8 +214,9 @@ plot 'TestThresholdxAccuracy_10-10.csv' index 0 using 4:1 title "LDLSH Optimized
 		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
-		.962 title 'dataset similarity' ls 9
+		.962 title 'baseline mean distance' ls 9
 
+set key default
 
 ### TestThresholdxThroughput_10a-10b.pdf ###
 set yrange [390:2800]
@@ -256,25 +262,25 @@ plot 'TestThresholdxLatency_10a-10c.csv' index 0 using 4:1:2:3 title "LDLSH Opti
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ### TestThresholdxAccuracy_10a-10c.pdf ###
-set yrange [0.96:0.999]
-set ytics ( "0.79" .962,0.97,0.98,0.99)
+# set yrange [0.96:0.999]
+# set ytics ( "0.79" .962,0.97,0.98,0.99)
 
-#set title "Average accuracy in relation to the similarity threshold for data-set 10a-10c"
-set xlabel "Similarity Treshold" 
-set ylabel "Average Similarity"
+# #set title "Average accuracy in relation to the similarity threshold for data-set 10a-10c"
+# set xlabel "Similarity Treshold" 
+# set ylabel "Average distance"
 
-set key left top 
+# set key left top 
 
-set out "TestThresholdxAccuracy_10a-10c.pdf"
-plot 'TestThresholdxAccuracy_10a-10c.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
-		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
-		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
-		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
- 		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
-		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
-		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
-		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
-		.962 title 'dataset similarity' ls 9
+# set out "TestThresholdxAccuracy_10a-10c.pdf"
+# plot 'TestThresholdxAccuracy_10a-10c.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
+# 		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
+# 		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
+# 		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
+#  		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
+# 		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
+# 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
+# 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
+# 		.962 title 'dataset similarity' ls 9
 
 
 ### TestThresholdxThroughput_10a-10c.pdf ###
@@ -327,7 +333,7 @@ plot 'TestThresholdxLatency_10x10a-10x10a.csv' index 0 using 4:1:2:3 title "LDLS
 
 ##set title "Average accuracy in relation to the similarity threshold for data-set 10x10a-10x10a"
 #set xlabel "Similarity Treshold" 
-#set ylabel "Average Similarity"
+#set ylabel "Average distance"
 
 #set key right bottom 
 
@@ -386,17 +392,37 @@ plot 'TestThresholdxLatency_10x10a-10x10b.csv' index 0 using 4:1:2:3 title "LDLS
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ### TestThresholdxAccuracy_10x10a-10x10b.pdf ###
+# set yrange [0.975:1.001]
+# set ytics ( "0.85" .978,0.97,0.98,0.99)
+
+# #set title "Average accuracy in relation to the similarity threshold for data-set 10x10a-10x10b"
+# set xlabel "Similarity Treshold" 
+# set ylabel "Average distance"
+
+# set key left top 
+
+# set out "TestThresholdxAccuracy_10x10a-10x10b.pdf"
+# plot 'TestThresholdxAccuracy_10x10a-10x10b.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
+# 		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
+# 		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
+# 		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
+#  		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
+# 		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
+# 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
+# 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
+# 		.978 title 'dataset similarity' ls 9
+
 set yrange [0.975:1.001]
-set ytics ( "0.85" .978,0.97,0.98,0.99)
+set ytics ( "0.85" .978,0.97,0.98,0.99,1)
 
 #set title "Average accuracy in relation to the similarity threshold for data-set 10x10a-10x10b"
 set xlabel "Similarity Treshold" 
-set ylabel "Average Similarity"
+set ylabel "Average distance"
 
-set key left top 
+set key at 0.95,0.99
 
-set out "TestThresholdxAccuracy_10x10a-10x10b.pdf"
-plot 'TestThresholdxAccuracy_10x10a-10x10b.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
+set out "TestThresholdxAccuracy_10x10-10x10.pdf"
+plot 'TestThresholdxAccuracy_10x10-10x10.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
 		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
 		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
 		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
@@ -404,8 +430,9 @@ plot 'TestThresholdxAccuracy_10x10a-10x10b.csv' index 0 using 4:1 title "LDLSH O
 		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
-		.978 title 'dataset similarity' ls 9
+		.978 title 'baseline mean distance' ls 9
 
+set key default
 
 ### TestThresholdxThroughput_10x10a-10x10b.pdf ###
 set yrange [460:2500]
@@ -451,25 +478,25 @@ plot 'TestThresholdxLatency_10x10a-10x10c.csv' index 0 using 4:1:2:3 title "LDLS
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ### TestThresholdxAccuracy_10x10a-10x10c.pdf ###
-set yrange [0.975:1.001]
-set ytics ( "0.85" .978,0.97,0.98,0.99)
+# set yrange [0.975:1.001]
+# set ytics ( "0.85" .978,0.97,0.98,0.99)
 
-#set title "Average accuracy in relation to the similarity threshold for data-set 10x10a-10x10c"
-set xlabel "Similarity Treshold" 
-set ylabel "Average Similarity"
+# #set title "Average accuracy in relation to the similarity threshold for data-set 10x10a-10x10c"
+# set xlabel "Similarity Treshold" 
+# set ylabel "Average distance"
 
-set key left top 
+# set key left top 
 
-set out "TestThresholdxAccuracy_10x10a-10x10c.pdf"
-plot 'TestThresholdxAccuracy_10x10a-10x10c.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
-		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
-		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
-		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
- 		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
-		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
-		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
-		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
-		.978 title 'dataset similarity' ls 9
+# set out "TestThresholdxAccuracy_10x10a-10x10c.pdf"
+# plot 'TestThresholdxAccuracy_10x10a-10x10c.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
+# 		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
+# 		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
+# 		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
+#  		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
+# 		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
+# 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
+# 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
+# 		.978 title 'dataset similarity' ls 9
 
 
 ### TestThresholdxThroughput_10x10a-10x10c.pdf ###
@@ -522,7 +549,7 @@ plot 'TestThresholdxLatency_100a-100a.csv' index 0 using 4:1:2:3 title "LDLSH Op
 
 #set title "Average accuracy in relation to the similarity threshold for data-set 100a-100a"
 #set xlabel "Similarity Treshold" 
-#set ylabel "Average Similarity"
+#set ylabel "Average distance"
 
 #set key right top 
 
@@ -589,7 +616,7 @@ plot 'TestThresholdxLatency_100a-100b.csv' index 0 using 4:1:2:3 title "LDLSH Op
 
 #set title "Average accuracy in relation to the similarity threshold for data-set 100a-100b"
 #set xlabel "Similarity Treshold" 
-#set ylabel "Average Similarity"
+#set ylabel "Average distance"
 
 #set key right bottom 
 
@@ -656,7 +683,7 @@ plot 'TestThresholdxLatency_100a-100c.csv' index 0 using 4:1:2:3 title "LDLSH Op
 
 #set title "Average accuracy in relation to the similarity threshold for data-set 100a-100c"
 #set xlabel "Similarity Treshold" 
-#set ylabel "Average Similarity"
+#set ylabel "Average distance"
 
 #set key right bottom 
 
