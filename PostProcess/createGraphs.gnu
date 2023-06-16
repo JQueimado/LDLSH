@@ -88,6 +88,53 @@ set size ratio .55 1.2,1
 
 ###############################################################################################################################
 
+## Accuracy ##
+set logscale y 2
+set yrange [0.96:0.999]
+set ytics ( "0.79" .962,0.97,0.98,0.99,1)
+
+set xlabel "Similarity Treshold" 
+set ylabel "Average distance"
+
+set key at 0.95,0.98
+
+set out "TestThresholdxAccuracy_10-10.pdf"
+plot 'TestThresholdxAccuracy_10-10.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
+		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
+		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
+		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
+ 		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
+		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
+		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
+		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
+		.962 title 'baseline mean distance' ls 9
+
+set key default
+
+set yrange [0.975:1.001]
+set ytics ( "0.85" .978,0.97,0.98,0.99,1)
+
+##
+
+set xlabel "Similarity Treshold" 
+set ylabel "Average distance"
+
+set key at 0.95,0.99
+
+set out "TestThresholdxAccuracy_10x10-10x10.pdf"
+plot 'TestThresholdxAccuracy_10x10-10x10.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
+		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
+		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
+		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
+ 		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
+		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
+		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
+		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
+		.978 title 'baseline mean distance' ls 9
+
+set key default
+
+
 ##### TEST 10_10 #####
 #### a-a ####
 unset ytics
@@ -195,28 +242,6 @@ plot 'TestThresholdxLatency_10a-10b.csv' index 0 using 4:1:2:3 title "LDLSH Opti
 # 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
 # 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
 # 		.962 title 'dataset similarity' ls 9
-
-set logscale y 2
-set yrange [0.96:0.999]
-set ytics ( "0.79" .962,0.97,0.98,0.99,1)
-
-set xlabel "Similarity Treshold" 
-set ylabel "Average distance"
-
-set key at 0.95,0.98
-
-set out "TestThresholdxAccuracy_10-10.pdf"
-plot 'TestThresholdxAccuracy_10-10.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
-		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
-		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
-		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
- 		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
-		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
-		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
-		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
-		.962 title 'baseline mean distance' ls 9
-
-set key default
 
 ### TestThresholdxThroughput_10a-10b.pdf ###
 set yrange [390:2800]
@@ -411,28 +436,6 @@ plot 'TestThresholdxLatency_10x10a-10x10b.csv' index 0 using 4:1:2:3 title "LDLS
 # 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
 # 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
 # 		.978 title 'dataset similarity' ls 9
-
-set yrange [0.975:1.001]
-set ytics ( "0.85" .978,0.97,0.98,0.99,1)
-
-#set title "Average accuracy in relation to the similarity threshold for data-set 10x10a-10x10b"
-set xlabel "Similarity Treshold" 
-set ylabel "Average distance"
-
-set key at 0.95,0.99
-
-set out "TestThresholdxAccuracy_10x10-10x10.pdf"
-plot 'TestThresholdxAccuracy_10x10-10x10.csv' index 0 using 4:1 title "LDLSH Optimized" with linespoints ls 2, \
-		'' index 0 using 4:1:2:3 title '' with errorbars ls 1,\
-		'' index 1 using 4:1 title "LDLSH" with linespoints ls 4, \
-		'' index 1 using 4:1:2:3 title '' with errorbars ls 3, \
- 		'' index 2 using 4:1 title "Traditional Replicated" with linespoints ls 6, \
-		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
-		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
-		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
-		.978 title 'baseline mean distance' ls 9
-
-set key default
 
 ### TestThresholdxThroughput_10x10a-10x10b.pdf ###
 set yrange [460:2500]
