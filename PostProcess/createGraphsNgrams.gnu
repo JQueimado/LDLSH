@@ -5,10 +5,11 @@ reset
 
 #set autoscale
 ##set title "Percentage of Sensitive Reads"
-set size ratio 0.65
+# set size ratio 0.65
 
-set lmargin 0.3
-set rmargin 0.3
+# set lmargin 0.3
+# set rmargin 0.3
+set bmargin 3
 
 A = "#2F528F"
 B = "#ED7D31"
@@ -42,19 +43,20 @@ C = "#000000"
 set style line 1 lt rgb A lw 2 pt 9 ps 1 pi -2
 set style line 2 lt rgb C lw 2 pt 1 ps 2 pi -2
 set style line 3 lt rgb B lw 2 pt 7 ps 1 pi -2
-set style line 9 lt rgb C lw 6 dt 2
-set style line 10 lt rgb C lw 6 dt 3
+set style line 9 lt rgb C lw 10 dt 2
+set style line 10 lt rgb C lw 10 dt 10
+set style line 11 lt rgb "#000" lw 3
 
 set boxwidth 0.5
 set style fill solid
 
-set xtics ("LDLSH Optimized" .25,\
+set xtics ("LDLSH\nOptimized" .25,\
 	"LDLSH" 1.75,\
-	"Traditional External" 3.25,\
-	"Tradidtional Replicated" 4.75)
+	"Traditional\nExternal" 3.25,\
+	"Traditional\nReplicated" 4.75)
 
-set yrange [0.78:1.05]
-set ytics .01
+set yrange [0.785:1.14]
+set ytics (.8, .85, .9, .95, 1)
 
 ##set style line 6 lt rgb B lw 1 pt 6 pi -1 ps 1
 #set style line 7 lt rgb C lw 4 pt 8 pi -1 ps 1
@@ -78,7 +80,8 @@ set key right top
 #set linetype cycle 3
 #set linetype cycle 4
 
-set terminal pdf size 18, 10 font ",30"
+set terminal pdf color font ",60" size 18, 10
+set size ratio .6 1,1
 
 ###############################################################################################################################
 
@@ -101,7 +104,7 @@ set terminal pdf size 18, 10 font ",30"
 
 set xrange [-0.5:5.5]
 
-set ylabel "Average distance between query value and query result\naccompanied with standard error deviation"
+set ylabel "Average distance"
 
 set out "TestAccuracyxNgram_10.pdf"
 plot 'TestAccuracyxNgram_10.csv' every 2 using 1:3 title 'Ngram 3' with boxes ls 1,\
@@ -109,7 +112,8 @@ plot 'TestAccuracyxNgram_10.csv' every 2 using 1:3 title 'Ngram 3' with boxes ls
 	'TestAccuracyxNgram_10.csv' every 2::1 using 1:3 title 'Ngram 4' with boxes ls 3,\
 	'TestAccuracyxNgram_10.csv' every 2::1 using 1:3:4:5 title '' with errorbars ls 2,\
 	0.7937854073276378	title 'base for Ngram 3' ls 9,\
-	0.8495047623629264	title 'base for Ngram 4' ls 10
+	0.8495047623629264	title 'base for Ngram 4' ls 10,\
+	1 title '' ls 11
 
 set out "TestAccuracyxNgram_10x10.pdf"
 plot 'TestAccuracyxNgram_10x10.csv' every 2 using 1:3 title 'Ngram 3' with boxes ls 1,\
@@ -117,4 +121,5 @@ plot 'TestAccuracyxNgram_10x10.csv' every 2 using 1:3 title 'Ngram 3' with boxes
 	'TestAccuracyxNgram_10x10.csv' every 2::1 using 1:3 title 'Ngram 4' with boxes ls 3,\
 	'TestAccuracyxNgram_10x10.csv' every 2::1 using 1:3:4:5 title '' with errorbars ls 2,\
 	0.8470108839664949	title 'base for Ngram 3' ls 9,\
-	0.9138432553377478	title 'base for Ngram 4' ls 10
+	0.9138432553377478	title 'base for Ngram 4' ls 10,\
+	1 title '' ls 11
