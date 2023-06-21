@@ -1,4 +1,5 @@
-set terminal pdf size 18, 10 font ",30"
+set terminal pdf size 18, 10 font ",50"
+set size ratio .55 1,1.05
 
 A = "#2F528F"
 B = "#ED7D31"
@@ -17,17 +18,17 @@ set style fill solid
 
 set ytics .1
 
-set xtics ("class 10 with 3-gram" 0, \
-    "class 10 with 4-gram" 1, \
-    "class 10x10 with 3-gram" 2, \
-    "class 10x10 with 4-gram" 3 )
+set xtics ("class 10\n3-gram" 0, \
+    "class 10\n4-gram" 1, \
+    "class 10x10\n 3-gram" 2, \
+    "class 10x10\n4-gram" 3 )
 
 ############################################################################
 set yrange [0:1]
 set out "srrl3_new.pdf"
 #set title "Mean of the best distances calcualted between data-set vectors \n concidering data-set class, configuration and ngram level"
-set xlabel "Used data set configurations" 
-set ylabel "Mean of the best distances calculated with error margins"
+#set xlabel "Data-set configurations" 
+set ylabel "Average distace"
 
 
 plot 'srrl3n.csv' using 1:3 title '' with boxes ls 1, \
