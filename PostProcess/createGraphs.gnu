@@ -55,7 +55,7 @@ plot 'TestThresholdxAccuracy_10-10.csv' index 0 using 4:1 title "LDLSH Optimized
 		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
-		.962 title 'baseline mean distance' ls 9
+		.962 title 'data-set baseline' ls 9
 
 set key default
 
@@ -78,7 +78,7 @@ plot 'TestThresholdxAccuracy_10x10-10x10.csv' index 0 using 4:1 title "LDLSH Opt
 		'' index 2 using 4:1:2:3 title '' with errorbars ls 5,\
 		'' index 3 using 4:1 title "Traditional External" with linespoints ls 8, \
 		'' index 3 using 4:1:2:3 title '' with errorbars ls 7, \
-		.978 title 'baseline mean distance' ls 9
+		.978 title 'data-set baseline' ls 9
 
 set key default
 

@@ -94,9 +94,9 @@ set size ratio .6 1,1
 #set ylabel "Average Latency with error"
 
 #set out "TestAccuracyxNgram_10a-10b.pdf"
-#plot 'TestAccuracyxNgram_10a-10b.csv' every 2 using 1:3 title 'Ngram 3' with boxes ls 1,\
+#plot 'TestAccuracyxNgram_10a-10b.csv' every 2 using 1:3 title '3gram' with boxes ls 1,\
 #	'TestAccuracyxNgram_10a-10b.csv' every 2 using 1:3:4:5 title '' with errorbars ls 2,\
-#	'TestAccuracyxNgram_10a-10b.csv' every 2::1 using 1:3 title 'Ngram 4' with boxes ls 3,\
+#	'TestAccuracyxNgram_10a-10b.csv' every 2::1 using 1:3 title '4gram' with boxes ls 3,\
 #	'TestAccuracyxNgram_10a-10b.csv' every 2::1 using 1:3:4:5 title '' with errorbars ls 2,\
 #	0.7937854073276378	title 'dataset similarity' ls 9,\
 #	0.8495047623629264	title 'dataset similarity' ls 10
@@ -107,19 +107,19 @@ set xrange [-0.5:5.5]
 set ylabel "Average distance"
 
 set out "TestAccuracyxNgram_10.pdf"
-plot 'TestAccuracyxNgram_10.csv' every 2 using 1:3 title 'Ngram 3' with boxes ls 1,\
+plot 'TestAccuracyxNgram_10.csv' every 2 using 1:3 title '3gram' with boxes ls 1,\
 	'TestAccuracyxNgram_10.csv' every 2 using 1:3:4:5 title '' with errorbars ls 2,\
-	'TestAccuracyxNgram_10.csv' every 2::1 using 1:3 title 'Ngram 4' with boxes ls 3,\
+	'TestAccuracyxNgram_10.csv' every 2::1 using 1:3 title '4gram' with boxes ls 3,\
 	'TestAccuracyxNgram_10.csv' every 2::1 using 1:3:4:5 title '' with errorbars ls 2,\
-	0.7937854073276378	title 'base for Ngram 3' ls 9,\
-	0.8495047623629264	title 'base for Ngram 4' ls 10,\
+	0.7937854073276378	title 'baseline 3gram' ls 9,\
+	0.8495047623629264	title 'baseline 4gram' ls 10,\
 	1 title '' ls 11
 
 set out "TestAccuracyxNgram_10x10.pdf"
-plot 'TestAccuracyxNgram_10x10.csv' every 2 using 1:3 title 'Ngram 3' with boxes ls 1,\
+plot 'TestAccuracyxNgram_10x10.csv' every 2 using 1:3 title '3gram' with boxes ls 1,\
 	'TestAccuracyxNgram_10x10.csv' every 2 using 1:3:4:5 title '' with errorbars ls 2,\
-	'TestAccuracyxNgram_10x10.csv' every 2::1 using 1:3 title 'Ngram 4' with boxes ls 3,\
+	'TestAccuracyxNgram_10x10.csv' every 2::1 using 1:3 title '4gram' with boxes ls 3,\
 	'TestAccuracyxNgram_10x10.csv' every 2::1 using 1:3:4:5 title '' with errorbars ls 2,\
-	0.8470108839664949	title 'base for Ngram 3' ls 9,\
-	0.9138432553377478	title 'base for Ngram 4' ls 10,\
+	0.8470108839664949	title 'baseline 3gram' ls 9,\
+	0.9138432553377478	title 'baseline 4gram' ls 10,\
 	1 title '' ls 11
