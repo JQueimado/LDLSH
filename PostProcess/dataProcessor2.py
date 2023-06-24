@@ -12,16 +12,19 @@ def main( testsFolder ):
     tests.sort()
 
     queryLatencydf = pd.DataFrame(columns=["test","mean", "meanplus", "meanminus"])
+    queryLatencydf_insert = pd.DataFrame(columns=["test","mean"])
     queryAccuracydf = pd.DataFrame(columns=["test","mean", "meanplus", "meanminus"])
     queryThroughputdf = pd.DataFrame(columns=["test", "mean", "meanplus", "meanminus"])
 
     datasetName = renameDataset( testsFolder )
 
     latencyTestResults = "/TestLatencyAverage_"+datasetName+".csv"
+    latencyTestResults_insert = "/TestLatencyAverage_insert_"+datasetName+".csv"
     accuracyTestResults = "/TestAccuracyAverage_"+datasetName+".csv"
     throughputTestResults = "/TestThroughputyAverage_"+datasetName+".csv"
     
     thresholdLatencyTestResults = "/TestThresholdxLatency_"+datasetName+".csv"
+    thresholdLatencyTestResults_insert = "/TestThresholdxLatency_insert_"+datasetName+".csv"
     thresholdAccuracyTestResults = "/TestThresholdxAccuracy_"+datasetName+".csv"
     thresholdThroughputTestResults = "/TestThresholdxThroughput_"+datasetName+".csv"
 
@@ -39,6 +42,14 @@ def main( testsFolder ):
 
         #Latency
         currentdf = pd.read_csv( test + "latency.mean.csv", header=None )
+
+        ## insert
+        temp = currentdf.loc[0]
+        testname = os.path.basename( test[:-1] ).split("_")[0]
+        mean = temp[1]
+        queryLatencydf_insert.loc[len(queryLatencydf_insert)] = [testname, mean]
+
+        ## query
         currentdf = currentdf.iloc[1:]
         testname = os.path.basename( test[:-1] ).split("_")[0]
         mean = currentdf[1].mean()
@@ -63,8 +74,11 @@ def main( testsFolder ):
 
         queryThroughputdf.loc[len(queryAccuracydf)] = [testname, mean, mean+std, mean-std]
 
-    print("Latency:\n",queryLatencydf)
+    print("Latency Query:\n",queryLatencydf)
     queryLatencydf.to_csv( testsFolder + latencyTestResults)
+
+    print("Latency Insert:\n",queryLatencydf_insert)
+    queryLatencydf_insert.to_csv( testsFolder + latencyTestResults_insert)
 
     print("Accuracy:\n",queryAccuracydf)
     queryAccuracydf.to_csv( testsFolder + accuracyTestResults )
@@ -73,6 +87,13 @@ def main( testsFolder ):
     queryThroughputdf.to_csv( testsFolder + throughputTestResults )
 
     #Latency with threshold
+    ## insert
+    queryLatencyThresholddf_insert = addThreshold(queryLatencydf_insert)
+    print("Insert Latency with Threshold:\n",queryLatencyThresholddf_insert)
+    queryLatencyThresholddf_insert.to_csv(testsFolder + thresholdLatencyTestResults_insert, index=None, header=None, sep="\t")
+    splitModels( testsFolder + thresholdLatencyTestResults_insert, 3 ) 
+
+    ## query
     queryLatencyThresholddf = addThreshold(queryLatencydf)
     print("Latency with Threshold:\n",queryLatencyThresholddf)
     queryLatencyThresholddf.to_csv(testsFolder + thresholdLatencyTestResults, index=None, header=None, sep="\t")
