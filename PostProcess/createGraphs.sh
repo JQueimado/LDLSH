@@ -15,7 +15,7 @@ cp "$Ngram" "$1/."
     cd "$1" || exit
     gnuplot "$Normal"
     gnuplot "$Ngram"
-    #rm "$Normal" "$Ngram"
-    mkdir "pdf"
-    mv ./*.pdf pdf/.
+    rm "$Normal" "$Ngram"
+    #mkdir "pdf"
+    #mv ./*.pdf pdf/.
 )
