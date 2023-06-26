@@ -39,6 +39,8 @@ python3 joinData_Normal.py \
     /media/sf_Data/TESTS-t4/TestResults/TestThresholdxAccuracy_10x10-10x10.csv \
     3
 
+## Latency query
+
 python3 joinData_Normal.py \
     /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_10a-10b.csv \
     /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_10a-10c.csv \
@@ -55,4 +57,24 @@ python3 joinData_Normal.py \
     /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_10x10a-10x10b.csv \
     /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_10x10a-10x10c.csv \
     /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_10x10-10x10.csv \
+    3
+
+## Latency insert
+
+python3 joinData_AcuracyInsert.py \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_insert_10a-10b.csv \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_insert_10a-10c.csv  \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_insert_10-10.csv  \
+    3
+
+python3 joinData_AcuracyInsert.py \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_insert_100a-100b.csv \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_insert_100a-100c.csv  \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_insert_100-100.csv  \
+    3
+
+python3 joinData_AcuracyInsert.py \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_insert_10x10a-10x10b.csv \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_insert_10x10a-10x10c.csv  \
+    /media/sf_Data/TESTS-t4/TestResults/TestThresholdxLatency_insert_10x10-10x10.csv  \
     3
