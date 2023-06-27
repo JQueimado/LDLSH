@@ -88,6 +88,7 @@ unset xtics
 set xtics(0.75,0.9,0.95)
 
 ## Latency 10a-10a query
+set logscale y 2
 set yrange [6:35]
 set ytics (10,20,30,35)
 
@@ -126,6 +127,7 @@ plot 'TestThresholdxLatency_insert_10a-10a.csv' index 0 using 2:1 title "LDLSH O
 		'' index 3 using 2:1 title '' ls 7
 
 ## Throughput_10a-10a
+set logscale y 2
 set yrange [340:2600]
 set ytics (340,500,1000,1500,2000,25000,2600)
 
@@ -145,6 +147,7 @@ plot 'TestThresholdxThroughput_10a-10a.csv' index 0 using 4:1:2:3 title "LDLSH O
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Latency 10-10 Query
+set logscale y 2
 set yrange [6:32]
 set ytics (5,10,20,30)
 
@@ -164,6 +167,7 @@ plot 'TestThresholdxLatency_10-10.csv' index 0 using 4:1:2:3 title "LDLSH Optimi
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Latency 10-10 Insert
+set logscale y 2
 set yrange [7:15]
 set ytics (7,8,9,10,11,12,13,14,15)
 
@@ -183,6 +187,7 @@ plot 'TestThresholdxLatency_insert_10-10.csv' index 0 using 2:1 title "LDLSH Opt
 		'' index 3 using 2:1 title '' ls 7
 
 ## Throughput 10a-10b
+set logscale y 2
 set yrange [390:2800]
 set ytics (500,1000,1500,2000,25000,3000,3500)
 
@@ -202,6 +207,7 @@ plot 'TestThresholdxThroughput_10a-10b.csv' index 0 using 4:1:2:3 title "LDLSH O
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Throughput 10a-10c
+set logscale y 2
 set yrange [390:2800]
 set ytics (500,1000,1500,2000,25000,3000,3500)
 
@@ -245,6 +251,7 @@ plot 'TestThresholdxLatency_10x10a-10x10a.csv' index 0 using 4:1:2:3 title "LDLS
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Latency 10x10a-10x10a Insert
+set logscale y 2
 set yrange [9:16]
 set ytics (7,8,9,10,11,12,13,14,15,16)
 
@@ -264,6 +271,7 @@ plot 'TestThresholdxLatency_insert_10x10a-10x10a.csv' index 0 using 2:1 title "L
 		'' index 3 using 2:1 title '' ls 7
 
 ## Throughput 10x10a-10x10a
+set logscale y 2
 set yrange [430:1800]
 set ytics (500,1000,1500,2000,25000,3000,3500)
 
@@ -303,6 +311,7 @@ plot 'TestThresholdxLatency_10x10-10x10.csv' index 0 using 4:1:2:3 title "LDLSH 
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Latency 10x10-10x10 Insert
+set logscale y 2
 set yrange [9:16]
 set ytics (7,8,9,10,11,12,13,14,15,16)
 
@@ -322,6 +331,7 @@ plot 'TestThresholdxLatency_insert_10x10-10x10.csv' index 0 using 2:1 title "LDL
 		'' index 3 using 2:1 title '' ls 7
 
 ## Throughput 10x10a-10x10b
+set logscale y 2
 set yrange [460:2500]
 set ytics (500,1000,1500,2000,25000,3000,3500)
 
@@ -341,6 +351,7 @@ plot 'TestThresholdxThroughput_10x10a-10x10b.csv' index 0 using 4:1:2:3 title "L
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Throughput_10x10a-10x10c
+set logscale y 2
 set yrange [500:2500]
 set ytics (500,1000,1500,2000,25000,3000,3500)
 
@@ -382,6 +393,7 @@ plot 'TestThresholdxLatency_100a-100a.csv' index 0 using 4:1:2:3 title "LDLSH Op
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Latency 100a-100a Insert
+set logscale y 2
 set yrange [6:11]
 set ytics (7,8,9,10,11,12,13,14,15,16)
 
@@ -444,6 +456,7 @@ plot 'TestThresholdxLatency_100-100.csv' index 0 using 4:1:2:3 title "LDLSH Opti
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Latency 100-100 Insert
+set logscale y 2
 set yrange [6:11]
 set ytics (7,8,9,10,11,12,13,14,15,16)
 
