@@ -6,8 +6,8 @@ set xrange [0.74:0.96]
 
 set logscale y 2
 
-set lmargin 0.3
-set rmargin 0.3
+# set lmargin 0.3
+# set rmargin 0.3
 
 A = "#2F528F"
 B = "#ED7D31"
@@ -32,7 +32,7 @@ set style line 8 lt rgb D lw 7 pt 43 ps 3 pi -2
 set style line 9 lt rgb F lw 7 dt 2
 
 set terminal pdf color font ",60" size 18, 10
-set size ratio .55 1.2,1
+set size ratio .5
 
 ###############################################################################################################################
 
@@ -203,8 +203,10 @@ plot 'TestThresholdxThroughput_10a-10c.csv' index 0 using 4:1:2:3 title "LDLSH O
 ###############################################################################################################################
 
 ## Latency 10x10a-10x10a Query
-set yrange [10:30]
-set ytics (5,10,20,30)
+set yrange [9:31]
+unset logscale
+unset ytics
+set ytics 5
 
 set xlabel "Similarity Treshold" 
 set ylabel "Average Latency"
@@ -260,8 +262,9 @@ plot 'TestThresholdxThroughput_10x10a-10x10a.csv' index 0 using 4:1:2:3 title "L
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Latency 10x10-10x10 Query
-set yrange [7:28]
-set ytics (5,10,20,30)
+set yrange [5:28]
+unset logscale
+set ytics 5
 
 set xlabel "Similarity Treshold" 
 set ylabel "Average Latency"
@@ -338,8 +341,9 @@ plot 'TestThresholdxThroughput_10x10a-10x10c.csv' index 0 using 4:1:2:3 title "L
 ###############################################################################################################################
 
 ## Latency 100a-100a Query
-set yrange [4:250]
-set ytics (5,10,20,30,40,50,70,90,110,150,200, 250)
+set yrange [-10:218]
+unset logscale
+set ytics 20
 
 set xlabel "Similarity Treshold" 
 set ylabel "Average Latency"
@@ -398,8 +402,10 @@ plot 'TestThresholdxThroughput_100a-100a.csv' index 0 using 4:1:2:3 title "LDLSH
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Latency 100-100 Query
-set yrange [3:220]
-set ytics (5,10,20,30,40,50,70,90,110,150,200, 250)
+unset logscale
+set yrange [-10:220]
+unset ytics
+set ytics 20
 
 set xlabel "Similarity Treshold" 
 set ylabel "Average Latency"
