@@ -104,6 +104,27 @@ plot 'TestThresholdxLatency_10a-10a.csv' index 0 using 4:1:2:3 title "LDLSH Opti
 		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
+## Latency 10a-10a insert
+set yrange [7:14]
+unset logscale
+unset ytics
+set ytics 1
+
+set xlabel "Similarity Treshold" 
+set ylabel "Average Latency"
+
+set key right top 
+
+set out "TestThresholdxLatency_insert_10a-10a.pdf"
+plot 'TestThresholdxLatency_insert_10a-10a.csv' index 0 using 2:1 title "LDLSH Optimized" with linespoints ls 2, \
+		'' index 0 using 2:1 title '' ls 1, \
+		'' index 1 using 2:1 title "LDLSH" with linespoints ls 3, \
+		'' index 1 using 2:1 title '' ls 4, \
+		'' index 2 using 2:1 title "Traditional Replicated" with linespoints ls 6, \
+		'' index 2 using 2:1 title '' ls 5, \
+		'' index 3 using 2:1 title "Traditional External" with linespoints ls 8, \
+		'' index 3 using 2:1 title '' ls 7
+
 ## Throughput_10a-10a
 set yrange [340:2600]
 set ytics (340,500,1000,1500,2000,25000,2600)
