@@ -22,6 +22,8 @@ public class MemoryTestMain2 extends SystemMainImp {
         super(args, appContext);
     }
 
+    int TIMEOUT=10000;
+
     @Override
     public void run() throws Exception {
         //Commands
@@ -46,12 +48,12 @@ public class MemoryTestMain2 extends SystemMainImp {
 
         //Execute
         AtomicInteger successCounter = new AtomicInteger();
+        System.out.println("Done. Please Check memory.");
         /*
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Done. Please Check memory.");
         scanner.nextLine();
         */
-        Thread.sleep(5000);
+        Thread.sleep(TIMEOUT);
 
         //Insert File
         switch (op) {
@@ -133,7 +135,7 @@ public class MemoryTestMain2 extends SystemMainImp {
 
         System.out.println("Done. Please Check memory.");
         //scanner.nextLine();
-        Thread.sleep(5000);
+        Thread.sleep(TIMEOUT);
 
         System.exit(0);
 
