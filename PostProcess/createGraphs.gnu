@@ -196,8 +196,8 @@ set ylabel "Average Throughput"
 
 set key right bottom 
 
-set out "TestThresholdxThroughput_10a-10b.pdf"
-plot 'TestThresholdxThroughput_10a-10b.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
+set out "TestThresholdxThroughput_10-10.pdf"
+plot 'TestThresholdxThroughput_10-10.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
 		'' index 0 using 4:1 title '' with linespoints ls 1, \
 		'' index 1 using 4:1:2:3 title "LDLSH" with errorbars ls 4, \
 		'' index 1 using 4:1 title '' with linespoints ls 3, \
@@ -207,25 +207,25 @@ plot 'TestThresholdxThroughput_10a-10b.csv' index 0 using 4:1:2:3 title "LDLSH O
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Throughput 10a-10c
-set logscale y 2
-set yrange [390:2800]
-set ytics (500,1000,1500,2000,25000,3000,3500)
+# set logscale y 2
+# set yrange [390:2800]
+# set ytics (500,1000,1500,2000,25000,3000,3500)
 
-#set title "Average throughput in relation to the similarity threshold for data-set 10a-10c"
-set xlabel "Similarity Treshold" 
-set ylabel "Average Throughput"
+# #set title "Average throughput in relation to the similarity threshold for data-set 10a-10c"
+# set xlabel "Similarity Treshold" 
+# set ylabel "Average Throughput"
 
-set key right bottom 
+# set key right bottom 
 
-set out "TestThresholdxThroughput_10a-10c.pdf"
-plot 'TestThresholdxThroughput_10a-10c.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
-		'' index 0 using 4:1 title '' with linespoints ls 1, \
-		'' index 1 using 4:1:2:3 title "LDLSH" with errorbars ls 4, \
-		'' index 1 using 4:1 title '' with linespoints ls 3, \
-		'' index 2 using 4:1:2:3 title "Traditional Replicated" with errorbars ls 6, \
-		'' index 2 using 4:1 title '' with linespoints ls 5, \
-		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
-		'' index 3 using 4:1 title '' with linespoints ls 7
+# set out "TestThresholdxThroughput_10a-10c.pdf"
+# plot 'TestThresholdxThroughput_10a-10c.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
+# 		'' index 0 using 4:1 title '' with linespoints ls 1, \
+# 		'' index 1 using 4:1:2:3 title "LDLSH" with errorbars ls 4, \
+# 		'' index 1 using 4:1 title '' with linespoints ls 3, \
+# 		'' index 2 using 4:1:2:3 title "Traditional Replicated" with errorbars ls 6, \
+# 		'' index 2 using 4:1 title '' with linespoints ls 5, \
+# 		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
+# 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ###############################################################################################################################
 
@@ -340,8 +340,8 @@ set ylabel "Average Throughput"
 
 set key right bottom 
 
-set out "TestThresholdxThroughput_10x10a-10x10b.pdf"
-plot 'TestThresholdxThroughput_10x10a-10x10b.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
+set out "TestThresholdxThroughput_10x10-10x10.pdf"
+plot 'TestThresholdxThroughput_10x10-10x10.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
 		'' index 0 using 4:1 title '' with linespoints ls 1, \
 		'' index 1 using 4:1:2:3 title "LDLSH" with errorbars ls 4, \
 		'' index 1 using 4:1 title '' with linespoints ls 3, \
@@ -351,24 +351,24 @@ plot 'TestThresholdxThroughput_10x10a-10x10b.csv' index 0 using 4:1:2:3 title "L
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ## Throughput_10x10a-10x10c
-set logscale y 2
-set yrange [500:2500]
-set ytics (500,1000,1500,2000,25000,3000,3500)
+# set logscale y 2
+# set yrange [500:2500]
+# set ytics (500,1000,1500,2000,25000,3000,3500)
 
-set xlabel "Similarity Treshold" 
-set ylabel "Average Throughput"
+# set xlabel "Similarity Treshold" 
+# set ylabel "Average Throughput"
 
-set key right bottom 
+# set key right bottom 
 
-set out "TestThresholdxThroughput_10x10a-10x10c.pdf"
-plot 'TestThresholdxThroughput_10x10a-10x10c.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
-		'' index 0 using 4:1 title '' with linespoints ls 1, \
-		'' index 1 using 4:1:2:3 title "LDLSH" with errorbars ls 4, \
-		'' index 1 using 4:1 title '' with linespoints ls 3, \
-		'' index 2 using 4:1:2:3 title "Traditional Replicated" with errorbars ls 6, \
-		'' index 2 using 4:1 title '' with linespoints ls 5, \
-		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
-		'' index 3 using 4:1 title '' with linespoints ls 7
+# set out "TestThresholdxThroughput_10x10a-10x10c.pdf"
+# plot 'TestThresholdxThroughput_10x10a-10x10c.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
+# 		'' index 0 using 4:1 title '' with linespoints ls 1, \
+# 		'' index 1 using 4:1:2:3 title "LDLSH" with errorbars ls 4, \
+# 		'' index 1 using 4:1 title '' with linespoints ls 3, \
+# 		'' index 2 using 4:1:2:3 title "Traditional Replicated" with errorbars ls 6, \
+# 		'' index 2 using 4:1 title '' with linespoints ls 5, \
+# 		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
+# 		'' index 3 using 4:1 title '' with linespoints ls 7
 
 ###############################################################################################################################
 
@@ -487,8 +487,8 @@ set ylabel "Average Throughput"
 
 set key right bottom 
 
-set out "TestThresholdxThroughput_100a-100b.pdf"
-plot 'TestThresholdxThroughput_100a-100b.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
+set out "TestThresholdxThroughput_100-100.pdf"
+plot 'TestThresholdxThroughput_100-100.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
 		'' index 0 using 4:1 title '' with linespoints ls 1, \
 		'' index 1 using 4:1:2:3 title "LDLSH" with errorbars ls 4, \
 		'' index 1 using 4:1 title '' with linespoints ls 3, \
@@ -497,25 +497,25 @@ plot 'TestThresholdxThroughput_100a-100b.csv' index 0 using 4:1:2:3 title "LDLSH
 		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
 		'' index 3 using 4:1 title '' with linespoints ls 7
 
-## Throughput 100a-100c
-#set yrange [-420:3600]
-unset yrange
-unset logscale
-#set ytics (500,1000,1500,2000,25000,3000,3500)
-set ytics 500
+# ## Throughput 100a-100c
+# #set yrange [-420:3600]
+# unset yrange
+# unset logscale
+# #set ytics (500,1000,1500,2000,25000,3000,3500)
+# set ytics 500
 
-#set title "Average throughput in relation to the similarity threshold for data-set 100a-100c"
-set xlabel "Similarity Treshold" 
-set ylabel "Average Throughput"
+# #set title "Average throughput in relation to the similarity threshold for data-set 100a-100c"
+# set xlabel "Similarity Treshold" 
+# set ylabel "Average Throughput"
 
-set key right bottom 
+# set key right bottom 
 
-set out "TestThresholdxThroughput_100a-100c.pdf"
-plot 'TestThresholdxThroughput_100a-100c.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
-		'' index 0 using 4:1 title '' with linespoints ls 1, \
-		'' index 1 using 4:1:2:3 title "LDLSH" with errorbars ls 4, \
-		'' index 1 using 4:1 title '' with linespoints ls 3, \
-		'' index 2 using 4:1:2:3 title "Traditional Replicated" with errorbars ls 6, \
-		'' index 2 using 4:1 title '' with linespoints ls 5, \
-		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
-		'' index 3 using 4:1 title '' with linespoints ls 7
+# set out "TestThresholdxThroughput_100a-100c.pdf"
+# plot 'TestThresholdxThroughput_100a-100c.csv' index 0 using 4:1:2:3 title "LDLSH Optimized" with errorbars ls 2, \
+# 		'' index 0 using 4:1 title '' with linespoints ls 1, \
+# 		'' index 1 using 4:1:2:3 title "LDLSH" with errorbars ls 4, \
+# 		'' index 1 using 4:1 title '' with linespoints ls 3, \
+# 		'' index 2 using 4:1:2:3 title "Traditional Replicated" with errorbars ls 6, \
+# 		'' index 2 using 4:1 title '' with linespoints ls 5, \
+# 		'' index 3 using 4:1:2:3 title "Traditional External" with errorbars ls 8, \
+# 		'' index 3 using 4:1 title '' with linespoints ls 7
