@@ -373,8 +373,8 @@ plot 'TestThresholdxThroughput_10x10a-10x10c.csv' index 0 using 4:1:2:3 title "L
 ###############################################################################################################################
 
 ## Latency 100a-100a Query
-set yrange [-10:218]
 unset logscale
+set yrange [-10:218]
 set ytics 20
 
 set xlabel "Similarity Treshold" 
