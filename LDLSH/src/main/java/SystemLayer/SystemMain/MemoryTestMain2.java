@@ -49,11 +49,9 @@ public class MemoryTestMain2 extends SystemMainImp {
         //Execute
         AtomicInteger successCounter = new AtomicInteger();
         System.out.println("Done. Please Check memory.");
-        /*
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
-        */
-        Thread.sleep(TIMEOUT);
+        //Thread.sleep(TIMEOUT);
 
         //Insert File
         switch (op) {
@@ -134,8 +132,8 @@ public class MemoryTestMain2 extends SystemMainImp {
             throw new Exception("Not all Inserts were performed. Missing: " + (data.size() - successCounter.get()) );
 
         System.out.println("Done. Please Check memory.");
-        //scanner.nextLine();
-        Thread.sleep(TIMEOUT);
+        scanner.nextLine();
+        //Thread.sleep(TIMEOUT);
 
         System.exit(0);
 
