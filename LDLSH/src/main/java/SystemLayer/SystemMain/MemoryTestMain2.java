@@ -46,15 +46,14 @@ public class MemoryTestMain2 extends SystemMainImp {
             }
         }
 
-        AtomicInteger successCounter = new AtomicInteger();
-
         //Execute
-//        System.out.println("Done. Please Check memory.");
-//        /*
-//        Scanner scanner = new Scanner(System.in);
-//        scanner.nextLine();
-//        */
-//        Thread.sleep(TIMEOUT);
+        AtomicInteger successCounter = new AtomicInteger();
+        System.out.println("Done. Please Check memory.");
+        /*
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
+        */
+        Thread.sleep(TIMEOUT);
 
         //Insert File
         switch (op) {
