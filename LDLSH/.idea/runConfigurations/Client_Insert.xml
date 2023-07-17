@@ -2,7 +2,7 @@
   <configuration default="false" name="Client Insert" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="Main" />
     <module name="LDLSH" />
-    <option name="PROGRAM_PARAMETERS" value="DebugConfigs/LDLSH_Accuracy_Test/ClientNode.properties -i data_sets/SRR2400000shufaa" />
+    <option name="PROGRAM_PARAMETERS" value="DebugConfigs/LDLSH_Accuracy_Test/ClientNode.properties -i data_sets/SRR100000shufaax10" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
