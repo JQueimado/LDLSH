@@ -7,3 +7,4 @@ TEST*
 nb*
 *.csv
 *.pdf
+.vscode/settings.json
