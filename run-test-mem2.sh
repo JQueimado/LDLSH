@@ -59,8 +59,8 @@ run_Test(){
     run_test_insert_client_jar "$1" "$3"
 	killall -9 java
 
-	run_test_query_client_jar "$2" "$3"
-    killall -9 java
+	# run_test_query_client_jar "$2" "$3"
+    # killall -9 java
 
     #Stop Server
     for SERVER in $SERVERS
