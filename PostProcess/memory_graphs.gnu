@@ -27,23 +27,44 @@ set style fill solid
 set boxwidth .9
 
 set xtics ( \
-    "t6" 0, \
-    "t7" 1, \
-    "t8" 2  \
+    "server1" 0, \
+    "server2" 1,  \
+    "server3" 2  \
  )
 
-set key left top
-set xlabel "LSH index servers"
-set ylabel "Ressorce utilization in Mib"
-
-set out "10a-10a-mem_graph.pdf"
-plot '10a-10a-mem_graph.csv' using 1 title "LDLSH Optimized" ls 1,\
+set yrange [8800000:15000000]
+set out "10-10-75-mem_graph.pdf"
+plot "10-10-75-mem_graph.csv" using 1 title"LDLSH Optimized" ls 1,\
     '' using 2 title "LDLSH" ls 3,\
     '' using 3 title "Traditional External" ls 5,\
     '' using 4 title "Traditional Replicated" ls 7
 
-set out "10x10a-10x10a-mem_graph.pdf"
-plot '10x10a-10x10a-mem_graph.csv' using 1 title "LDLSH Optimized" ls 1,\
+set yrange [23000000:85000000]
+set out "100-100-75-mem_graph.pdf"
+plot "100-100-75-mem_graph.csv" using 1 title"LDLSH Optimized" ls 1,\
     '' using 2 title "LDLSH" ls 3,\
     '' using 3 title "Traditional External" ls 5,\
     '' using 4 title "Traditional Replicated" ls 7
+
+set yrange [10000000:22000000]
+set out "10x10-10x10-75-mem_graph.pdf"
+plot "10x10-10x10-75-mem_graph.csv" using 1 title"LDLSH Optimized" ls 1,\
+    '' using 2 title "LDLSH" ls 3,\
+    '' using 3 title "Traditional External" ls 5,\
+    '' using 4 title "Traditional Replicated" ls 7
+
+# set key left top
+# set xlabel "LSH index servers"
+# set ylabel "Ressorce utilization in Mib"
+
+# set out "10a-10a-mem_graph.pdf"
+# plot '10a-10a-mem_graph.csv' using 1 title "LDLSH Optimized" ls 1,\
+#     '' using 2 title "LDLSH" ls 3,\
+#     '' using 3 title "Traditional External" ls 5,\
+#     '' using 4 title "Traditional Replicated" ls 7
+
+# set out "10x10a-10x10a-mem_graph.pdf"
+# plot '10x10a-10x10a-mem_graph.csv' using 1 title "LDLSH Optimized" ls 1,\
+#     '' using 2 title "LDLSH" ls 3,\
+#     '' using 3 title "Traditional External" ls 5,\
+#     '' using 4 title "Traditional Replicated" ls 7
