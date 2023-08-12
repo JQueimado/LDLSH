@@ -118,7 +118,7 @@ def latencyProcessor( testfiles : list):
         df = df.drop([0,1,3,4,6], axis=1)
         df.columns = ['value', 'time']
         df = df.iloc[50:]
-        df["time"] = df["time"].apply(lambda x : x * 0.000001)
+        df["time"] = df["time"].apply(lambda x : x * 0.000001) #nanoseconds to miliseconds
 
         fileName = os.path.splitext( os.path.basename(file) )[0]
         if resultdf.empty:
