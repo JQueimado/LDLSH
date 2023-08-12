@@ -32,21 +32,21 @@ set xtics ( \
     "server3" 2  \
  )
 
-set yrange [8800000:15000000]
+set yrange [8800000:18000000]
 set out "10-10-75-mem_graph.pdf"
 plot "10-10-75-mem_graph.csv" using 1 title"LDLSH Optimized" ls 1,\
     '' using 2 title "LDLSH" ls 3,\
     '' using 3 title "Traditional External" ls 5,\
     '' using 4 title "Traditional Replicated" ls 7
 
-set yrange [23000000:85000000]
+set yrange [33000000:120000000]
 set out "100-100-75-mem_graph.pdf"
 plot "100-100-75-mem_graph.csv" using 1 title"LDLSH Optimized" ls 1,\
     '' using 2 title "LDLSH" ls 3,\
     '' using 3 title "Traditional External" ls 5,\
     '' using 4 title "Traditional Replicated" ls 7
 
-set yrange [10000000:22000000]
+set yrange [8000000:32000000]
 set out "10x10-10x10-75-mem_graph.pdf"
 plot "10x10-10x10-75-mem_graph.csv" using 1 title"LDLSH Optimized" ls 1,\
     '' using 2 title "LDLSH" ls 3,\
